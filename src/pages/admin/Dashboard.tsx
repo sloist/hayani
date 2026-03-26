@@ -5,6 +5,15 @@ import type { Order } from '../../types';
 
 const STATUSES = ['all', 'pending', 'paid', 'shipped', 'delivered', 'cancelled'] as const;
 
+const STATUS_LABELS: Record<string, string> = {
+  all: '전체',
+  pending: '입금대기',
+  paid: '입금확인',
+  shipped: '배송중',
+  delivered: '배송완료',
+  cancelled: '취소',
+};
+
 export default function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filter, setFilter] = useState<string>('all');
@@ -49,14 +58,14 @@ export default function Dashboard() {
           HAYANI
         </Link>
         <button onClick={handleLogout} className="label" style={{ color: 'var(--text2)' }}>
-          Logout
+          로그아웃
         </button>
       </div>
 
       {/* Nav tabs */}
       <div style={{ display: 'flex', gap: '24px', marginBottom: '32px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
-        <span className="label" style={{ color: 'var(--text)' }}>Orders</span>
-        <Link to="/admin/products" className="label" style={{ color: 'var(--text3)' }}>Products</Link>
+        <span className="label" style={{ color: 'var(--text)' }}>주문 관리</span>
+        <Link to="/admin/products" className="label" style={{ color: 'var(--text3)' }}>제품 관리</Link>
       </div>
 
       {/* Status filters */}
@@ -68,7 +77,6 @@ export default function Dashboard() {
             style={{
               fontSize: '11px',
               letterSpacing: '2px',
-              textTransform: 'uppercase',
               padding: '6px 12px',
               border: '1px solid',
               borderColor: filter === s ? 'var(--text)' : 'var(--border)',
@@ -76,16 +84,16 @@ export default function Dashboard() {
               backgroundColor: filter === s ? 'var(--bg2)' : 'transparent',
             }}
           >
-            {s}
+            {STATUS_LABELS[s]}
           </button>
         ))}
       </div>
 
       {/* Orders */}
       {loading ? (
-        <p style={{ color: 'var(--text2)', fontSize: '13px' }}>Loading...</p>
+        <p style={{ color: 'var(--text2)', fontSize: '13px' }}>로딩중...</p>
       ) : filtered.length === 0 ? (
-        <p style={{ color: 'var(--text2)', fontSize: '13px' }}>No orders found.</p>
+        <p style={{ color: 'var(--text2)', fontSize: '13px' }}>주문 없음</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', backgroundColor: 'var(--border)' }}>
           {/* Header row */}
@@ -96,17 +104,16 @@ export default function Dashboard() {
             padding: '10px 16px',
             backgroundColor: 'var(--bg2)',
             fontSize: '10px',
-            textTransform: 'uppercase',
             letterSpacing: '3px',
             color: 'var(--text2)',
           }}>
-            <span>Order</span>
-            <span>Customer</span>
-            <span>Product</span>
-            <span>Size</span>
-            <span style={{ textAlign: 'right' }}>Total</span>
-            <span>Status</span>
-            <span>Date</span>
+            <span>주문번호</span>
+            <span>고객</span>
+            <span>제품</span>
+            <span>사이즈</span>
+            <span style={{ textAlign: 'right' }}>합계</span>
+            <span>상태</span>
+            <span>주문일시</span>
           </div>
 
           {filtered.map(order => (
@@ -134,10 +141,9 @@ export default function Dashboard() {
               <span style={{
                 fontSize: '10px',
                 letterSpacing: '2px',
-                textTransform: 'uppercase',
                 color: order.status === 'cancelled' ? '#c44' : order.status === 'delivered' ? '#4a8' : 'var(--text2)',
               }}>
-                {order.status}
+                {STATUS_LABELS[order.status]}
               </span>
               <span style={{ color: 'var(--text2)', fontSize: '12px' }}>
                 {new Date(order.created_at).toLocaleDateString('ko-KR')}

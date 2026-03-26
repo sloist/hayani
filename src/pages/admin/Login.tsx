@@ -45,7 +45,7 @@ export default function Login() {
         HAYANI
       </Link>
 
-      <span className="label" style={{ marginBottom: '48px' }}>Admin</span>
+      <span className="label" style={{ marginBottom: '48px' }}>관리자</span>
 
       <form onSubmit={handleSubmit} style={{
         width: '100%',
@@ -56,7 +56,7 @@ export default function Login() {
       }}>
         <input
           type="email"
-          placeholder="Email"
+          placeholder="이메일"
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
@@ -73,7 +73,7 @@ export default function Login() {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="비밀번호"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
@@ -107,7 +107,7 @@ export default function Login() {
             fontWeight: 300,
           }}
         >
-          {loading ? '...' : 'Login'}
+          {loading ? '...' : '로그인'}
         </button>
       </form>
     </div>

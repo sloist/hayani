@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase, generateOrderNumber } from '../lib/supabase';
-import { getCollect } from '../lib/collect';
 import type { Product, OrderFormData } from '../types';
 
 const SHIPPING_FEE = 4000;
@@ -18,7 +17,6 @@ export default function Order() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const submittedRef = useRef(false);
-  const fromCollect = searchParams.get('from') === 'collect';
 
   const [form, setForm] = useState<OrderFormData>({
     customer_email: '', customer_name: '', customer_phone: '',
@@ -27,41 +25,29 @@ export default function Order() {
 
   useEffect(() => {
     async function load() {
-      if (fromCollect) {
-        // Load all collected items
-        const collected = getCollect();
-        if (collected.length === 0) { navigate('/'); return; }
+      // Single item order
+      const productId = searchParams.get('product_id');
+      const size = searchParams.get('size');
+      if (!productId || !size) { navigate('/'); return; }
 
-        const ids = [...new Set(collected.map(c => c.productId))];
-        const { data } = await supabase.from('products').select('*').in('id', ids);
-        const productMap = new Map((data || []).map(p => [p.id, p]));
-
-        const items = collected
-          .map(c => {
-            const product = productMap.get(c.productId);
-            return product && product.stock > 0 ? { product, size: c.size } : null;
-          })
-          .filter((x): x is OrderItem => x !== null);
-
-        if (items.length === 0) { navigate('/'); return; }
-        setOrderItems(items);
-      } else {
-        // Single item order
-        const productId = searchParams.get('product_id');
-        const size = searchParams.get('size');
-        if (!productId || !size) { navigate('/'); return; }
-
-        const { data } = await supabase.from('products').select('*').eq('id', productId).single();
-        if (!data || data.stock <= 0) { navigate('/'); return; }
-        setOrderItems([{ product: data, size }]);
-      }
+      const { data } = await supabase.from('products').select('*').eq('id', productId).single();
+      if (!data || data.stock <= 0) { navigate('/'); return; }
+      setOrderItems([{ product: data, size }]);
       setLoading(false);
     }
     load();
-  }, [searchParams, navigate, fromCollect]);
+  }, [searchParams, navigate]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function handleBack() {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate('/');
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -102,12 +88,6 @@ export default function Order() {
         }
       }
 
-      // Clear collect if ordering from collect
-      if (fromCollect) {
-        localStorage.removeItem('hayani_collect');
-        window.dispatchEvent(new Event('collect-change'));
-      }
-
       navigate(`/order/complete?order_number=${orderNumber}`);
     } catch {
       submittedRef.current = false;
@@ -131,7 +111,21 @@ export default function Order() {
   return (
     <div style={{ maxWidth: '520px', margin: '0 auto', padding: '100px 40px 80px' }}>
       <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <Link to="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '16px', fontWeight: 300, letterSpacing: '0.12em', color: 'var(--text2)' }}>HAYANI</Link>
+        <button
+          onClick={handleBack}
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: '20px',
+            fontWeight: 300,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text2)',
+            padding: '0',
+          }}
+        >
+          &larr;
+        </button>
         <span className="label">Order</span>
       </div>
 

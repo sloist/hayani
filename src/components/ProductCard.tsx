@@ -7,6 +7,7 @@ interface Props {
 
 export default function ProductCard({ product, onClick }: Props) {
   const isSoldOut = product.stock <= 0;
+  const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
 
   return (
     <button
@@ -60,7 +61,7 @@ export default function ProductCard({ product, onClick }: Props) {
         )}
       </div>
 
-      {/* Label */}
+      {/* Label: code + price */}
       <div style={{ textAlign: 'center' }}>
         <span style={{
           fontSize: '10px',
@@ -68,8 +69,19 @@ export default function ProductCard({ product, onClick }: Props) {
           textTransform: 'uppercase',
           color: 'var(--text2)',
           fontWeight: 300,
+          display: 'block',
         }}>
           {product.code}
+        </span>
+        <span style={{
+          display: 'block',
+          marginTop: '6px',
+          fontSize: '12px',
+          letterSpacing: '0.04em',
+          color: 'var(--text2)',
+          fontWeight: 300,
+        }}>
+          {formatPrice(product.price)}
         </span>
         {isSoldOut && (
           <span style={{

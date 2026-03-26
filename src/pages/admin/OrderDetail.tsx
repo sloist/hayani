@@ -5,6 +5,14 @@ import type { Order } from '../../types';
 
 const STATUS_LIST = ['pending', 'paid', 'shipped', 'delivered'] as const;
 
+const STATUS_LABELS: Record<string, string> = {
+  pending: '입금대기',
+  paid: '입금확인',
+  shipped: '배송중',
+  delivered: '배송완료',
+  cancelled: '취소',
+};
+
 function formatDate(d: string | null) {
   if (!d) return '-';
   return new Date(d).toLocaleString('ko-KR');
@@ -68,7 +76,7 @@ export default function OrderDetail() {
   }
 
   if (loading) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
-  if (!order) return <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text2)' }}>Order not found.</div>;
+  if (!order) return <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text2)' }}>주문을 찾을 수 없습니다.</div>;
 
   const infoStyle: React.CSSProperties = {
     display: 'grid',
@@ -87,7 +95,7 @@ export default function OrderDetail() {
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', padding: '24px', maxWidth: '720px', margin: '0 auto' }}>
       {/* Back */}
       <Link to="/admin" style={{ fontSize: '12px', color: 'var(--text2)', letterSpacing: '2px', textTransform: 'uppercase' }}>
-        &larr; Orders
+        &larr; 주문 관리
       </Link>
 
       {/* Order number */}
@@ -105,13 +113,12 @@ export default function OrderDetail() {
         display: 'inline-block',
         fontSize: '10px',
         letterSpacing: '2px',
-        textTransform: 'uppercase',
         padding: '4px 10px',
         border: '1px solid var(--border)',
         color: order.status === 'cancelled' ? '#c44' : order.status === 'delivered' ? '#4a8' : 'var(--text2)',
         marginBottom: '32px',
       }}>
-        {order.status}
+        {STATUS_LABELS[order.status]}
       </span>
 
       {/* Status buttons */}
@@ -124,7 +131,6 @@ export default function OrderDetail() {
             style={{
               fontSize: '11px',
               letterSpacing: '2px',
-              textTransform: 'uppercase',
               padding: '8px 16px',
               border: '1px solid',
               borderColor: order.status === s ? 'var(--text)' : 'var(--border)',
@@ -134,18 +140,17 @@ export default function OrderDetail() {
               cursor: (updating || order.status === s || order.status === 'cancelled') ? 'default' : 'pointer',
             }}
           >
-            {s}
+            {STATUS_LABELS[s]}
           </button>
         ))}
         <button
           onClick={() => {
-            if (confirm('Cancel this order? Stock will be restored.')) changeStatus('cancelled');
+            if (confirm('이 주문을 취소하시겠습니까? 재고가 복구됩니다.')) changeStatus('cancelled');
           }}
           disabled={updating || order.status === 'cancelled'}
           style={{
             fontSize: '11px',
             letterSpacing: '2px',
-            textTransform: 'uppercase',
             padding: '8px 16px',
             border: '1px solid',
             borderColor: order.status === 'cancelled' ? '#c44' : 'var(--border)',
@@ -155,45 +160,45 @@ export default function OrderDetail() {
             cursor: (updating || order.status === 'cancelled') ? 'default' : 'pointer',
           }}
         >
-          Cancel
+          취소
         </button>
       </div>
 
       {/* Product info */}
-      <p className="label" style={{ marginBottom: '12px' }}>Product</p>
+      <p className="label" style={{ marginBottom: '12px' }}>제품</p>
       <div style={{ ...infoStyle, marginBottom: '32px' }}>
-        <span style={labelStyle}>Code</span><span>{order.product?.code || '-'}</span>
-        <span style={labelStyle}>Name</span><span>{order.product?.name || '-'}</span>
-        <span style={labelStyle}>Size</span><span>{order.size}</span>
-        <span style={labelStyle}>Quantity</span><span>{order.quantity}</span>
-        <span style={labelStyle}>Total</span><span>{order.total_price.toLocaleString()}원</span>
+        <span style={labelStyle}>코드</span><span>{order.product?.code || '-'}</span>
+        <span style={labelStyle}>이름</span><span>{order.product?.name || '-'}</span>
+        <span style={labelStyle}>사이즈</span><span>{order.size}</span>
+        <span style={labelStyle}>수량</span><span>{order.quantity}</span>
+        <span style={labelStyle}>합계</span><span>{order.total_price.toLocaleString()}원</span>
       </div>
 
       {/* Customer info */}
-      <p className="label" style={{ marginBottom: '12px' }}>Customer</p>
+      <p className="label" style={{ marginBottom: '12px' }}>고객</p>
       <div style={{ ...infoStyle, marginBottom: '32px' }}>
-        <span style={labelStyle}>Name</span><span>{order.customer_name}</span>
-        <span style={labelStyle}>Email</span><span>{order.customer_email}</span>
-        <span style={labelStyle}>Phone</span><span>{order.customer_phone}</span>
-        <span style={labelStyle}>Address</span><span>{order.customer_address} {order.customer_address_detail || ''}</span>
-        <span style={labelStyle}>Delivery Memo</span><span>{order.delivery_memo || '-'}</span>
+        <span style={labelStyle}>이름</span><span>{order.customer_name}</span>
+        <span style={labelStyle}>이메일</span><span>{order.customer_email}</span>
+        <span style={labelStyle}>연락처</span><span>{order.customer_phone}</span>
+        <span style={labelStyle}>주소</span><span>{order.customer_address} {order.customer_address_detail || ''}</span>
+        <span style={labelStyle}>배송메모</span><span>{order.delivery_memo || '-'}</span>
       </div>
 
       {/* Payment info */}
-      <p className="label" style={{ marginBottom: '12px' }}>Payment</p>
+      <p className="label" style={{ marginBottom: '12px' }}>결제</p>
       <div style={{ ...infoStyle, marginBottom: '32px' }}>
-        <span style={labelStyle}>Depositor</span><span>{order.depositor_name}</span>
-        <span style={labelStyle}>Amount</span><span>{order.total_price.toLocaleString()}원</span>
+        <span style={labelStyle}>입금자명</span><span>{order.depositor_name}</span>
+        <span style={labelStyle}>금액</span><span>{order.total_price.toLocaleString()}원</span>
       </div>
 
       {/* Timestamps */}
-      <p className="label" style={{ marginBottom: '12px' }}>Timestamps</p>
+      <p className="label" style={{ marginBottom: '12px' }}>일시</p>
       <div style={{ ...infoStyle, marginBottom: '32px' }}>
-        <span style={labelStyle}>Created</span><span>{formatDate(order.created_at)}</span>
-        <span style={labelStyle}>Paid</span><span>{formatDate(order.paid_at)}</span>
-        <span style={labelStyle}>Shipped</span><span>{formatDate(order.shipped_at)}</span>
+        <span style={labelStyle}>주문일시</span><span>{formatDate(order.created_at)}</span>
+        <span style={labelStyle}>입금확인</span><span>{formatDate(order.paid_at)}</span>
+        <span style={labelStyle}>배송중</span><span>{formatDate(order.shipped_at)}</span>
         {order.cancelled_at && (
-          <><span style={labelStyle}>Cancelled</span><span>{formatDate(order.cancelled_at)}</span></>
+          <><span style={labelStyle}>취소</span><span>{formatDate(order.cancelled_at)}</span></>
         )}
       </div>
     </div>

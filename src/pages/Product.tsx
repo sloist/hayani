@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { addToCollect, isCollected } from '../lib/collect';
 import type { Product as ProductType } from '../types';
 
 export default function Product() {
@@ -10,7 +9,6 @@ export default function Product() {
   const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
-  const [collected, setCollected] = useState(false);
 
   useEffect(() => {
     async function fetch() {
@@ -22,13 +20,13 @@ export default function Product() {
     fetch();
   }, [id]);
 
-  useEffect(() => {
-    if (id && selectedSize) {
-      setCollected(isCollected(id, selectedSize));
+  function handleBack() {
+    if (window.history.length > 1) {
+      window.history.back();
     } else {
-      setCollected(false);
+      navigate('/');
     }
-  }, [id, selectedSize]);
+  }
 
   if (loading) return <div style={{ minHeight: '100vh' }} />;
   if (!product) { navigate('/'); return null; }
@@ -42,25 +40,28 @@ export default function Product() {
     navigate(`/order?product_id=${product!.id}&size=${selectedSize}`);
   }
 
-  function handleCollect() {
-    if (!selectedSize || isSoldOut) return;
-    addToCollect(product!.id, selectedSize);
-    setCollected(true);
-  }
-
   return (
     <div style={{ minHeight: '100vh' }}>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '28px 40px', display: 'flex', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', fontWeight: 300, letterSpacing: '0.12em' }}>
-          HAYANI
-        </Link>
-        <Link to="/collect" style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase' as const, color: 'var(--text2)' }}>
-          Collect
-        </Link>
+        <button
+          onClick={handleBack}
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: '20px',
+            fontWeight: 300,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text)',
+            padding: '0',
+          }}
+        >
+          &larr;
+        </button>
       </div>
 
-      <div style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', flexWrap: 'wrap' }}>
-        <div style={{
+      <div className="product-layout" style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', flexWrap: 'wrap' }}>
+        <div className="product-image" style={{
           flex: '1 1 50%', minWidth: '300px', position: 'sticky', top: 0, height: '100vh',
           backgroundColor: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
@@ -99,19 +100,9 @@ export default function Product() {
             ))}
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <button onClick={handleCollect} disabled={!selectedSize || isSoldOut || collected} style={{
-              flex: 1, padding: '16px 0',
-              border: '1px solid var(--border)',
-              backgroundColor: 'transparent',
-              color: collected ? 'var(--text3)' : (selectedSize && !isSoldOut) ? 'var(--text)' : 'var(--text3)',
-              fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
-              transition: 'all 0.3s ease', cursor: (selectedSize && !isSoldOut && !collected) ? 'pointer' : 'default',
-            }}>
-              {collected ? 'Collected' : 'Collect'}
-            </button>
+          <div style={{ marginTop: '16px' }}>
             <button onClick={handleOrder} disabled={!canOrder} style={{
-              flex: 1, padding: '16px 0',
+              width: '100%', padding: '16px 0',
               backgroundColor: canOrder ? 'var(--text)' : 'var(--border)',
               color: canOrder ? 'var(--bg)' : 'var(--text3)',
               fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
@@ -128,6 +119,20 @@ export default function Product() {
           )}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .product-layout {
+            flex-direction: column !important;
+          }
+          .product-image {
+            position: relative !important;
+            height: auto !important;
+            max-height: 55vh !important;
+            top: auto !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
