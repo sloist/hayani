@@ -82,6 +82,7 @@ export default function Products() {
 
     if (error) {
       console.error('Upload error:', error);
+      alert(`업로드 실패: ${error.message}`);
       return null;
     }
 
@@ -93,7 +94,10 @@ export default function Products() {
   }
 
   async function handleFileSelect(file: File) {
-    if (!file.type.startsWith('image/')) return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
 
     // If editing, upload immediately and save to DB
     if (editingId) {
