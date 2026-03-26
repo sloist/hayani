@@ -6,6 +6,12 @@ interface Props {
   initialIndex?: number;
 }
 
+function getSlideVw() {
+  // Desktop: narrower slides so next card peeks
+  // Mobile: wider slides
+  return window.innerWidth > 768 ? 42 : 78;
+}
+
 export default function HorizontalGallery({ children, onIndexChange, initialIndex = 0 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
@@ -13,10 +19,32 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
   const [showHint, setShowHint] = useState(true);
+  const [slideWidth, setSlideWidth] = useState(getSlideVw);
 
   const slideCount = children.length;
-  const slideWidth = 72;
-  const peekWidth = 14;
+  const peekWidth = (100 - slideWidth) / 2;
+
+  // Update on resize
+  useEffect(() => {
+    function onResize() {
+      const newWidth = getSlideVw();
+      setSlideWidth(prev => {
+        if (prev !== newWidth) {
+          // Re-snap to current index after resize
+          setTimeout(() => {
+            const el = containerRef.current;
+            if (el) {
+              const target = currentIndex.current * (window.innerWidth * newWidth / 100);
+              el.scrollTo({ left: target, behavior: 'instant' });
+            }
+          }, 50);
+        }
+        return newWidth;
+      });
+    }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const scrollToIndex = useCallback((index: number, smooth = true) => {
     const el = containerRef.current;
@@ -39,14 +67,14 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
     }
   }, [initialIndex, scrollToIndex]);
 
-  // Hide hint after first interaction
+  // Hide hint
   useEffect(() => {
     if (!showHint) return;
     const timer = setTimeout(() => setShowHint(false), 4000);
     return () => clearTimeout(timer);
   }, [showHint]);
 
-  // Wheel handler
+  // Wheel
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -113,7 +141,7 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
     };
   }, [scrollToIndex]);
 
-  // Sync index on manual scroll end
+  // Sync index on scroll end
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -132,11 +160,11 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
   }, [slideWidth, onIndexChange]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden' }}>
       <div
         ref={containerRef}
         style={{
-          height: '100vh',
+          height: '100%',
           display: 'flex',
           overflowX: 'auto',
           overflowY: 'hidden',
@@ -145,7 +173,6 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
           msOverflowStyle: 'none',
         }}
       >
-        {/* Left padding for first slide centering */}
         <div style={{ flexShrink: 0, width: `${peekWidth}vw` }} />
 
         {children.map((child, i) => (
@@ -154,8 +181,8 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
             style={{
               flexShrink: 0,
               width: `${slideWidth}vw`,
-              height: '100vh',
-              padding: '80px 8px 60px',
+              height: '100%',
+              padding: '80px 8px 48px',
               scrollSnapAlign: 'center',
             }}
           >
@@ -163,30 +190,24 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
           </div>
         ))}
 
-        {/* Right padding for last slide centering */}
         <div style={{ flexShrink: 0, width: `${peekWidth}vw` }} />
       </div>
 
-      {/* Scroll hint */}
       {showHint && (
         <div
           style={{
-            position: 'fixed',
-            bottom: '40px',
+            position: 'absolute',
+            bottom: '24px',
             right: '40px',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            opacity: 0.4,
             animation: 'fadeHint 2s ease-in-out infinite',
           }}
         >
           <span style={{
-            fontSize: '9px',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            color: 'var(--text2)',
-            fontWeight: 300,
+            fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase',
+            color: 'var(--text2)', fontWeight: 300,
           }}>
             Scroll
           </span>
