@@ -61,6 +61,9 @@ export default function Product() {
               <span key={i} style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
             ))}
           </div>
+          <span style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '1px', marginTop: '4px' }}>
+            Size & order available in COUNTER
+          </span>
         </div>
       </div>
     </div>
