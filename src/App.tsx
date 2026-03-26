@@ -10,6 +10,7 @@ const AdminLogin = lazy(() => import('./pages/admin/Login'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminOrderDetail = lazy(() => import('./pages/admin/OrderDetail'));
 const AdminProducts = lazy(() => import('./pages/admin/Products'));
+const OrderCheck = lazy(() => import('./pages/OrderCheck'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/orders/:id" element={<AdminOrderDetail />} />
           <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/order/check" element={<OrderCheck />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
         </Routes>

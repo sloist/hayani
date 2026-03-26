@@ -57,6 +57,9 @@ export default function FooterSlide() {
           <a href="mailto:hello@hayani.kr" style={{ ...linkStyle, textDecoration: 'none' }}>
             Contact
           </a>
+          <button onClick={() => navigate('/order/check')} style={linkStyle}>
+            Order
+          </button>
           <button onClick={() => navigate('/terms')} style={linkStyle}>
             Terms
           </button>
