@@ -4,11 +4,11 @@ export default function FooterSlide() {
   const navigate = useNavigate();
 
   const linkStyle = {
-    fontSize: '9px',
+    fontSize: '10px',
     letterSpacing: '3px',
     textTransform: 'uppercase' as const,
-    color: 'var(--text3)',
-    fontWeight: 300,
+    color: 'var(--text2)',
+    fontWeight: 500,
     cursor: 'pointer',
     background: 'none',
     border: 'none',
@@ -31,7 +31,7 @@ export default function FooterSlide() {
         <p style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontSize: 'clamp(16px, 2.5vw, 20px)',
-          fontWeight: 300,
+          fontWeight: 400,
           lineHeight: '2.2',
           letterSpacing: '0.04em',
           color: 'var(--text)',
@@ -42,8 +42,8 @@ export default function FooterSlide() {
         </p>
 
         <p style={{
-          fontSize: '13px',
-          fontWeight: 200,
+          fontSize: '14px',
+          fontWeight: 400,
           color: 'var(--text2)',
           lineHeight: '2',
           marginTop: '8px',
@@ -65,10 +65,11 @@ export default function FooterSlide() {
           </button>
         </div>
         <span style={{
-          fontSize: '9px',
+          fontSize: '10px',
           letterSpacing: '3px',
-          color: 'var(--text3)',
+          color: 'var(--text2)',
           marginTop: '8px',
+          fontWeight: 400,
         }}>
           &copy; 2026 HAYANI
         </span>

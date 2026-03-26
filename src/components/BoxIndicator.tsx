@@ -30,11 +30,11 @@ export default function BoxIndicator() {
         border: 'none',
         cursor: 'pointer',
         padding: '0',
-        fontSize: '9px',
+        fontSize: '10px',
         textTransform: 'uppercase',
         letterSpacing: '3px',
-        color: 'var(--text3)',
-        fontWeight: 300,
+        color: 'var(--text2)',
+        fontWeight: 500,
       }}
     >
       BOX{count > 0 ? ` ${count}` : ''}

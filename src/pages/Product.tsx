@@ -10,6 +10,7 @@ export default function Product() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [expandedSize, setExpandedSize] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetch() {
@@ -41,41 +42,66 @@ export default function Product() {
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '48px', fontWeight: 300, letterSpacing: '0.12em', color: 'var(--text3)' }}>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '48px', fontWeight: 400, letterSpacing: '0.12em', color: 'var(--text3)' }}>
               {product.code}
             </span>
           )}
         </div>
 
         <div style={{ flex: '1 1 400px', padding: '120px 60px 80px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <span className="label">{product.code}</span>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 300, letterSpacing: '0.06em' }}>
+          <span style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text2)', fontWeight: 500 }}>
+            {product.code}
+          </span>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 400, letterSpacing: '0.06em' }}>
             {product.name}
           </h1>
-          <span style={{ fontSize: '14px', fontWeight: 300, letterSpacing: '0.04em' }}>{formatPrice(product.price)}</span>
+          <span style={{ fontSize: '15px', fontWeight: 400, letterSpacing: '0.04em' }}>{formatPrice(product.price)}</span>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
             {(product.specs || []).map((spec, i) => (
-              <span key={i} style={{ fontSize: '11px', letterSpacing: '2px', color: 'var(--text2)', fontWeight: 300 }}>{spec}</span>
+              <span key={i} style={{ fontSize: '12px', letterSpacing: '1px', color: 'var(--text2)', fontWeight: 400 }}>{spec}</span>
             ))}
           </div>
 
-          {/* Sizes - display only */}
-          <div style={{ display: 'flex', gap: '12px', paddingTop: '16px' }}>
-            {(product.sizes || []).map(size => (
-              <span key={size} style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                minWidth: '48px', height: '48px', padding: '0 12px',
-                border: '1px solid var(--border)',
-                fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)',
-              }}>
-                {size}
+          {/* Sizes as 1, 2, 3 */}
+          {product.sizes && product.sizes.length > 0 && (
+            <div style={{ paddingTop: '12px' }}>
+              <span style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text2)', fontWeight: 500, display: 'block', marginBottom: '12px' }}>
+                Size
               </span>
-            ))}
-          </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {product.sizes.map((size, i) => (
+                  <button
+                    key={size}
+                    onClick={() => setExpandedSize(expandedSize === i ? null : i)}
+                    style={{
+                      minWidth: '40px', height: '40px', padding: '0 10px',
+                      border: expandedSize === i ? '1px solid var(--text)' : '1px solid var(--border)',
+                      backgroundColor: 'transparent',
+                      fontSize: '13px', fontWeight: 500,
+                      color: expandedSize === i ? 'var(--text)' : 'var(--text2)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+              {expandedSize !== null && product.sizes[expandedSize] && (
+                <div style={{
+                  marginTop: '12px', padding: '12px 16px',
+                  backgroundColor: 'var(--bg2)',
+                  fontSize: '12px', color: 'var(--text2)', fontWeight: 400,
+                  letterSpacing: '1px',
+                }}>
+                  Size {expandedSize + 1} — {product.sizes[expandedSize]}
+                </div>
+              )}
+            </div>
+          )}
 
-          <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 200, lineHeight: '1.8' }}>
-            BOX에서 선택 가능
+          <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400, lineHeight: '1.8' }}>
+            Available in BOX
           </p>
         </div>
       </div>

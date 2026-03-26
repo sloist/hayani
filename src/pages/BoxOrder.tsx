@@ -57,7 +57,6 @@ export default function BoxOrder() {
     try {
       const orderNumber = await generateOrderNumber();
 
-      // Verify stock for all items
       for (const item of box) {
         const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
         if (!cur || cur.stock < item.quantity) {
@@ -65,7 +64,6 @@ export default function BoxOrder() {
         }
       }
 
-      // Decrease stock
       for (const item of box) {
         const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
         if (cur) {
@@ -73,7 +71,6 @@ export default function BoxOrder() {
         }
       }
 
-      // Build items jsonb
       const items = box.map(item => ({
         product_id: item.productId,
         code: item.code,
@@ -116,12 +113,11 @@ export default function BoxOrder() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '12px 0', border: 'none', borderBottom: '1px solid var(--border)',
-    backgroundColor: 'transparent', fontSize: '13px', fontWeight: 300, color: 'var(--text)', outline: 'none',
+    backgroundColor: 'transparent', fontSize: '14px', fontWeight: 400, color: 'var(--text)', outline: 'none',
   };
 
   return (
     <div style={{ maxWidth: '520px', margin: '0 auto', padding: '100px 40px 80px' }}>
-      {/* Top bar */}
       <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <BackButton to="/box" />
         <span className="label">2 / 3</span>
@@ -132,39 +128,38 @@ export default function BoxOrder() {
         {box.map((item, i) => (
           <div key={`${item.productId}-${item.size}`} style={{ marginBottom: i < box.length - 1 ? '16px' : '0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 300 }}>{item.name}</span>
-              <span style={{ fontSize: '13px', fontWeight: 300 }}>{formatPrice(item.price * item.quantity)}</span>
+              <span style={{ fontSize: '14px', fontWeight: 400 }}>{item.name}</span>
+              <span style={{ fontSize: '14px', fontWeight: 400 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px', fontWeight: 500 }}>
               {item.code} / {item.size} / {item.quantity}
             </span>
           </div>
         ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text2)' }}>배송비</span>
-          <span style={{ fontSize: '11px', color: 'var(--text2)' }}>{formatPrice(SHIPPING_FEE)}</span>
+          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400 }}>Shipping</span>
+          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400 }}>{formatPrice(SHIPPING_FEE)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 400 }}>합계</span>
-          <span style={{ fontSize: '13px', fontWeight: 400 }}>{formatPrice(total)}</span>
+          <span style={{ fontSize: '14px', fontWeight: 500 }}>Total</span>
+          <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(total)}</span>
         </div>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit}>
-        <span className="label" style={{ marginBottom: '24px', display: 'block' }}>주문 정보</span>
+        <span className="label" style={{ marginBottom: '24px', display: 'block' }}>Information</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
-          <input name="customer_email" type="email" placeholder="이메일" value={form.customer_email} onChange={handleChange} required style={inputStyle} />
+          <input name="customer_email" type="email" placeholder="Email" value={form.customer_email} onChange={handleChange} required style={inputStyle} />
           <input name="customer_name" placeholder="이름" value={form.customer_name} onChange={handleChange} required style={inputStyle} />
           <input name="customer_phone" placeholder="연락처" value={form.customer_phone} onChange={handleChange} required style={inputStyle} />
           <input name="customer_address" placeholder="주소" value={form.customer_address} onChange={handleChange} required style={inputStyle} />
           <input name="customer_address_detail" placeholder="상세주소" value={form.customer_address_detail} onChange={handleChange} style={inputStyle} />
-          <input name="delivery_memo" placeholder="배송메모" value={form.delivery_memo} onChange={handleChange} style={inputStyle} />
+          <input name="delivery_memo" placeholder="Memo" value={form.delivery_memo} onChange={handleChange} style={inputStyle} />
         </div>
 
         <div style={{ padding: '24px', border: '1px solid var(--border)', marginBottom: '24px' }}>
-          <span className="label" style={{ marginBottom: '16px', display: 'block' }}>무통장입금</span>
-          <div style={{ fontSize: '13px', fontWeight: 300, lineHeight: '2' }}>
+          <span className="label" style={{ marginBottom: '16px', display: 'block' }}>Bank Transfer</span>
+          <div style={{ fontSize: '14px', fontWeight: 400, lineHeight: '2' }}>
             <div>카카오뱅크</div>
             <div style={{ color: 'var(--text2)' }}>계좌번호 안내 예정</div>
             <div>예금주: 하야니</div>
@@ -172,7 +167,7 @@ export default function BoxOrder() {
         </div>
 
         <input name="depositor_name" placeholder="입금자명" value={form.depositor_name} onChange={handleChange} required style={{ ...inputStyle, marginBottom: '16px' }} />
-        <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 200, marginBottom: '40px', lineHeight: '1.8' }}>
+        <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400, marginBottom: '40px', lineHeight: '1.8' }}>
           24시간 이내 미입금 시 자동 취소됩니다.
         </p>
 
@@ -180,10 +175,10 @@ export default function BoxOrder() {
           width: '100%', padding: '16px 0',
           backgroundColor: submitting ? 'var(--border)' : 'var(--text)',
           color: submitting ? 'var(--text3)' : 'var(--bg)',
-          fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
+          fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500,
           border: 'none', cursor: submitting ? 'default' : 'pointer',
         }}>
-          {submitting ? 'Processing' : '주문 완료'}
+          {submitting ? 'Processing...' : 'Confirm Order'}
         </button>
       </form>
     </div>

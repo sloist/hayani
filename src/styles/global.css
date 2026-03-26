@@ -1,12 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Noto+Sans+KR:wght@200;300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 
 :root {
   --bg: #faf9f7;
   --bg2: #f4f2ee;
   --border: #e8e5df;
-  --text: #1a1917;
-  --text2: #9e9a93;
-  --text3: #c8c4bc;
+  --text: #111110;
+  --text2: #6b6860;
+  --text3: #a09b93;
 }
 
 *, *::before, *::after {
@@ -23,7 +23,7 @@ html {
 
 body {
   font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--text);
   background-color: var(--bg);
   line-height: 1.6;
@@ -40,12 +40,12 @@ img { display: block; max-width: 100%; }
   text-transform: uppercase;
   letter-spacing: 4px;
   color: var(--text2);
-  font-weight: 300;
+  font-weight: 500;
 }
 
 .display {
   font-family: 'Cormorant Garamond', serif;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.08em;
 }
 

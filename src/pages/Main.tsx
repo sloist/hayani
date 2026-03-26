@@ -6,6 +6,7 @@ import HorizontalGallery from '../components/HorizontalGallery';
 import ProductCard from '../components/ProductCard';
 import FooterSlide from '../components/FooterSlide';
 import BoxIndicator from '../components/BoxIndicator';
+import ProductModal from '../components/ProductModal';
 
 function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
   const clickCount = useRef(0);
@@ -41,7 +42,7 @@ function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
         style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontSize: 'clamp(32px, 5vw, 56px)',
-          fontWeight: 300,
+          fontWeight: 400,
           letterSpacing: '0.16em',
           color: 'var(--text)',
           background: 'none',
@@ -59,6 +60,7 @@ function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
 export default function Main() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,7 +90,7 @@ export default function Main() {
       <ProductCard
         key={product.id}
         product={product}
-        onClick={() => navigate(`/wear/${product.id}`)}
+        onClick={() => setSelectedProduct(product)}
       />
     )),
     <FooterSlide key="footer" />,
@@ -100,6 +102,12 @@ export default function Main() {
       <HorizontalGallery initialIndex={0}>
         {slides}
       </HorizontalGallery>
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </>
   );
 }

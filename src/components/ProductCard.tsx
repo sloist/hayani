@@ -6,18 +6,13 @@ interface Props {
 }
 
 export default function ProductCard({ product, onClick }: Props) {
-  const isSoldOut = product.stock <= 0;
-  const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
-
   return (
     <button
       onClick={onClick}
       style={{
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '20px',
         cursor: 'pointer',
         background: 'none',
         border: 'none',
@@ -26,7 +21,6 @@ export default function ProductCard({ product, onClick }: Props) {
         padding: '0',
       }}
     >
-      {/* Image area */}
       <div
         style={{
           width: '80%',
@@ -45,54 +39,18 @@ export default function ProductCard({ product, onClick }: Props) {
         {product.image_url ? (
           <img
             src={product.image_url}
-            alt={product.name}
+            alt={product.code}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
         ) : (
           <span style={{
             fontFamily: "'Cormorant Garamond', serif",
             fontSize: 'clamp(28px, 4vw, 42px)',
-            fontWeight: 300,
+            fontWeight: 400,
             letterSpacing: '0.12em',
             color: 'var(--text3)',
           }}>
             {product.code}
-          </span>
-        )}
-      </div>
-
-      {/* Label: code + price */}
-      <div style={{ textAlign: 'center' }}>
-        <span style={{
-          fontSize: '10px',
-          letterSpacing: '4px',
-          textTransform: 'uppercase',
-          color: 'var(--text2)',
-          fontWeight: 300,
-          display: 'block',
-        }}>
-          {product.code}
-        </span>
-        <span style={{
-          display: 'block',
-          marginTop: '6px',
-          fontSize: '12px',
-          letterSpacing: '0.04em',
-          color: 'var(--text2)',
-          fontWeight: 300,
-        }}>
-          {formatPrice(product.price)}
-        </span>
-        {isSoldOut && (
-          <span style={{
-            display: 'block',
-            marginTop: '4px',
-            fontSize: '9px',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            color: 'var(--text3)',
-          }}>
-            Sold Out
           </span>
         )}
       </div>

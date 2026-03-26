@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Product } from '../types';
@@ -9,9 +9,11 @@ import BoxIndicator from '../components/BoxIndicator';
 export default function Box() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedSize, setSelectedSize] = useState('');
   const [box, setBox] = useState<BoxItem[]>(getBox);
   const navigate = useNavigate();
+  const stripRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -22,6 +24,7 @@ export default function Box() {
         .gt('stock', 0)
         .order('sort_order');
       setProducts(data || []);
+      if (data && data.length > 0) setSelectedProduct(data[0]);
       setLoading(false);
     }
     fetchProducts();
@@ -35,23 +38,41 @@ export default function Box() {
     return () => window.removeEventListener('box-change', onBoxChange);
   }, []);
 
+  // Horizontal scroll with wheel on product strip
+  useEffect(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    function onWheel(e: WheelEvent) {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        el!.scrollLeft += e.deltaY;
+      }
+    }
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
   const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
   const subtotal = box.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const SHIPPING_FEE = 4000;
 
-  function handleAdd(product: Product) {
-    const size = selectedSizes[product.id];
-    if (!size) return;
+  function handleSelectProduct(product: Product) {
+    setSelectedProduct(product);
+    setSelectedSize('');
+  }
+
+  function handleAdd() {
+    if (!selectedProduct || !selectedSize) return;
     addToBox({
-      productId: product.id,
-      code: product.code,
-      name: product.name,
-      size,
-      price: product.price,
+      productId: selectedProduct.id,
+      code: selectedProduct.code,
+      name: selectedProduct.name,
+      size: selectedSize,
+      price: selectedProduct.price,
       quantity: 1,
-      imageUrl: product.image_url,
+      imageUrl: selectedProduct.image_url,
     });
-    setSelectedSizes(prev => ({ ...prev, [product.id]: '' }));
+    setSelectedSize('');
   }
 
   function handleRemove(productId: string, size: string) {
@@ -66,89 +87,121 @@ export default function Box() {
   if (loading) return <div style={{ minHeight: '100vh' }} />;
 
   return (
-    <div style={{ maxWidth: '520px', margin: '0 auto', padding: '100px 40px 160px' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top bar */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '28px 40px', display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '28px 40px', display: 'flex', justifyContent: 'space-between', backgroundColor: 'var(--bg)' }}>
         <BackButton to="/" />
         <BoxIndicator />
       </div>
 
-      <span className="label" style={{ display: 'block', marginBottom: '40px' }}>Box</span>
-
-      {/* Product list */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', marginBottom: '48px' }}>
+      {/* Horizontal product strip */}
+      <div
+        ref={stripRef}
+        style={{
+          marginTop: '80px',
+          display: 'flex',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          scrollbarWidth: 'none',
+          gap: '4px',
+          padding: '0 40px',
+          flexShrink: 0,
+        }}
+      >
         {products.map(product => (
-          <div key={product.id} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-            {/* Thumbnail */}
-            <div style={{
-              width: '72px', height: '96px', flexShrink: 0,
-              backgroundColor: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          <button
+            key={product.id}
+            onClick={() => handleSelectProduct(product)}
+            style={{
+              flexShrink: 0,
+              width: '120px',
+              height: '160px',
+              backgroundColor: 'var(--bg2)',
+              border: selectedProduct?.id === product.id ? '2px solid var(--text)' : '2px solid transparent',
               overflow: 'hidden',
-            }}>
-              {product.image_url ? (
-                <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)' }}>{product.code}</span>
-              )}
-            </div>
-
-            {/* Info + size select */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <span style={{ fontSize: '10px', letterSpacing: '3px', color: 'var(--text2)', textTransform: 'uppercase' }}>{product.code}</span>
-              <span style={{ fontSize: '13px', fontWeight: 300 }}>{product.name}</span>
-              <span style={{ fontSize: '12px', fontWeight: 300, color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
-
-              {/* Size buttons */}
-              <div style={{ display: 'flex', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
-                {(product.sizes || []).map(size => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSizes(prev => ({ ...prev, [product.id]: prev[product.id] === size ? '' : size }))}
-                    style={{
-                      minWidth: '40px', height: '32px', padding: '0 8px',
-                      border: selectedSizes[product.id] === size ? '1px solid var(--text)' : '1px solid var(--border)',
-                      backgroundColor: 'transparent',
-                      fontSize: '9px', letterSpacing: '2px',
-                      color: selectedSizes[product.id] === size ? 'var(--text)' : 'var(--text2)',
-                      transition: 'border-color 0.2s ease',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-
-              {/* Add button */}
-              {selectedSizes[product.id] && (
-                <button
-                  onClick={() => handleAdd(product)}
-                  style={{
-                    alignSelf: 'flex-start',
-                    padding: '6px 16px',
-                    backgroundColor: 'var(--text)',
-                    color: 'var(--bg)',
-                    fontSize: '9px',
-                    letterSpacing: '3px',
-                    textTransform: 'uppercase',
-                    border: 'none',
-                    cursor: 'pointer',
-                    marginTop: '4px',
-                  }}
-                >
-                  담기
-                </button>
-              )}
-            </div>
-          </div>
+              cursor: 'pointer',
+              padding: 0,
+              transition: 'border-color 0.2s ease',
+            }}
+          >
+            {product.image_url ? (
+              <img src={product.image_url} alt={product.code} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)', fontWeight: 500 }}>{product.code}</span>
+            )}
+          </button>
         ))}
-
-        {products.length === 0 && (
-          <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 200, textAlign: 'center', padding: '40px 0' }}>
-            판매 중인 제품이 없습니다.
-          </p>
-        )}
       </div>
+
+      {/* Selected product detail */}
+      {selectedProduct && (
+        <div style={{ padding: '32px 40px', maxWidth: '520px', margin: '0 auto', width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+            <span style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500, color: 'var(--text2)' }}>
+              {selectedProduct.code}
+            </span>
+            <span style={{ fontSize: '14px', fontWeight: 500 }}>
+              {formatPrice(selectedProduct.price)}
+            </span>
+          </div>
+          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.04em', marginBottom: '20px' }}>
+            {selectedProduct.name}
+          </h2>
+
+          {/* Size selection as 1, 2, 3 */}
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+            {(selectedProduct.sizes || []).map((size, i) => (
+              <button
+                key={size}
+                onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
+                style={{
+                  minWidth: '40px', height: '40px', padding: '0 10px',
+                  border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
+                  backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
+                  fontSize: '13px', fontWeight: 500,
+                  color: selectedSize === size ? 'var(--bg)' : 'var(--text2)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          {/* Show actual size name when selected */}
+          {selectedSize && (
+            <div style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400, marginBottom: '12px', letterSpacing: '1px' }}>
+              Size {(selectedProduct.sizes || []).indexOf(selectedSize) + 1} — {selectedSize}
+            </div>
+          )}
+
+          {/* Add button */}
+          <button
+            onClick={handleAdd}
+            disabled={!selectedSize}
+            style={{
+              padding: '12px 32px',
+              backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
+              color: selectedSize ? 'var(--bg)' : 'var(--text3)',
+              fontSize: '10px',
+              letterSpacing: '4px',
+              textTransform: 'uppercase',
+              fontWeight: 500,
+              cursor: selectedSize ? 'pointer' : 'default',
+              transition: 'all 0.2s ease',
+              marginTop: '4px',
+            }}
+          >
+            Add
+          </button>
+        </div>
+      )}
+
+      {products.length === 0 && (
+        <p style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: 400, textAlign: 'center', padding: '80px 40px' }}>
+          No items available
+        </p>
+      )}
 
       {/* Box summary - fixed bottom */}
       <div style={{
@@ -158,26 +211,22 @@ export default function Box() {
       }}>
         <div style={{ maxWidth: '520px', margin: '0 auto' }}>
           {box.length === 0 ? (
-            <p style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 200, textAlign: 'center' }}>
-              아직 비어 있습니다
+            <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 400, textAlign: 'center' }}>
+              Empty
             </p>
           ) : (
             <>
-              {/* Box items */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
                 {box.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 300, color: 'var(--text2)' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>
                       {item.code} / {item.size} / {item.quantity}
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 300 }}>{formatPrice(item.price * item.quantity)}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
                       <button
                         onClick={() => handleRemove(item.productId, item.size)}
-                        style={{
-                          background: 'none', border: 'none', cursor: 'pointer',
-                          fontSize: '11px', color: 'var(--text3)', padding: '0',
-                        }}
+                        style={{ fontSize: '11px', color: 'var(--text3)', padding: '0' }}
                       >
                         ✕
                       </button>
@@ -186,27 +235,24 @@ export default function Box() {
                 ))}
               </div>
 
-              {/* Total + next */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
                 <div>
-                  <span style={{ fontSize: '11px', color: 'var(--text2)' }}>합계 </span>
-                  <span style={{ fontSize: '13px', fontWeight: 400 }}>{formatPrice(subtotal + SHIPPING_FEE)}</span>
-                  <span style={{ fontSize: '10px', color: 'var(--text3)', marginLeft: '8px' }}>배송비 포함</span>
+                  <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(subtotal + SHIPPING_FEE)}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--text2)', marginLeft: '8px' }}>incl. shipping</span>
                 </div>
                 <button
                   onClick={handleNext}
                   style={{
-                    padding: '10px 28px',
+                    padding: '12px 32px',
                     backgroundColor: 'var(--text)',
                     color: 'var(--bg)',
-                    fontSize: '9px',
-                    letterSpacing: '3px',
+                    fontSize: '10px',
+                    letterSpacing: '4px',
                     textTransform: 'uppercase',
-                    border: 'none',
-                    cursor: 'pointer',
+                    fontWeight: 500,
                   }}
                 >
-                  다음
+                  Next
                 </button>
               </div>
             </>
