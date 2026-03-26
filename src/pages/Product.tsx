@@ -10,7 +10,6 @@ export default function Product() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [expandedSize, setExpandedSize] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetch() {
@@ -26,6 +25,9 @@ export default function Product() {
   if (!product) { navigate('/'); return null; }
 
   const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
+  const name = product.name.replace(/^HAYANI\s*/i, '');
+  const specs = (product.specs || []).map(s => s.replace(/off-?white/i, 'Canvas-White'));
+  const sizes = product.sizes || [];
 
   return (
     <div style={{ minHeight: '100vh' }}>
@@ -40,64 +42,39 @@ export default function Product() {
           backgroundColor: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {product.image_url ? (
-            <img src={product.image_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img className="product-img" src={product.image_url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
             <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '48px', fontWeight: 400, letterSpacing: '0.12em', color: 'var(--text3)' }}>
-              {product.code}
+              {name}
             </span>
           )}
         </div>
 
-        <div style={{ flex: '1 1 400px', padding: '120px 60px 80px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ flex: '1 1 400px', padding: '120px 60px 80px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '0.06em' }}>
-            {product.name.replace(/^HAYANI\s*/i, '')}
+            {name}
           </h1>
           <span style={{ fontSize: '13px', fontWeight: 400, letterSpacing: '0.04em', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-            {(product.specs || []).map((spec, i) => (
-              <span key={i} style={{ fontSize: '12px', letterSpacing: '0.5px', color: 'var(--text2)', fontWeight: 300 }}>{spec}</span>
-            ))}
-          </div>
-
-          {/* Sizes as 1, 2, 3 */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div style={{ paddingTop: '12px' }}>
-              <span style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text2)', fontWeight: 300, display: 'block', marginBottom: '12px' }}>
-                Size
-              </span>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                {product.sizes.map((size, i) => (
-                  <button
-                    key={size}
-                    onClick={() => setExpandedSize(expandedSize === i ? null : i)}
-                    style={{
-                      minWidth: '40px', height: '40px', padding: '0 10px',
-                      border: expandedSize === i ? '1px solid var(--text)' : '1px solid var(--border)',
-                      backgroundColor: 'transparent',
-                      fontSize: '13px', fontWeight: 500,
-                      color: expandedSize === i ? 'var(--text)' : 'var(--text2)',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
+          {/* Specs + Sizes paired */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              {specs.map((spec, i) => (
+                <span key={i} style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
+              ))}
+            </div>
+            {sizes.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'right' }}>
+                {sizes.map((size, i) => (
+                  <span key={size} style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>
                     {i + 1}
-                  </button>
+                  </span>
                 ))}
               </div>
-              {expandedSize !== null && (
-                <div style={{
-                  marginTop: '12px', padding: '12px 16px',
-                  backgroundColor: 'var(--bg2)',
-                  fontSize: '12px', color: 'var(--text2)', fontWeight: 300,
-                  letterSpacing: '1px',
-                }}>
-                  실측 정보 준비 중
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
 
-          <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, lineHeight: '1.8' }}>
+          <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300 }}>
             Added
           </p>
         </div>
@@ -105,15 +82,8 @@ export default function Product() {
 
       <style>{`
         @media (max-width: 768px) {
-          .product-layout {
-            flex-direction: column !important;
-          }
-          .product-image {
-            position: relative !important;
-            height: auto !important;
-            max-height: 55vh !important;
-            top: auto !important;
-          }
+          .product-layout { flex-direction: column !important; }
+          .product-image { position: relative !important; height: auto !important; max-height: 55vh !important; top: auto !important; }
         }
       `}</style>
     </div>

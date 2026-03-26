@@ -41,6 +41,7 @@ export default function ProductCard({ product, onClick }: Props) {
       >
         {product.image_url ? (
           <img
+            className="product-img"
             src={product.image_url}
             alt={product.code}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}

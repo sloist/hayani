@@ -101,7 +101,7 @@ export default function Box() {
             overflow: 'hidden', padding: 0, transition: 'border-color 0.2s ease',
           }}>
             {product.image_url ? (
-              <img src={product.image_url} alt={product.code} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img className="product-img" src={product.image_url} alt={product.code} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
             )}

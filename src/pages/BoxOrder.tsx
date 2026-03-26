@@ -128,8 +128,8 @@ export default function BoxOrder() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <span className="label" style={{ marginBottom: '24px', display: 'block' }}>Order</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
+        <span className="label" style={{ marginBottom: '20px', display: 'block' }}>Details</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '36px' }}>
           <input name="customer_email" type="email" placeholder="Email" value={form.customer_email} onChange={handleChange} required style={inputStyle} />
           <input name="customer_name" placeholder="이름" value={form.customer_name} onChange={handleChange} required style={inputStyle} />
           <input name="customer_phone" placeholder="연락처" value={form.customer_phone} onChange={handleChange} required style={inputStyle} />
@@ -143,7 +143,7 @@ export default function BoxOrder() {
           <div style={{ fontSize: '14px', fontWeight: 300, lineHeight: '2' }}>
             <div>카카오뱅크</div>
             <div style={{ color: 'var(--text2)' }}>계좌번호 안내 예정</div>
-            <div style={{ fontSize: '12px', color: 'var(--text3)' }}>예금주: 하야니</div>
+            <div style={{ fontSize: '12px', color: 'var(--text2)' }}>예금주: 하야니</div>
           </div>
         </div>
 

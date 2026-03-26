@@ -198,7 +198,7 @@ const HorizontalGallery = forwardRef<GalleryHandle, Props>(function HorizontalGa
               flexShrink: 0,
               width: `${slideWidth}vw`,
               height: '100%',
-              padding: '80px 8px 48px',
+              padding: '80px 4px 48px',
               scrollSnapAlign: 'center',
             }}
           >

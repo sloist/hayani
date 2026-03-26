@@ -9,11 +9,7 @@
   --text3: #9a9590;
 }
 
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
   font-size: 16px;
@@ -30,19 +26,18 @@ body {
   overflow-x: hidden;
 }
 
-::selection {
-  background: rgba(0, 0, 0, 0.08);
-  color: inherit;
-}
-::-moz-selection {
-  background: rgba(0, 0, 0, 0.08);
-  color: inherit;
-}
+::selection { background: rgba(0, 0, 0, 0.08); color: inherit; }
+::-moz-selection { background: rgba(0, 0, 0, 0.08); color: inherit; }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; outline: none; -webkit-tap-highlight-color: transparent; }
 input, textarea, select { font-family: inherit; font-size: inherit; font-weight: inherit; }
 img { display: block; max-width: 100%; user-select: none; -webkit-user-drag: none; }
+
+/* Product images — subtle contrast lift so white clothes don't vanish */
+img.product-img {
+  filter: contrast(1.04) brightness(0.98);
+}
 
 .label {
   font-size: 10px;
@@ -52,15 +47,5 @@ img { display: block; max-width: 100%; user-select: none; -webkit-user-drag: non
   font-weight: 400;
 }
 
-.display {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-}
-
-/* Input focus state */
-input:focus, textarea:focus {
-  border-color: var(--text) !important;
-}
-
+input:focus, textarea:focus { border-color: var(--text) !important; }
 ::-webkit-scrollbar { width: 0; height: 0; }
