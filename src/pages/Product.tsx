@@ -48,15 +48,15 @@ export default function Product() {
           )}
         </div>
 
-        <div style={{ flex: '1 1 400px', padding: '120px 60px 80px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 400, letterSpacing: '0.06em' }}>
+        <div style={{ flex: '1 1 400px', padding: '120px 60px 80px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '0.06em' }}>
             {product.name.replace(/^HAYANI\s*/i, '')}
           </h1>
-          <span style={{ fontSize: '15px', fontWeight: 500, letterSpacing: '0.04em' }}>{formatPrice(product.price)}</span>
+          <span style={{ fontSize: '13px', fontWeight: 400, letterSpacing: '0.04em', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
             {(product.specs || []).map((spec, i) => (
-              <span key={i} style={{ fontSize: '12px', letterSpacing: '1px', color: 'var(--text2)', fontWeight: 300 }}>{spec}</span>
+              <span key={i} style={{ fontSize: '12px', letterSpacing: '0.5px', color: 'var(--text2)', fontWeight: 300 }}>{spec}</span>
             ))}
           </div>
 
@@ -98,7 +98,7 @@ export default function Product() {
           )}
 
           <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, lineHeight: '1.8' }}>
-            In BOX
+            Added
           </p>
         </div>
       </div>

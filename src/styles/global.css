@@ -2,11 +2,11 @@
 
 :root {
   --bg: #faf9f7;
-  --bg2: #f4f2ee;
-  --border: #e8e5df;
+  --bg2: #f0ede8;
+  --border: #ddd9d2;
   --text: #111110;
-  --text2: #6b6860;
-  --text3: #a09b93;
+  --text2: #5a5650;
+  --text3: #9a9590;
 }
 
 *, *::before, *::after {
@@ -30,7 +30,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Selection color — light gray */
 ::selection {
   background: rgba(0, 0, 0, 0.08);
   color: inherit;
@@ -57,6 +56,11 @@ img { display: block; max-width: 100%; user-select: none; -webkit-user-drag: non
   font-family: 'Cormorant Garamond', serif;
   font-weight: 400;
   letter-spacing: 0.08em;
+}
+
+/* Input focus state */
+input:focus, textarea:focus {
+  border-color: var(--text) !important;
 }
 
 ::-webkit-scrollbar { width: 0; height: 0; }

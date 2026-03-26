@@ -31,14 +31,11 @@ export default function Box() {
   }, []);
 
   useEffect(() => {
-    function onBoxChange() {
-      setBox(getBox());
-    }
+    function onBoxChange() { setBox(getBox()); }
     window.addEventListener('box-change', onBoxChange);
     return () => window.removeEventListener('box-change', onBoxChange);
   }, []);
 
-  // Horizontal scroll with wheel on product strip
   useEffect(() => {
     const el = stripRef.current;
     if (!el) return;
@@ -55,6 +52,7 @@ export default function Box() {
   const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
   const subtotal = box.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const SHIPPING_FEE = 4000;
+  const stripName = (n: string) => n.replace(/^HAYANI\s*/i, '');
 
   function handleSelectProduct(product: Product) {
     setSelectedProduct(product);
@@ -79,11 +77,6 @@ export default function Box() {
     removeFromBox(productId, size);
   }
 
-  function handleNext() {
-    if (box.length === 0) return;
-    navigate('/box/order');
-  }
-
   if (loading) return <div style={{ minHeight: '100vh' }} />;
 
   return (
@@ -94,84 +87,64 @@ export default function Box() {
         <BoxIndicator />
       </div>
 
-      {/* Horizontal product strip */}
-      <div
-        ref={stripRef}
-        style={{
-          marginTop: '80px',
-          display: 'flex',
-          justifyContent: 'center',
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          scrollbarWidth: 'none',
-          gap: '4px',
-          padding: '0 40px',
-          flexShrink: 0,
-        }}
-      >
+      {/* Product strip */}
+      <div ref={stripRef} style={{
+        marginTop: '80px', display: 'flex', justifyContent: 'center',
+        overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none',
+        gap: '4px', padding: '0 40px', flexShrink: 0,
+      }}>
         {products.map(product => (
-          <button
-            key={product.id}
-            onClick={() => handleSelectProduct(product)}
-            style={{
-              flexShrink: 0,
-              width: '120px',
-              height: '160px',
-              backgroundColor: 'var(--bg2)',
-              border: selectedProduct?.id === product.id ? '2px solid var(--text)' : '2px solid transparent',
-              overflow: 'hidden',
-              cursor: 'pointer',
-              padding: 0,
-              transition: 'border-color 0.2s ease',
-            }}
-          >
+          <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
+            flexShrink: 0, width: '120px', height: '160px',
+            backgroundColor: 'var(--bg2)',
+            border: selectedProduct?.id === product.id ? '2px solid var(--text)' : '2px solid transparent',
+            overflow: 'hidden', padding: 0, transition: 'border-color 0.2s ease',
+          }}>
             {product.image_url ? (
               <img src={product.image_url} alt={product.code} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)', fontWeight: 500 }}>{product.name.replace(/^HAYANI\s*/i, '')}</span>
+              <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
             )}
           </button>
         ))}
       </div>
 
-      {/* Selected product detail */}
+      {/* Selected product */}
       {selectedProduct && (
         <div style={{ padding: '32px 40px', maxWidth: '520px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px', width: '100%', maxWidth: '320px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '16px', width: '100%', maxWidth: '320px' }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.04em' }}>
-              {selectedProduct.name.replace(/^HAYANI\s*/i, '')}
+              {stripName(selectedProduct.name)}
             </h2>
-            <span style={{ fontSize: '14px', fontWeight: 500 }}>
+            <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text2)' }}>
               {formatPrice(selectedProduct.price)}
             </span>
           </div>
 
           {selectedProduct.stock <= 0 ? (
-            <span style={{ fontSize: '11px', letterSpacing: '3px', color: 'var(--text3)', fontWeight: 400, textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '10px', letterSpacing: '3px', color: 'var(--text3)', textTransform: 'uppercase' }}>
               Sold Out
             </span>
           ) : (
             <>
-              {/* Size selection as 1, 2, 3 — with per-size stock check */}
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                 {(selectedProduct.sizes || []).map((size, i) => {
                   const sizeStock = selectedProduct.stock_by_size?.[size];
                   const isSizeOut = sizeStock !== undefined && sizeStock <= 0;
                   return (
-                    <button
-                      key={size}
+                    <button key={size}
                       onClick={() => !isSizeOut && setSelectedSize(selectedSize === size ? '' : size)}
                       disabled={isSizeOut}
                       style={{
-                        minWidth: '40px', height: '40px', padding: '0 10px',
+                        minWidth: '36px', height: '36px', padding: '0 8px',
                         border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
                         backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
-                        fontSize: '13px', fontWeight: 500,
+                        fontSize: '12px', fontWeight: 500,
                         color: isSizeOut ? 'var(--text3)' : selectedSize === size ? 'var(--bg)' : 'var(--text2)',
-                        transition: 'all 0.2s ease',
                         opacity: isSizeOut ? 0.4 : 1,
                         cursor: isSizeOut ? 'default' : 'pointer',
                         textDecoration: isSizeOut ? 'line-through' : 'none',
+                        transition: 'all 0.2s ease',
                       }}
                     >
                       {i + 1}
@@ -180,23 +153,13 @@ export default function Box() {
                 })}
               </div>
 
-              {/* Add button */}
-              <button
-                onClick={handleAdd}
-                disabled={!selectedSize}
-                style={{
-                  padding: '12px 32px',
-                  backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
-                  color: selectedSize ? 'var(--bg)' : 'var(--text3)',
-                  fontSize: '10px',
-                  letterSpacing: '4px',
-                  textTransform: 'uppercase',
-                  fontWeight: 500,
-                  cursor: selectedSize ? 'pointer' : 'default',
-                  transition: 'all 0.2s ease',
-                  marginTop: '4px',
-                }}
-              >
+              <button onClick={handleAdd} disabled={!selectedSize} style={{
+                padding: '10px 28px',
+                backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
+                color: selectedSize ? 'var(--bg)' : 'var(--text3)',
+                fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500,
+                cursor: selectedSize ? 'pointer' : 'default', transition: 'all 0.2s ease',
+              }}>
                 BOX
               </button>
             </>
@@ -206,62 +169,45 @@ export default function Box() {
 
       {products.length === 0 && (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <p style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>
-            No items available
-          </p>
+          <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 300 }}>No items available</p>
         </div>
       )}
 
-      {/* Box summary - fixed bottom */}
+      {/* Bottom summary */}
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
-        backgroundColor: 'var(--bg)', borderTop: '1px solid var(--border)',
-        padding: '20px 40px',
+        backgroundColor: 'var(--bg)', borderTop: '1px solid var(--border)', padding: '20px 40px',
       }}>
         <div style={{ maxWidth: '520px', margin: '0 auto' }}>
           {box.length === 0 ? (
-            <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>
-              Still empty
-            </p>
+            <p style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
           ) : (
             <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
                 {box.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 300, color: 'var(--text2)' }}>
-                      {item.name.replace(/^HAYANI\s*/i, '')} / {sizeToNumber(item.size)} / {item.quantity}EA
+                    <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>
+                      {stripName(item.name)} · {sizeToNumber(item.size)} · {item.quantity}EA
                     </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
-                      <button
-                        onClick={() => handleRemove(item.productId, item.size)}
-                        style={{ fontSize: '11px', color: 'var(--text3)', padding: '0' }}
-                      >
-                        ✕
-                      </button>
+                      <button onClick={() => handleRemove(item.productId, item.size)}
+                        style={{ fontSize: '10px', color: 'var(--text3)', padding: '2px' }}>✕</button>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
-                <div>
-                  <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(subtotal + SHIPPING_FEE)}</span>
-                  <span style={{ fontSize: '11px', color: 'var(--text2)', marginLeft: '8px' }}>incl. delivery</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '15px', fontWeight: 500 }}>{formatPrice(subtotal + SHIPPING_FEE)}</span>
+                  <span style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px' }}>Shipping included</span>
                 </div>
-                <button
-                  onClick={handleNext}
-                  style={{
-                    padding: '12px 32px',
-                    backgroundColor: 'var(--text)',
-                    color: 'var(--bg)',
-                    fontSize: '10px',
-                    letterSpacing: '4px',
-                    textTransform: 'uppercase',
-                    fontWeight: 500,
-                  }}
-                >
-                  Next
+                <button onClick={() => box.length > 0 && navigate('/box/order')} style={{
+                  padding: '12px 32px', backgroundColor: 'var(--text)', color: 'var(--bg)',
+                  fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500,
+                }}>
+                  Continue
                 </button>
               </div>
             </>

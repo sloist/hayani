@@ -2,7 +2,7 @@ import BackButton from '../components/BackButton';
 
 export default function Privacy() {
   return (
-    <div style={{ minHeight: '100vh', padding: '120px 40px 80px', maxWidth: '640px', margin: '0 auto' }}>
+    <div style={{ minHeight: '100vh', padding: '120px 40px 80px', maxWidth: '540px', margin: '0 auto' }}>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: '28px 40px', zIndex: 100, backgroundColor: 'var(--bg)' }}>
         <BackButton />
       </div>

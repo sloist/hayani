@@ -30,11 +30,10 @@ export default function BoxOrder() {
   const [form, setForm] = useState<OrderFormData>(loadCustomer);
   const [submitting, setSubmitting] = useState(false);
   const submittedRef = useRef(false);
+  const stripName = (n: string) => n.replace(/^HAYANI\s*/i, '');
 
   useEffect(() => {
-    if (box.length === 0) {
-      navigate('/box');
-    }
+    if (box.length === 0) navigate('/box');
   }, [box, navigate]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -48,7 +47,6 @@ export default function BoxOrder() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submittedRef.current || submitting || box.length === 0) return;
-
     const required = ['customer_email', 'customer_name', 'customer_phone', 'customer_address', 'depositor_name'] as const;
     for (const f of required) if (!form[f].trim()) return;
 
@@ -60,44 +58,26 @@ export default function BoxOrder() {
 
       for (const item of box) {
         const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
-        if (!cur || cur.stock < item.quantity) {
-          throw new Error(`${item.name} (${item.size}) 재고가 부족합니다.`);
-        }
+        if (!cur || cur.stock < item.quantity) throw new Error(`${item.name} (${item.size}) 재고가 부족합니다.`);
       }
-
       for (const item of box) {
         const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
-        if (cur) {
-          await supabase.from('products').update({ stock: cur.stock - item.quantity }).eq('id', item.productId);
-        }
+        if (cur) await supabase.from('products').update({ stock: cur.stock - item.quantity }).eq('id', item.productId);
       }
 
       const items = box.map(item => ({
-        product_id: item.productId,
-        code: item.code,
-        name: item.name,
-        size: item.size,
-        price: item.price,
-        quantity: item.quantity,
-        image_url: item.imageUrl,
+        product_id: item.productId, code: item.code, name: item.name,
+        size: item.size, price: item.price, quantity: item.quantity, image_url: item.imageUrl,
       }));
 
       const { error } = await supabase.from('orders').insert({
-        order_number: orderNumber,
-        items,
-        subtotal,
-        shipping_fee: SHIPPING_FEE,
-        total_price: total,
-        customer_email: form.customer_email.trim(),
-        customer_name: form.customer_name.trim(),
-        customer_phone: form.customer_phone.trim(),
-        customer_address: form.customer_address.trim(),
+        order_number: orderNumber, items, subtotal, shipping_fee: SHIPPING_FEE, total_price: total,
+        customer_email: form.customer_email.trim(), customer_name: form.customer_name.trim(),
+        customer_phone: form.customer_phone.trim(), customer_address: form.customer_address.trim(),
         customer_address_detail: form.customer_address_detail.trim() || null,
-        delivery_memo: form.delivery_memo.trim() || null,
-        depositor_name: form.depositor_name.trim(),
+        delivery_memo: form.delivery_memo.trim() || null, depositor_name: form.depositor_name.trim(),
         status: 'pending',
       });
-
       if (error) throw error;
 
       saveCustomer(form);
@@ -118,58 +98,58 @@ export default function BoxOrder() {
   };
 
   return (
-    <div style={{ maxWidth: '520px', margin: '0 auto', padding: '100px 40px 80px' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '100px 40px 80px' }}>
       <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <BackButton to="/box" />
         <span className="label">2 / 3</span>
       </div>
 
       {/* Summary */}
-      <div style={{ paddingBottom: '32px', marginBottom: '32px', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ paddingBottom: '28px', marginBottom: '28px', borderBottom: '1px solid var(--border)' }}>
         {box.map((item, i) => (
-          <div key={`${item.productId}-${item.size}`} style={{ marginBottom: i < box.length - 1 ? '16px' : '0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '14px', fontWeight: 300 }}>{item.name.replace(/^HAYANI\s*/i, '')}</span>
+          <div key={`${item.productId}-${item.size}`} style={{ marginBottom: i < box.length - 1 ? '14px' : '0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+              <span style={{ fontSize: '14px', fontWeight: 400 }}>{stripName(item.name)}</span>
               <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px', fontWeight: 300 }}>
-              Size {sizeToNumber(item.size)} / {item.quantity}EA
+            <span style={{ fontSize: '11px', color: 'var(--text3)', letterSpacing: '1px', fontWeight: 300 }}>
+              Size {sizeToNumber(item.size)} · {item.quantity}EA
             </span>
           </div>
         ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300 }}>Delivery</span>
-          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300 }}>{formatPrice(SHIPPING_FEE)}</span>
+          <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 300 }}>Shipping</span>
+          <span style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 300 }}>{formatPrice(SHIPPING_FEE)}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
           <span style={{ fontSize: '14px', fontWeight: 500 }}>Total</span>
           <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(total)}</span>
         </div>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <span className="label" style={{ marginBottom: '24px', display: 'block' }}>Information</span>
+        <span className="label" style={{ marginBottom: '24px', display: 'block' }}>Order</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
           <input name="customer_email" type="email" placeholder="Email" value={form.customer_email} onChange={handleChange} required style={inputStyle} />
           <input name="customer_name" placeholder="이름" value={form.customer_name} onChange={handleChange} required style={inputStyle} />
           <input name="customer_phone" placeholder="연락처" value={form.customer_phone} onChange={handleChange} required style={inputStyle} />
           <input name="customer_address" placeholder="주소" value={form.customer_address} onChange={handleChange} required style={inputStyle} />
           <input name="customer_address_detail" placeholder="상세주소" value={form.customer_address_detail} onChange={handleChange} style={inputStyle} />
-          <input name="delivery_memo" placeholder="Memo" value={form.delivery_memo} onChange={handleChange} style={inputStyle} />
+          <input name="delivery_memo" placeholder="Note" value={form.delivery_memo} onChange={handleChange} style={inputStyle} />
         </div>
 
         <div style={{ padding: '24px', border: '1px solid var(--border)', marginBottom: '24px' }}>
-          <span className="label" style={{ marginBottom: '16px', display: 'block' }}>Bank Transfer</span>
+          <span className="label" style={{ marginBottom: '16px', display: 'block' }}>Payment</span>
           <div style={{ fontSize: '14px', fontWeight: 300, lineHeight: '2' }}>
             <div>카카오뱅크</div>
             <div style={{ color: 'var(--text2)' }}>계좌번호 안내 예정</div>
-            <div>예금주: 하야니</div>
+            <div style={{ fontSize: '12px', color: 'var(--text3)' }}>예금주: 하야니</div>
           </div>
         </div>
 
         <input name="depositor_name" placeholder="입금자명" value={form.depositor_name} onChange={handleChange} required style={{ ...inputStyle, marginBottom: '16px' }} />
-        <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, marginBottom: '40px', lineHeight: '1.8' }}>
-          24시간 이내 미입금 시 자동 취소됩니다.
+        <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, marginBottom: '40px', lineHeight: '1.8' }}>
+          Unpaid orders are cancelled after 24 hours.
         </p>
 
         <button type="submit" disabled={submitting} style={{
