@@ -6,6 +6,7 @@ export interface Product {
   stock: number;
   specs: string[];
   sizes: string[];
+  stock_by_size: Record<string, number> | null;
   image_url: string | null;
   sort_order: number;
   is_active: boolean;

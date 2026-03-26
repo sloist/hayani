@@ -12,10 +12,11 @@ interface ProductForm {
   specs: string;
   sizes: string;
   image_url: string;
+  stock_by_size: string; // JSON string
 }
 
 const emptyForm: ProductForm = {
-  code: '', name: '', price: '', stock: '', sort_order: '0', specs: '', sizes: '', image_url: '',
+  code: '', name: '', price: '', stock: '', sort_order: '0', specs: '', sizes: '', image_url: '', stock_by_size: '',
 };
 
 export default function Products() {
@@ -66,6 +67,7 @@ export default function Products() {
       specs: p.specs.join(', '),
       sizes: p.sizes.join(', '),
       image_url: p.image_url || '',
+      stock_by_size: p.stock_by_size ? JSON.stringify(p.stock_by_size) : '',
     });
     setModalOpen(true);
   }
@@ -145,6 +147,7 @@ export default function Products() {
       specs: form.specs.split(',').map(s => s.trim()).filter(Boolean),
       sizes: form.sizes.split(',').map(s => s.trim()).filter(Boolean),
       image_url: form.image_url.startsWith('blob:') ? null : (form.image_url.trim() || null),
+      stock_by_size: form.stock_by_size.trim() ? JSON.parse(form.stock_by_size) : null,
     };
 
     if (editingId) {
@@ -360,6 +363,10 @@ export default function Products() {
               <div>
                 <label style={{ fontSize: '11px', color: 'var(--text2)', marginBottom: '4px', display: 'block' }}>사이즈 (쉼표로 구분)</label>
                 <input style={inputStyle} value={form.sizes} onChange={e => updateForm('sizes', e.target.value)} placeholder="예: S, M, L, XL" />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', color: 'var(--text2)', marginBottom: '4px', display: 'block' }}>사이즈별 재고 (JSON)</label>
+                <input style={inputStyle} value={form.stock_by_size} onChange={e => updateForm('stock_by_size', e.target.value)} placeholder='예: {"S":20,"M":15,"L":10}' />
               </div>
               <div>
                 <label style={{ fontSize: '11px', color: 'var(--text2)', marginBottom: '4px', display: 'block' }}>이미지</label>

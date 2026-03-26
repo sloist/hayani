@@ -153,24 +153,32 @@ export default function Box() {
             </span>
           ) : (
             <>
-              {/* Size selection as 1, 2, 3 */}
+              {/* Size selection as 1, 2, 3 — with per-size stock check */}
               <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-                {(selectedProduct.sizes || []).map((size, i) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                    style={{
-                      minWidth: '40px', height: '40px', padding: '0 10px',
-                      border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
-                      backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
-                      fontSize: '13px', fontWeight: 500,
-                      color: selectedSize === size ? 'var(--bg)' : 'var(--text2)',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
+                {(selectedProduct.sizes || []).map((size, i) => {
+                  const sizeStock = selectedProduct.stock_by_size?.[size];
+                  const isSizeOut = sizeStock !== undefined && sizeStock <= 0;
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => !isSizeOut && setSelectedSize(selectedSize === size ? '' : size)}
+                      disabled={isSizeOut}
+                      style={{
+                        minWidth: '40px', height: '40px', padding: '0 10px',
+                        border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
+                        backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
+                        fontSize: '13px', fontWeight: 500,
+                        color: isSizeOut ? 'var(--text3)' : selectedSize === size ? 'var(--bg)' : 'var(--text2)',
+                        transition: 'all 0.2s ease',
+                        opacity: isSizeOut ? 0.4 : 1,
+                        cursor: isSizeOut ? 'default' : 'pointer',
+                        textDecoration: isSizeOut ? 'line-through' : 'none',
+                      }}
+                    >
+                      {i + 1}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Add button */}
