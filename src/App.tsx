@@ -3,8 +3,9 @@ import { lazy, Suspense } from 'react';
 import Main from './pages/Main';
 
 const Product = lazy(() => import('./pages/Product'));
-const Order = lazy(() => import('./pages/Order'));
-const OrderComplete = lazy(() => import('./pages/OrderComplete'));
+const Box = lazy(() => import('./pages/Box'));
+const BoxOrder = lazy(() => import('./pages/BoxOrder'));
+const BoxComplete = lazy(() => import('./pages/BoxComplete'));
 const AdminLogin = lazy(() => import('./pages/admin/Login'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminOrderDetail = lazy(() => import('./pages/admin/OrderDetail'));
@@ -21,8 +22,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/wear/:id" element={<Product />} />
-          <Route path="/order" element={<Order />} />
-          <Route path="/order/complete" element={<OrderComplete />} />
+          <Route path="/box" element={<Box />} />
+          <Route path="/box/order" element={<BoxOrder />} />
+          <Route path="/box/complete" element={<BoxComplete />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/orders/:id" element={<AdminOrderDetail />} />

@@ -1,58 +1,53 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase, generateOrderNumber } from '../lib/supabase';
-import type { Product, OrderFormData } from '../types';
+import { getBox, clearBox, type BoxItem } from '../lib/box';
+import type { OrderFormData } from '../types';
+import BackButton from '../components/BackButton';
 
 const SHIPPING_FEE = 4000;
+const CUSTOMER_KEY = 'hayani_customer';
 
-interface OrderItem {
-  product: Product;
-  size: string;
+function loadCustomer(): OrderFormData {
+  try {
+    const raw = localStorage.getItem(CUSTOMER_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return {
+    customer_email: '', customer_name: '', customer_phone: '',
+    customer_address: '', customer_address_detail: '', delivery_memo: '', depositor_name: '',
+  };
 }
 
-export default function Order() {
-  const [searchParams] = useSearchParams();
+function saveCustomer(form: OrderFormData) {
+  localStorage.setItem(CUSTOMER_KEY, JSON.stringify(form));
+}
+
+export default function BoxOrder() {
   const navigate = useNavigate();
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [box] = useState<BoxItem[]>(getBox);
+  const [form, setForm] = useState<OrderFormData>(loadCustomer);
   const [submitting, setSubmitting] = useState(false);
   const submittedRef = useRef(false);
 
-  const [form, setForm] = useState<OrderFormData>({
-    customer_email: '', customer_name: '', customer_phone: '',
-    customer_address: '', customer_address_detail: '', delivery_memo: '', depositor_name: '',
-  });
-
   useEffect(() => {
-    async function load() {
-      // Single item order
-      const productId = searchParams.get('product_id');
-      const size = searchParams.get('size');
-      if (!productId || !size) { navigate('/'); return; }
-
-      const { data } = await supabase.from('products').select('*').eq('id', productId).single();
-      if (!data || data.stock <= 0) { navigate('/'); return; }
-      setOrderItems([{ product: data, size }]);
-      setLoading(false);
+    if (box.length === 0) {
+      navigate('/box');
     }
-    load();
-  }, [searchParams, navigate]);
+  }, [box, navigate]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  function handleBack() {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      navigate('/');
-    }
-  }
+  const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
+  const subtotal = box.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = subtotal + SHIPPING_FEE;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (submittedRef.current || submitting || orderItems.length === 0) return;
+    if (submittedRef.current || submitting || box.length === 0) return;
+
     const required = ['customer_email', 'customer_name', 'customer_phone', 'customer_address', 'depositor_name'] as const;
     for (const f of required) if (!form[f].trim()) return;
 
@@ -62,46 +57,62 @@ export default function Order() {
     try {
       const orderNumber = await generateOrderNumber();
 
-      for (const item of orderItems) {
-        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.product.id).single();
-        if (!cur || cur.stock <= 0) continue;
-
-        await supabase.from('products').update({ stock: cur.stock - 1 }).eq('id', item.product.id);
-
-        const itemOrderNumber = orderItems.length > 1
-          ? `${orderNumber}-${orderItems.indexOf(item) + 1}`
-          : orderNumber;
-
-        const { error } = await supabase.from('orders').insert({
-          order_number: itemOrderNumber, product_id: item.product.id, size: item.size, quantity: 1,
-          total_price: item.product.price + (orderItems.indexOf(item) === 0 ? SHIPPING_FEE : 0),
-          customer_email: form.customer_email.trim(), customer_name: form.customer_name.trim(),
-          customer_phone: form.customer_phone.trim(), customer_address: form.customer_address.trim(),
-          customer_address_detail: form.customer_address_detail.trim() || null,
-          delivery_memo: form.delivery_memo.trim() || null, depositor_name: form.depositor_name.trim(),
-          status: 'pending',
-        });
-
-        if (error) {
-          await supabase.from('products').update({ stock: cur.stock }).eq('id', item.product.id);
-          throw error;
+      // Verify stock for all items
+      for (const item of box) {
+        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
+        if (!cur || cur.stock < item.quantity) {
+          throw new Error(`${item.name} (${item.size}) 재고가 부족합니다.`);
         }
       }
 
-      navigate(`/order/complete?order_number=${orderNumber}`);
-    } catch {
+      // Decrease stock
+      for (const item of box) {
+        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
+        if (cur) {
+          await supabase.from('products').update({ stock: cur.stock - item.quantity }).eq('id', item.productId);
+        }
+      }
+
+      // Build items jsonb
+      const items = box.map(item => ({
+        product_id: item.productId,
+        code: item.code,
+        name: item.name,
+        size: item.size,
+        price: item.price,
+        quantity: item.quantity,
+        image_url: item.imageUrl,
+      }));
+
+      const { error } = await supabase.from('orders').insert({
+        order_number: orderNumber,
+        items,
+        subtotal,
+        shipping_fee: SHIPPING_FEE,
+        total_price: total,
+        customer_email: form.customer_email.trim(),
+        customer_name: form.customer_name.trim(),
+        customer_phone: form.customer_phone.trim(),
+        customer_address: form.customer_address.trim(),
+        customer_address_detail: form.customer_address_detail.trim() || null,
+        delivery_memo: form.delivery_memo.trim() || null,
+        depositor_name: form.depositor_name.trim(),
+        status: 'pending',
+      });
+
+      if (error) throw error;
+
+      saveCustomer(form);
+      clearBox();
+      navigate(`/box/complete?order_number=${orderNumber}`);
+    } catch (err) {
       submittedRef.current = false;
       setSubmitting(false);
-      alert('주문 처리 중 오류가 발생했습니다.');
+      alert(err instanceof Error ? err.message : '주문 처리 중 오류가 발생했습니다.');
     }
   }
 
-  if (loading) return <div style={{ minHeight: '100vh' }} />;
-  if (orderItems.length === 0) return null;
-
-  const formatPrice = (p: number) => `\u20A9${p.toLocaleString('ko-KR')}`;
-  const subtotal = orderItems.reduce((sum, i) => sum + i.product.price, 0);
-  const total = subtotal + SHIPPING_FEE;
+  if (box.length === 0) return null;
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '12px 0', border: 'none', borderBottom: '1px solid var(--border)',
@@ -110,35 +121,22 @@ export default function Order() {
 
   return (
     <div style={{ maxWidth: '520px', margin: '0 auto', padding: '100px 40px 80px' }}>
+      {/* Top bar */}
       <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <button
-          onClick={handleBack}
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '20px',
-            fontWeight: 300,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text2)',
-            padding: '0',
-          }}
-        >
-          &larr;
-        </button>
-        <span className="label">Order</span>
+        <BackButton to="/box" />
+        <span className="label">2 / 3</span>
       </div>
 
       {/* Summary */}
       <div style={{ paddingBottom: '32px', marginBottom: '32px', borderBottom: '1px solid var(--border)' }}>
-        {orderItems.map((item, i) => (
-          <div key={`${item.product.id}-${item.size}-${i}`} style={{ marginBottom: i < orderItems.length - 1 ? '16px' : '0' }}>
+        {box.map((item, i) => (
+          <div key={`${item.productId}-${item.size}`} style={{ marginBottom: i < box.length - 1 ? '16px' : '0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 300 }}>{item.product.name}</span>
-              <span style={{ fontSize: '13px', fontWeight: 300 }}>{formatPrice(item.product.price)}</span>
+              <span style={{ fontSize: '13px', fontWeight: 300 }}>{item.name}</span>
+              <span style={{ fontSize: '13px', fontWeight: 300 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
             <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px' }}>
-              {item.product.code} / {item.size} / 1
+              {item.code} / {item.size} / {item.quantity}
             </span>
           </div>
         ))}
@@ -152,6 +150,7 @@ export default function Order() {
         </div>
       </div>
 
+      {/* Form */}
       <form onSubmit={handleSubmit}>
         <span className="label" style={{ marginBottom: '24px', display: 'block' }}>주문 정보</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
@@ -182,6 +181,7 @@ export default function Order() {
           backgroundColor: submitting ? 'var(--border)' : 'var(--text)',
           color: submitting ? 'var(--text3)' : 'var(--bg)',
           fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
+          border: 'none', cursor: submitting ? 'default' : 'pointer',
         }}>
           {submitting ? 'Processing' : '주문 완료'}
         </button>

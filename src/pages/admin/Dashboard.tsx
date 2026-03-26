@@ -33,7 +33,7 @@ export default function Dashboard() {
     async function fetchOrders() {
       const { data } = await supabase
         .from('orders')
-        .select('*, product:products(*)')
+        .select('*')
         .order('created_at', { ascending: false });
       setOrders(data || []);
       setLoading(false);
@@ -47,6 +47,17 @@ export default function Dashboard() {
   }
 
   const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
+
+  function getItemsSummary(order: Order): string {
+    if (!order.items || order.items.length === 0) return '-';
+    if (order.items.length === 1) return order.items[0].code;
+    return `${order.items[0].code} 외 ${order.items.length - 1}`;
+  }
+
+  function getSizesSummary(order: Order): string {
+    if (!order.items || order.items.length === 0) return '-';
+    return order.items.map(i => i.size).join(', ');
+  }
 
   if (!authed) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
 
@@ -87,6 +98,7 @@ export default function Dashboard() {
               borderColor: filter === s ? 'var(--text)' : 'var(--border)',
               color: filter === s ? 'var(--text)' : 'var(--text2)',
               backgroundColor: filter === s ? 'var(--bg2)' : 'transparent',
+              cursor: 'pointer',
             }}
           >
             {STATUS_LABELS[s]}
@@ -104,7 +116,7 @@ export default function Dashboard() {
           {/* Header row */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '120px 1fr 100px 60px 100px 90px 100px',
+            gridTemplateColumns: '120px 1fr 120px 80px 100px 90px 100px',
             gap: '12px',
             padding: '10px 16px',
             backgroundColor: 'var(--bg2)',
@@ -127,7 +139,7 @@ export default function Dashboard() {
               to={`/admin/orders/${order.id}`}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '120px 1fr 100px 60px 100px 90px 100px',
+                gridTemplateColumns: '120px 1fr 120px 80px 100px 90px 100px',
                 gap: '12px',
                 padding: '14px 16px',
                 backgroundColor: 'var(--bg)',
@@ -140,8 +152,8 @@ export default function Dashboard() {
             >
               <span style={{ fontFamily: 'monospace', fontSize: '12px' }}>{order.order_number}</span>
               <span>{order.customer_name}</span>
-              <span style={{ color: 'var(--text2)', fontSize: '12px' }}>{order.product?.code || '-'}</span>
-              <span style={{ color: 'var(--text2)' }}>{order.size}</span>
+              <span style={{ color: 'var(--text2)', fontSize: '12px' }}>{getItemsSummary(order)}</span>
+              <span style={{ color: 'var(--text2)', fontSize: '12px' }}>{getSizesSummary(order)}</span>
               <span style={{ textAlign: 'right' }}>{order.total_price.toLocaleString()}원</span>
               <span style={{
                 fontSize: '10px',

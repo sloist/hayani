@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom';
 
-export default function OrderComplete() {
+export default function BoxComplete() {
   const [params] = useSearchParams();
   const orderNumber = params.get('order_number');
 

@@ -37,7 +37,7 @@ export default function OrderDetail() {
     async function fetchOrder() {
       const { data } = await supabase
         .from('orders')
-        .select('*, product:products(*)')
+        .select('*')
         .eq('id', id)
         .single();
       setOrder(data);
@@ -57,12 +57,14 @@ export default function OrderDetail() {
 
     if (newStatus === 'cancelled') {
       updates.cancelled_at = new Date().toISOString();
-      // Restore product stock
-      if (order.product) {
-        await supabase
-          .from('products')
-          .update({ stock: order.product.stock + order.quantity })
-          .eq('id', order.product_id);
+      // Restore stock for all items
+      if (order.items) {
+        for (const item of order.items) {
+          const { data: cur } = await supabase.from('products').select('stock').eq('id', item.product_id).single();
+          if (cur) {
+            await supabase.from('products').update({ stock: cur.stock + item.quantity }).eq('id', item.product_id);
+          }
+        }
       }
     }
 
@@ -70,7 +72,7 @@ export default function OrderDetail() {
       .from('orders')
       .update(updates)
       .eq('id', order.id)
-      .select('*, product:products(*)')
+      .select('*')
       .single();
 
     if (data) setOrder(data);
@@ -79,6 +81,8 @@ export default function OrderDetail() {
 
   if (!authed || loading) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
   if (!order) return <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text2)' }}>주문을 찾을 수 없습니다.</div>;
+
+  const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
 
   const infoStyle: React.CSSProperties = {
     display: 'grid',
@@ -166,14 +170,30 @@ export default function OrderDetail() {
         </button>
       </div>
 
-      {/* Product info */}
+      {/* Items */}
       <p className="label" style={{ marginBottom: '12px' }}>제품</p>
-      <div style={{ ...infoStyle, marginBottom: '32px' }}>
-        <span style={labelStyle}>코드</span><span>{order.product?.code || '-'}</span>
-        <span style={labelStyle}>이름</span><span>{order.product?.name || '-'}</span>
-        <span style={labelStyle}>사이즈</span><span>{order.size}</span>
-        <span style={labelStyle}>수량</span><span>{order.quantity}</span>
-        <span style={labelStyle}>합계</span><span>{order.total_price.toLocaleString()}원</span>
+      <div style={{ marginBottom: '32px' }}>
+        {order.items && order.items.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {order.items.map((item, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+                <div>
+                  <span style={{ fontSize: '12px', letterSpacing: '2px', color: 'var(--text2)' }}>{item.code}</span>
+                  <span style={{ fontSize: '13px', marginLeft: '12px' }}>{item.name}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text2)', marginLeft: '12px' }}>{item.size} / {item.quantity}개</span>
+                </div>
+                <span style={{ fontSize: '13px' }}>{formatPrice(item.price * item.quantity)}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span style={{ fontSize: '13px', color: 'var(--text3)' }}>-</span>
+        )}
+        <div style={{ ...infoStyle, marginTop: '16px' }}>
+          <span style={labelStyle}>소계</span><span>{formatPrice(order.subtotal)}</span>
+          <span style={labelStyle}>배송비</span><span>{formatPrice(order.shipping_fee)}</span>
+          <span style={labelStyle}>합계</span><span style={{ fontWeight: 500 }}>{formatPrice(order.total_price)}</span>
+        </div>
       </div>
 
       {/* Customer info */}
@@ -190,7 +210,7 @@ export default function OrderDetail() {
       <p className="label" style={{ marginBottom: '12px' }}>결제</p>
       <div style={{ ...infoStyle, marginBottom: '32px' }}>
         <span style={labelStyle}>입금자명</span><span>{order.depositor_name}</span>
-        <span style={labelStyle}>금액</span><span>{order.total_price.toLocaleString()}원</span>
+        <span style={labelStyle}>금액</span><span>{formatPrice(order.total_price)}</span>
       </div>
 
       {/* Timestamps */}

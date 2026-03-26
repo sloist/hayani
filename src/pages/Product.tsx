@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Product as ProductType } from '../types';
+import BackButton from '../components/BackButton';
+import BoxIndicator from '../components/BoxIndicator';
 
 export default function Product() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSize, setSelectedSize] = useState('');
 
   useEffect(() => {
     async function fetch() {
@@ -20,44 +21,16 @@ export default function Product() {
     fetch();
   }, [id]);
 
-  function handleBack() {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      navigate('/');
-    }
-  }
-
   if (loading) return <div style={{ minHeight: '100vh' }} />;
   if (!product) { navigate('/'); return null; }
 
-  const isSoldOut = product.stock <= 0;
-  const canOrder = selectedSize && !isSoldOut;
-  const formatPrice = (p: number) => `\u20A9${p.toLocaleString('ko-KR')}`;
-
-  function handleOrder() {
-    if (!canOrder) return;
-    navigate(`/order?product_id=${product!.id}&size=${selectedSize}`);
-  }
+  const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
 
   return (
     <div style={{ minHeight: '100vh' }}>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '28px 40px', display: 'flex', justifyContent: 'space-between' }}>
-        <button
-          onClick={handleBack}
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '20px',
-            fontWeight: 300,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text)',
-            padding: '0',
-          }}
-        >
-          &larr;
-        </button>
+        <BackButton />
+        <BoxIndicator />
       </div>
 
       <div className="product-layout" style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', flexWrap: 'wrap' }}>
@@ -87,36 +60,23 @@ export default function Product() {
             ))}
           </div>
 
+          {/* Sizes - display only */}
           <div style={{ display: 'flex', gap: '12px', paddingTop: '16px' }}>
             {(product.sizes || []).map(size => (
-              <button key={size} onClick={() => setSelectedSize(size)} disabled={isSoldOut} style={{
-                width: size.length > 3 ? 'auto' : '48px', minWidth: '48px', height: '48px', padding: '0 12px',
-                border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
-                backgroundColor: 'transparent', fontSize: '10px', letterSpacing: '2px',
-                color: isSoldOut ? 'var(--text3)' : 'var(--text)', transition: 'border-color 0.2s ease',
+              <span key={size} style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                minWidth: '48px', height: '48px', padding: '0 12px',
+                border: '1px solid var(--border)',
+                fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)',
               }}>
                 {size}
-              </button>
+              </span>
             ))}
           </div>
 
-          <div style={{ marginTop: '16px' }}>
-            <button onClick={handleOrder} disabled={!canOrder} style={{
-              width: '100%', padding: '16px 0',
-              backgroundColor: canOrder ? 'var(--text)' : 'var(--border)',
-              color: canOrder ? 'var(--bg)' : 'var(--text3)',
-              fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
-              transition: 'opacity 0.3s ease', cursor: canOrder ? 'pointer' : 'default',
-            }}>
-              {isSoldOut ? 'Sold Out' : 'Order'}
-            </button>
-          </div>
-
-          {!isSoldOut && (
-            <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 200, lineHeight: '1.8' }}>
-              프리오더 상품입니다. 주문 순서대로 순차 발송됩니다.
-            </p>
-          )}
+          <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 200, lineHeight: '1.8' }}>
+            BOX에서 선택 가능
+          </p>
         </div>
       </div>
 

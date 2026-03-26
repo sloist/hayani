@@ -12,12 +12,22 @@ export interface Product {
   created_at: string;
 }
 
+export interface OrderItem {
+  product_id: string;
+  code: string;
+  name: string;
+  size: string;
+  price: number;
+  quantity: number;
+  image_url: string | null;
+}
+
 export interface Order {
   id: string;
   order_number: string;
-  product_id: string;
-  size: string;
-  quantity: number;
+  items: OrderItem[];
+  subtotal: number;
+  shipping_fee: number;
   total_price: number;
   customer_email: string;
   customer_name: string;
@@ -31,7 +41,6 @@ export interface Order {
   paid_at: string | null;
   shipped_at: string | null;
   cancelled_at: string | null;
-  product?: Product;
 }
 
 export interface OrderFormData {

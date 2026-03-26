@@ -5,6 +5,7 @@ import type { Product } from '../types';
 import HorizontalGallery from '../components/HorizontalGallery';
 import ProductCard from '../components/ProductCard';
 import FooterSlide from '../components/FooterSlide';
+import BoxIndicator from '../components/BoxIndicator';
 
 function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
   const clickCount = useRef(0);
@@ -97,8 +98,11 @@ export default function Main() {
   ];
 
   return (
-    <HorizontalGallery initialIndex={0}>
-      {slides}
-    </HorizontalGallery>
+    <>
+      <BoxIndicator />
+      <HorizontalGallery initialIndex={0}>
+        {slides}
+      </HorizontalGallery>
+    </>
   );
 }
