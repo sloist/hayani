@@ -13,22 +13,22 @@ export default function Terms() {
 
       <div style={{ fontSize: '13px', fontWeight: 400, lineHeight: '2.2', color: 'var(--text2)', display: 'flex', flexDirection: 'column', gap: '32px' }}>
         <section>
-          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 500 }}>Order & Payment</h2>
+          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Order & Payment</h2>
           <p>모든 상품은 프리오더 방식으로 운영됩니다. 주문 후 무통장 입금 확인 시 제작이 시작되며, 입금 확인까지 최대 24시간이 소요될 수 있습니다. 제작 기간은 상품별로 상이하며, 상세 페이지에 안내됩니다.</p>
         </section>
 
         <section>
-          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 500 }}>Shipping</h2>
+          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Shipping</h2>
           <p>배송비는 전 상품 ₩4,000이며, 제작 완료 후 순차적으로 발송됩니다. 배송은 CJ대한통운을 이용하며, 발송 후 1~3일 이내 수령 가능합니다.</p>
         </section>
 
         <section>
-          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 500 }}>Exchange & Return</h2>
+          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Exchange & Return</h2>
           <p>프리오더 특성상 단순 변심에 의한 교환 및 반품은 불가합니다. 상품 하자 시 수령 후 7일 이내 hello@hayani.kr로 문의해 주세요.</p>
         </section>
 
         <section>
-          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 500 }}>Notice</h2>
+          <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Notice</h2>
           <p>본 약관은 2026년 3월부터 적용됩니다. 약관 변경 시 사이트를 통해 공지합니다.</p>
         </section>
       </div>

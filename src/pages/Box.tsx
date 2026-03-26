@@ -170,7 +170,7 @@ export default function Box() {
 
           {/* Show actual size name when selected */}
           {selectedSize && (
-            <div style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400, marginBottom: '12px', letterSpacing: '1px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, marginBottom: '12px', letterSpacing: '1px' }}>
               Size {(selectedProduct.sizes || []).indexOf(selectedSize) + 1} — {selectedSize}
             </div>
           )}
@@ -192,7 +192,7 @@ export default function Box() {
               marginTop: '4px',
             }}
           >
-            Add
+            BOX
           </button>
         </div>
       )}
@@ -211,15 +211,15 @@ export default function Box() {
       }}>
         <div style={{ maxWidth: '520px', margin: '0 auto' }}>
           {box.length === 0 ? (
-            <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 400, textAlign: 'center' }}>
-              Empty
+            <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>
+              Still empty
             </p>
           ) : (
             <>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
                 {box.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 300, color: 'var(--text2)' }}>
                       {item.code} / {item.size} / {item.quantity}
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -238,7 +238,7 @@ export default function Box() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
                 <div>
                   <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(subtotal + SHIPPING_FEE)}</span>
-                  <span style={{ fontSize: '11px', color: 'var(--text2)', marginLeft: '8px' }}>incl. shipping</span>
+                  <span style={{ fontSize: '11px', color: 'var(--text2)', marginLeft: '8px' }}>incl. delivery</span>
                 </div>
                 <button
                   onClick={handleNext}

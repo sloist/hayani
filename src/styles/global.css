@@ -40,7 +40,7 @@ img { display: block; max-width: 100%; }
   text-transform: uppercase;
   letter-spacing: 4px;
   color: var(--text2);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .display {

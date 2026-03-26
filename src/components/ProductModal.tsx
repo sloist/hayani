@@ -101,7 +101,7 @@ export default function ProductModal({ product, onClose }: Props) {
           {product.specs && product.specs.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
               {product.specs.map((spec, i) => (
-                <span key={i} style={{ fontSize: '12px', letterSpacing: '1px', color: 'var(--text2)', fontWeight: 400 }}>{spec}</span>
+                <span key={i} style={{ fontSize: '12px', letterSpacing: '1px', color: 'var(--text2)', fontWeight: 300 }}>{spec}</span>
               ))}
             </div>
           )}
@@ -109,7 +109,7 @@ export default function ProductModal({ product, onClose }: Props) {
           {/* Sizes */}
           {product.sizes && product.sizes.length > 0 && (
             <div style={{ paddingTop: '16px' }}>
-              <span style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text2)', fontWeight: 500, display: 'block', marginBottom: '12px' }}>
+              <span style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text2)', fontWeight: 300, display: 'block', marginBottom: '12px' }}>
                 Size
               </span>
               <div style={{ display: 'flex', gap: '10px' }}>
@@ -134,7 +134,7 @@ export default function ProductModal({ product, onClose }: Props) {
                 <div style={{
                   marginTop: '12px', padding: '12px 16px',
                   backgroundColor: 'var(--bg2)',
-                  fontSize: '12px', color: 'var(--text2)', fontWeight: 400,
+                  fontSize: '12px', color: 'var(--text2)', fontWeight: 300,
                   letterSpacing: '1px',
                 }}>
                   Size {expandedSize + 1} — {product.sizes[expandedSize]}
@@ -143,8 +143,8 @@ export default function ProductModal({ product, onClose }: Props) {
             </div>
           )}
 
-          <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400, lineHeight: '1.8', marginTop: '24px' }}>
-            Available in BOX
+          <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, lineHeight: '1.8', marginTop: '24px' }}>
+            In BOX
           </p>
         </div>
       </div>

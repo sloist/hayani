@@ -128,17 +128,17 @@ export default function BoxOrder() {
         {box.map((item, i) => (
           <div key={`${item.productId}-${item.size}`} style={{ marginBottom: i < box.length - 1 ? '16px' : '0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '14px', fontWeight: 400 }}>{item.name}</span>
-              <span style={{ fontSize: '14px', fontWeight: 400 }}>{formatPrice(item.price * item.quantity)}</span>
+              <span style={{ fontSize: '14px', fontWeight: 300 }}>{item.name}</span>
+              <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px', fontWeight: 500 }}>
+            <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px', fontWeight: 300 }}>
               {item.code} / {item.size} / {item.quantity}
             </span>
           </div>
         ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
-          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400 }}>Shipping</span>
-          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400 }}>{formatPrice(SHIPPING_FEE)}</span>
+          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300 }}>Delivery</span>
+          <span style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300 }}>{formatPrice(SHIPPING_FEE)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
           <span style={{ fontSize: '14px', fontWeight: 500 }}>Total</span>
@@ -159,7 +159,7 @@ export default function BoxOrder() {
 
         <div style={{ padding: '24px', border: '1px solid var(--border)', marginBottom: '24px' }}>
           <span className="label" style={{ marginBottom: '16px', display: 'block' }}>Bank Transfer</span>
-          <div style={{ fontSize: '14px', fontWeight: 400, lineHeight: '2' }}>
+          <div style={{ fontSize: '14px', fontWeight: 300, lineHeight: '2' }}>
             <div>카카오뱅크</div>
             <div style={{ color: 'var(--text2)' }}>계좌번호 안내 예정</div>
             <div>예금주: 하야니</div>
@@ -167,7 +167,7 @@ export default function BoxOrder() {
         </div>
 
         <input name="depositor_name" placeholder="입금자명" value={form.depositor_name} onChange={handleChange} required style={{ ...inputStyle, marginBottom: '16px' }} />
-        <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 400, marginBottom: '40px', lineHeight: '1.8' }}>
+        <p style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, marginBottom: '40px', lineHeight: '1.8' }}>
           24시간 이내 미입금 시 자동 취소됩니다.
         </p>
 
@@ -178,7 +178,7 @@ export default function BoxOrder() {
           fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500,
           border: 'none', cursor: submitting ? 'default' : 'pointer',
         }}>
-          {submitting ? 'Processing...' : 'Confirm Order'}
+          {submitting ? 'Processing...' : 'Complete'}
         </button>
       </form>
     </div>

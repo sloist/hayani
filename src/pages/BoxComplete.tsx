@@ -16,13 +16,13 @@ export default function BoxComplete() {
         입금 확인 후 순차 발송됩니다.
       </p>
       {orderNumber && (
-        <span style={{ fontSize: '12px', letterSpacing: '3px', color: 'var(--text2)', fontFamily: 'monospace', fontWeight: 500 }}>
+        <span style={{ fontSize: '12px', letterSpacing: '3px', color: 'var(--text2)', fontFamily: 'monospace', fontWeight: 400 }}>
           {orderNumber}
         </span>
       )}
       <Link to="/" style={{
         marginTop: '40px', fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase',
-        color: 'var(--text2)', borderBottom: '1px solid var(--border)', paddingBottom: '4px', fontWeight: 500,
+        color: 'var(--text2)', borderBottom: '1px solid var(--border)', paddingBottom: '4px', fontWeight: 400,
       }}>
         Home
       </Link>

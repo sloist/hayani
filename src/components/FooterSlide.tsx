@@ -8,7 +8,7 @@ export default function FooterSlide() {
     letterSpacing: '3px',
     textTransform: 'uppercase' as const,
     color: 'var(--text2)',
-    fontWeight: 500,
+    fontWeight: 400,
     cursor: 'pointer',
     background: 'none',
     border: 'none',

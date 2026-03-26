@@ -34,7 +34,7 @@ export default function BoxIndicator() {
         textTransform: 'uppercase',
         letterSpacing: '3px',
         color: 'var(--text2)',
-        fontWeight: 500,
+        fontWeight: 400,
       }}
     >
       BOX{count > 0 ? ` ${count}` : ''}
