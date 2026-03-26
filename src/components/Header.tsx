@@ -1,14 +1,6 @@
-import { Link, useLocation } from 'react-router-dom';
-
-const NAV_ITEMS = [
-  { label: 'Home', path: '/' },
-  { label: 'Wear', path: '/wear' },
-  { label: 'About', path: '/about' },
-];
+import { Link } from 'react-router-dom';
 
 export default function Header() {
-  const location = useLocation();
-
   return (
     <header style={{
       position: 'fixed',
@@ -20,9 +12,9 @@ export default function Header() {
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: '24px 40px',
-      background: 'var(--bg)',
+      pointerEvents: 'none',
     }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', pointerEvents: 'auto' }}>
         <Link to="/" style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontSize: '18px',
@@ -45,28 +37,6 @@ export default function Header() {
           &middot;
         </Link>
       </div>
-
-      <nav style={{
-        display: 'flex',
-        gap: '32px',
-      }}>
-        {NAV_ITEMS.map(item => (
-          <Link
-            key={item.path}
-            to={item.path}
-            style={{
-              fontSize: '11px',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              fontWeight: 300,
-              color: location.pathname === item.path ? 'var(--text)' : 'var(--text2)',
-              transition: 'color 0.3s ease',
-            }}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
     </header>
   );
 }

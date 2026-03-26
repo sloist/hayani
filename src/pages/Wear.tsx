@@ -51,9 +51,7 @@ export default function Wear() {
           gap: '24px',
           alignItems: 'baseline',
         }}>
-          <span className="label">HAYANI / Wear</span>
-          <span className="label">Summer 2026</span>
-          <span className="label">Pre-Order</span>
+          <span className="label">Wear</span>
         </div>
 
         {/* Horizontal scroll gallery */}

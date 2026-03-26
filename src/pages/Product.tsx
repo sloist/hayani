@@ -186,7 +186,6 @@ export default function Product() {
             {isSoldOut ? 'Sold Out' : 'Order'}
           </button>
 
-          {/* Pre-order notice */}
           {!isSoldOut && (
             <p style={{
               fontSize: '11px',
@@ -194,8 +193,7 @@ export default function Product() {
               fontWeight: 200,
               lineHeight: '1.8',
             }}>
-              프리오더 상품입니다.<br />
-              주문 순서대로 순차 발송됩니다.
+              소량 생산 제품입니다.
             </p>
           )}
         </div>
