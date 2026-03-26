@@ -100,6 +100,7 @@ export default function Box() {
         style={{
           marginTop: '80px',
           display: 'flex',
+          justifyContent: 'center',
           overflowX: 'auto',
           overflowY: 'hidden',
           scrollbarWidth: 'none',
@@ -135,8 +136,8 @@ export default function Box() {
 
       {/* Selected product detail */}
       {selectedProduct && (
-        <div style={{ padding: '32px 40px', maxWidth: '520px', margin: '0 auto', width: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+        <div style={{ padding: '32px 40px', maxWidth: '520px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px', width: '100%', maxWidth: '320px' }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.04em' }}>
               {selectedProduct.name.replace(/^HAYANI\s*/i, '')}
             </h2>
