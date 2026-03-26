@@ -10,6 +10,7 @@ export default function ProductModal({ product, onClose }: Props) {
   const [closing, setClosing] = useState(false);
   const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
   const name = product.name.replace(/^HAYANI\s*/i, '');
+  const specs = (product.specs || []).map(s => s.replace(/off-?white/i, 'Canvas-White'));
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -18,8 +19,6 @@ export default function ProductModal({ product, onClose }: Props) {
 
   function handleClose() { setClosing(true); setTimeout(onClose, 250); }
 
-  const specs = (product.specs || []).map(s => s.replace(/off-?white/i, 'Canvas-White'));
-
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 200,
@@ -27,40 +26,35 @@ export default function ProductModal({ product, onClose }: Props) {
       animation: closing ? 'modalOut 0.25s ease forwards' : 'modalIn 0.3s ease',
       display: 'flex', flexDirection: 'column',
     }}>
-      <div style={{ padding: '28px 40px', flexShrink: 0 }}>
+      <div style={{ padding: '20px 40px', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
         <button onClick={handleClose} style={{
           fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', fontWeight: 400,
           color: 'var(--text)', padding: '0',
         }}>&larr;</button>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 40px 40px' }}>
-        <div style={{ display: 'flex', gap: '48px', maxWidth: '900px', width: '100%', alignItems: 'center' }} className="modal-layout">
-          {/* Image */}
-          <div style={{
-            flex: '1 1 50%', maxHeight: '70vh', aspectRatio: '3/4',
-            backgroundColor: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden',
-          }}>
-            {product.image_url ? (
-              <img className="product-img" src={product.image_url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '36px', fontWeight: 400, letterSpacing: '0.12em', color: 'var(--text3)' }}>{name}</span>
-            )}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px', gap: '20px', maxWidth: '640px', margin: '0 auto', width: '100%' }}>
+        <div style={{
+          width: '100%', maxHeight: '55vh', aspectRatio: '3/4',
+          backgroundColor: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden',
+        }}>
+          {product.image_url ? (
+            <img className="product-img" src={product.image_url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '36px', fontWeight: 400, letterSpacing: '0.12em', color: 'var(--text3)' }}>{name}</span>
+          )}
+        </div>
+
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h2>
+            <span style={{ fontSize: '12px', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
           </div>
-
-          {/* Info — specs only */}
-          <div style={{ flex: '1 1 40%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '24px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h2>
-              <span style={{ fontSize: '13px', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-              {specs.map((spec, i) => (
-                <span key={i} style={{ fontSize: '11px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
-              ))}
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+            {specs.map((spec, i) => (
+              <span key={i} style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
+            ))}
           </div>
         </div>
       </div>
@@ -68,9 +62,6 @@ export default function ProductModal({ product, onClose }: Props) {
       <style>{`
         @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes modalOut { from { opacity: 1; } to { opacity: 0; } }
-        @media (max-width: 768px) {
-          .modal-layout { flex-direction: column !important; gap: 20px !important; align-items: stretch !important; }
-        }
       `}</style>
     </div>
   );

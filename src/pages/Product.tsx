@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Product as ProductType } from '../types';
 import BackButton from '../components/BackButton';
-import BoxIndicator from '../components/BoxIndicator';
+import CounterIndicator from '../components/CounterIndicator';
 
 export default function Product() {
   const { id } = useParams<{ id: string }>();
@@ -33,46 +33,38 @@ export default function Product() {
   const specs = (product.specs || []).map(s => s.replace(/off-?white/i, 'Canvas-White'));
 
   return (
-    <div style={{ height: '100vh', overflow: 'hidden' }}>
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '28px 40px', display: 'flex', justifyContent: 'space-between' }}>
+    <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
         <BackButton />
-        <BoxIndicator />
+        <CounterIndicator />
       </div>
 
-      <div className="product-layout" style={{ height: '100vh', display: 'flex' }}>
-        <div className="product-image" style={{
-          flex: '1 1 50%', minWidth: '300px',
+      {/* Image above, info below — like a caption */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px', gap: '20px', maxWidth: '640px', margin: '0 auto', width: '100%' }}>
+        <div style={{
+          width: '100%', maxHeight: '55vh', aspectRatio: '3/4',
           backgroundColor: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden',
         }}>
           {product.image_url ? (
             <img className="product-img" src={product.image_url} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '48px', fontWeight: 400, letterSpacing: '0.12em', color: 'var(--text3)' }}>{name}</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '36px', fontWeight: 400, letterSpacing: '0.12em', color: 'var(--text3)' }}>{name}</span>
           )}
         </div>
 
-        <div className="product-info" style={{ flex: '1 1 400px', padding: '100px 60px 60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '16px' }}>
-            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h1>
-            <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text2)', flexShrink: 0 }}>{formatPrice(product.price)}</span>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h1>
+            <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
           </div>
-
-          {/* Specs only */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
             {specs.map((spec, i) => (
-              <span key={i} style={{ fontSize: '11px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
+              <span key={i} style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
             ))}
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .product-layout { flex-direction: column !important; height: auto !important; }
-          .product-image { flex: 0 0 50vh !important; min-width: 0 !important; }
-          .product-info { padding: 24px 28px 24px !important; }
-        }
-      `}</style>
     </div>
   );
 }

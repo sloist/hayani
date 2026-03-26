@@ -2,18 +2,17 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Product } from '../types';
-import { getBox, addToBox, removeFromBox, type BoxItem } from '../lib/box';
+import { getCounter, addToCounter, removeFromCounter, type CounterItem } from '../lib/counter';
 import { sizeToNumber } from '../lib/size';
 import BackButton from '../components/BackButton';
 import StepIndicator from '../components/StepIndicator';
 
-export default function Box() {
+export default function Counter() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState('');
-  const [showSizeGuide, setShowSizeGuide] = useState(false);
-  const [box, setBox] = useState<BoxItem[]>(getBox);
+  const [counter, setCounter] = useState<CounterItem[]>(getCounter);
   const navigate = useNavigate();
   const stripRef = useRef<HTMLDivElement>(null);
 
@@ -24,24 +23,19 @@ export default function Box() {
       const prods = data || [];
       setProducts(prods);
       if (prods.length > 0) setSelectedProduct(prods[0]);
-
-      // Clean stale BOX items (inactive or removed products)
+      // Clean stale items
       const activeIds = new Set(prods.map(p => p.id));
-      const currentBox = getBox();
-      const staleItems = currentBox.filter(item => !activeIds.has(item.productId));
-      for (const item of staleItems) {
-        removeFromBox(item.productId, item.size);
-      }
-
+      const cur = getCounter();
+      for (const item of cur) { if (!activeIds.has(item.productId)) removeFromCounter(item.productId, item.size); }
       setLoading(false);
     }
     fetchProducts();
   }, []);
 
   useEffect(() => {
-    function onBoxChange() { setBox(getBox()); }
-    window.addEventListener('box-change', onBoxChange);
-    return () => window.removeEventListener('box-change', onBoxChange);
+    function onChange() { setCounter(getCounter()); }
+    window.addEventListener('counter-change', onChange);
+    return () => window.removeEventListener('counter-change', onChange);
   }, []);
 
   useEffect(() => {
@@ -55,60 +49,64 @@ export default function Box() {
   }, []);
 
   const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
-  const subtotal = box.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = counter.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const SHIPPING_FEE = 4000;
   const stripName = (n: string) => n.replace(/^HAYANI\s*/i, '');
 
-  function handleSelectProduct(product: Product) { setSelectedProduct(product); setSelectedSize(''); setShowSizeGuide(false); }
+  function handleSelectProduct(product: Product) { setSelectedProduct(product); setSelectedSize(''); }
 
   function handleAdd() {
     if (!selectedProduct || !selectedSize) return;
-    addToBox({ productId: selectedProduct.id, code: selectedProduct.code, name: selectedProduct.name, size: selectedSize, price: selectedProduct.price, quantity: 1, imageUrl: selectedProduct.image_url });
+    addToCounter({ productId: selectedProduct.id, code: selectedProduct.code, name: selectedProduct.name, size: selectedSize, price: selectedProduct.price, quantity: 1, imageUrl: selectedProduct.image_url });
     setSelectedSize('');
   }
 
   if (loading) return <div style={{ height: '100vh' }} />;
 
+  // Size guide from product data or placeholder
+  const sizeGuide = selectedProduct?.size_guide;
+  const sizes = selectedProduct?.sizes || [];
+
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
       {/* Top bar */}
-      <div style={{ padding: '28px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+      <div style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
         <BackButton to="/" />
         <StepIndicator current={1} />
-        <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)', fontWeight: 400 }}>1 / 3</span>
+        <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>1 / 3</span>
       </div>
 
       {/* Product strip */}
       <div ref={stripRef} style={{
         display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
-        scrollbarWidth: 'none', gap: '4px', padding: '0 40px', flexShrink: 0,
+        scrollbarWidth: 'none', gap: '8px', padding: '0 40px', flexShrink: 0,
       }}>
         {products.map(product => (
           <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
-            flexShrink: 0, width: 'min(110px, 22vw)', height: 'min(146px, 29vw)',
+            flexShrink: 0, width: 'min(100px, 21vw)', height: 'min(132px, 28vw)',
             backgroundColor: selectedProduct?.id === product.id ? 'var(--border)' : 'var(--bg2)',
             border: 'none', overflow: 'hidden', padding: 0,
             transition: 'background-color 0.3s ease',
-            opacity: selectedProduct?.id === product.id ? 1 : 0.85,
+            opacity: selectedProduct?.id === product.id ? 1 : 0.8,
           }}>
             {product.image_url ? (
               <img className="product-img" src={product.image_url} alt={stripName(product.name)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
+              <span style={{ fontSize: '9px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
             )}
           </button>
         ))}
       </div>
 
-      {/* Selected product — flex grows to fill */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px' }}>
+      {/* Selected product */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px', gap: '6px' }}>
         {selectedProduct ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', maxWidth: '300px' }}>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.04em' }}>
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', maxWidth: '280px' }}>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', fontWeight: 400, letterSpacing: '0.04em' }}>
                 {stripName(selectedProduct.name)}
               </h2>
-              <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text2)' }}>{formatPrice(selectedProduct.price)}</span>
+              <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>{formatPrice(selectedProduct.price)}</span>
             </div>
 
             {selectedProduct.stock <= 0 ? (
@@ -116,82 +114,80 @@ export default function Box() {
             ) : (
               <>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  {(selectedProduct.sizes || []).map((size, i) => {
+                  {sizes.map((size, i) => {
                     const sizeStock = selectedProduct.stock_by_size?.[size];
                     const isSizeOut = sizeStock !== undefined && sizeStock <= 0;
                     return (
                       <button key={size} onClick={() => !isSizeOut && setSelectedSize(selectedSize === size ? '' : size)} disabled={isSizeOut} style={{
-                        minWidth: '36px', height: '36px', padding: '0 8px',
+                        minWidth: '34px', height: '34px', padding: '0 6px',
                         border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
                         backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
-                        fontSize: '12px', fontWeight: 500,
+                        fontSize: '11px', fontWeight: 500,
                         color: isSizeOut ? 'var(--text3)' : selectedSize === size ? 'var(--bg)' : 'var(--text2)',
                         opacity: isSizeOut ? 0.4 : 1, cursor: isSizeOut ? 'default' : 'pointer',
                         textDecoration: isSizeOut ? 'line-through' : 'none', transition: 'all 0.2s ease',
                       }}>
-                        {i + 1}
+                        {size === 'F' ? 'F' : i + 1}
                       </button>
                     );
                   })}
                 </div>
-                {/* Size Guide toggle */}
-                <button onClick={() => setShowSizeGuide(!showSizeGuide)} style={{
-                  fontSize: '10px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '1px',
-                }}>
-                  {showSizeGuide ? '− Size Guide' : '+ Size Guide'}
-                </button>
-                {showSizeGuide && selectedProduct && (
-                  <div style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, lineHeight: '1.8', textAlign: 'left', width: '100%', maxWidth: '280px' }}>
-                    {(selectedProduct.sizes || []).map((_, i) => {
-                      // Placeholder measurements — will come from size_guide jsonb
-                      const guides: Record<number, string> = { 0: '가슴 52 · 총장 68', 1: '가슴 55 · 총장 71', 2: '가슴 58 · 총장 74', 3: '가슴 61 · 총장 77' };
-                      return <div key={i}>{i + 1} — {guides[i] || '준비 중'}</div>;
+
+                {/* Size guide — always visible */}
+                {sizes.length > 0 && sizes[0] !== 'F' && (
+                  <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, lineHeight: '1.6', textAlign: 'center' }}>
+                    {sizes.map((_, i) => {
+                      const guide = sizeGuide?.[i];
+                      const text = guide ? Object.entries(guide).map(([k, v]) => `${k} ${v}`).join(' · ') : `가슴 ${52 + i * 3} · 총장 ${68 + i * 3}`;
+                      return <div key={i}>{i + 1} — {text}</div>;
                     })}
                   </div>
                 )}
+
                 <button onClick={handleAdd} disabled={!selectedSize} style={{
-                  padding: '10px 28px', backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
+                  padding: '10px 28px',
+                  backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
                   color: selectedSize ? 'var(--bg)' : 'var(--text3)',
                   fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500,
                   cursor: selectedSize ? 'pointer' : 'default', transition: 'all 0.2s ease',
                 }}>
-                  BOX
+                  COUNTER
                 </button>
               </>
             )}
-          </div>
+          </>
         ) : products.length === 0 ? (
           <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 300 }}>No items available</p>
         ) : null}
       </div>
 
       {/* Bottom summary */}
-      <div style={{ flexShrink: 0, borderTop: '1px solid var(--border)', padding: '16px 40px' }}>
+      <div style={{ flexShrink: 0, borderTop: '1px solid var(--border)', padding: '14px 40px' }}>
         <div style={{ maxWidth: '520px', margin: '0 auto' }}>
-          {box.length === 0 ? (
-            <p style={{ fontSize: '12px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
+          {counter.length === 0 ? (
+            <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
           ) : (
             <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
-                {box.map(item => (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
+                {counter.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>
-                      {stripName(item.name)} · {sizeToNumber(item.size)} · {item.quantity}EA
+                    <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text2)' }}>
+                      {stripName(item.name)} · {sizeToNumber(item.size, products.find(p => p.id === item.productId)?.sizes)} · {item.quantity}EA
                     </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
-                      <button onClick={() => removeFromBox(item.productId, item.size)} style={{ fontSize: '10px', color: 'var(--text3)', padding: '2px' }}>✕</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
+                      <button onClick={() => removeFromCounter(item.productId, item.size)} style={{ fontSize: '9px', color: 'var(--text3)', padding: '2px' }}>✕</button>
                     </div>
                   </div>
                 ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid var(--border)' }}>
                 <div>
-                  <span style={{ fontSize: '15px', fontWeight: 500 }}>{formatPrice(subtotal + SHIPPING_FEE)}</span>
-                  <span style={{ fontSize: '9px', color: 'var(--text3)', marginLeft: '8px' }}>Shipping included</span>
+                  <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(subtotal + SHIPPING_FEE)}</span>
+                  <span style={{ fontSize: '8px', color: 'var(--text3)', marginLeft: '6px' }}>Shipping included</span>
                 </div>
-                <button onClick={() => box.length > 0 && navigate('/box/order')} style={{
-                  padding: '12px 32px', backgroundColor: 'var(--text)', color: 'var(--bg)',
+                <button onClick={() => counter.length > 0 && navigate('/counter/checkout')} style={{
+                  padding: '11px 28px', backgroundColor: 'var(--text)', color: 'var(--bg)',
                   fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500,
                 }}>Continue</button>
               </div>

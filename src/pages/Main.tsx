@@ -5,7 +5,7 @@ import type { Product } from '../types';
 import HorizontalGallery, { type GalleryHandle } from '../components/HorizontalGallery';
 import ProductCard from '../components/ProductCard';
 import FooterSlide from '../components/FooterSlide';
-import BoxIndicator from '../components/BoxIndicator';
+import CounterIndicator from '../components/CounterIndicator';
 import ProductModal from '../components/ProductModal';
 
 function HomeSlide({ onAdminAccess, onNext }: { onAdminAccess: () => void; onNext: () => void }) {
@@ -131,7 +131,7 @@ export default function Main() {
         transition: 'opacity 0.4s ease',
         pointerEvents: showOverlay ? 'auto' : 'none',
       }}>
-        <BoxIndicator />
+        <CounterIndicator />
       </div>
 
       <HorizontalGallery ref={galleryRef} initialIndex={savedIndex} onIndexChange={handleIndexChange}>

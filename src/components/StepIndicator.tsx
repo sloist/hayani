@@ -1,4 +1,4 @@
-const STEPS = ['Box', 'Checkout', 'Complete'];
+const NAMES = ['COUNTER', 'CHECKOUT', 'COMPLETE'];
 
 interface Props {
   current: number; // 1, 2, or 3
@@ -6,18 +6,8 @@ interface Props {
 
 export default function StepIndicator({ current }: Props) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', letterSpacing: '2px' }}>
-      {STEPS.map((step, i) => (
-        <span key={step}>
-          {i > 0 && <span style={{ color: 'var(--text3)', margin: '0 2px' }}>·</span>}
-          <span style={{
-            color: current === i + 1 ? 'var(--text)' : 'var(--text3)',
-            fontWeight: current === i + 1 ? 500 : 300,
-          }}>
-            {step}
-          </span>
-        </span>
-      ))}
-    </div>
+    <span style={{ fontSize: '10px', letterSpacing: '3px', color: 'var(--text2)', fontWeight: 400 }}>
+      {NAMES[current - 1] || ''}
+    </span>
   );
 }

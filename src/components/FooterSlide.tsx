@@ -6,36 +6,31 @@ export default function FooterSlide() {
   const linkStyle: React.CSSProperties = {
     fontSize: '12px', letterSpacing: '3px', textTransform: 'uppercase',
     color: 'var(--text2)', fontWeight: 400, cursor: 'pointer',
-    background: 'none', border: 'none', padding: 0,
+    background: 'none', border: 'none', padding: '4px 0', display: 'block',
   };
 
   return (
     <div style={{
       width: '100%', height: '100%',
       display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-      padding: '40px', textAlign: 'center', gap: '32px',
+      padding: '40px', textAlign: 'center', gap: '40px',
     }}>
-      {/* Links */}
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+      {/* Links — vertical */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
         <a href="mailto:white@hayani.kr" style={{ ...linkStyle, textDecoration: 'none' }}>Contact</a>
-        <span style={{ color: 'var(--border)' }}>·</span>
         <button onClick={() => navigate('/order')} style={linkStyle}>Order</button>
-        <span style={{ color: 'var(--border)' }}>·</span>
         <button onClick={() => navigate('/terms')} style={linkStyle}>Terms</button>
-        <span style={{ color: 'var(--border)' }}>·</span>
         <button onClick={() => navigate('/privacy')} style={linkStyle}>Privacy</button>
       </div>
 
       {/* Copyright */}
-      <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)' }}>
-        &copy; 2026 HAYANI. All rights reserved.
-      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', alignItems: 'center' }}>
+        <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)' }}>&copy; 2026 HAYANI</span>
+        <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)' }}>All rights reserved.</span>
+      </div>
 
       {/* Legal */}
-      <div style={{
-        fontSize: '10px', lineHeight: '2.2', color: 'var(--text3)', fontWeight: 300,
-        display: 'flex', flexDirection: 'column', gap: '0',
-      }}>
+      <div style={{ fontSize: '9px', lineHeight: '2', color: 'var(--text3)', fontWeight: 300, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <span>HAYANI · 대표 정문수</span>
         <span>사업자등록번호 000-00-00000</span>
         <span>통신판매업 신고번호 0000-충남천안-0000</span>
