@@ -15,21 +15,13 @@ export default function Main() {
 
   useEffect(() => {
     async function fetchProducts() {
-      try {
-        console.log('Fetching products...');
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_active', true)
-          .order('sort_order');
-        if (error) console.error('Supabase error:', error);
-        console.log('Products:', data?.length);
-        setProducts(data || []);
-      } catch (e) {
-        console.error('Fetch crashed:', e);
-      } finally {
-        setLoading(false);
-      }
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('sort_order');
+      setProducts(data || []);
+      setLoading(false);
     }
     fetchProducts();
   }, []);
