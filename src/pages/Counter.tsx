@@ -23,7 +23,6 @@ export default function Counter() {
       const prods = data || [];
       setProducts(prods);
       if (prods.length > 0) setSelectedProduct(prods[0]);
-      // Clean stale items
       const activeIds = new Set(prods.map(p => p.id));
       const cur = getCounter();
       for (const item of cur) { if (!activeIds.has(item.productId)) removeFromCounter(item.productId, item.size); }
@@ -65,46 +64,48 @@ export default function Counter() {
 
   if (loading) return <div style={{ height: '100vh' }} />;
 
-  // Size guide from product data or placeholder
   const sizeGuide = selectedProduct?.size_guide;
   const sizes = selectedProduct?.sizes || [];
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
-      {/* Top bar */}
-      <div style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+
+      {/* Row 1: Top bar — flex 0 (auto) */}
+      <div style={{ padding: '16px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
         <BackButton to="/" />
         <StepIndicator current={1} />
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>1 / 3</span>
       </div>
 
-      {/* Product strip */}
-      <div ref={stripRef} style={{
-        display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
-        scrollbarWidth: 'none', gap: '8px', padding: '0 40px', flexShrink: 0,
-      }}>
-        {products.map(product => (
-          <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
-            flexShrink: 0, width: 'min(100px, 21vw)', height: 'min(132px, 28vw)',
-            backgroundColor: selectedProduct?.id === product.id ? 'var(--border)' : 'var(--bg2)',
-            border: 'none', overflow: 'hidden', padding: 0,
-            transition: 'background-color 0.3s ease',
-            opacity: selectedProduct?.id === product.id ? 1 : 0.8,
-          }}>
-            {product.image_url ? (
-              <img className="product-img" src={product.image_url} alt={stripName(product.name)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <span style={{ fontSize: '9px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
-            )}
-          </button>
-        ))}
+      {/* Row 2: Product thumbnails — flex 3 */}
+      <div style={{ flex: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0 }}>
+        <div ref={stripRef} style={{
+          display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
+          scrollbarWidth: 'none', gap: '10px', padding: '0 40px', width: '100%',
+        }}>
+          {products.map(product => (
+            <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
+              flexShrink: 0, width: 'min(140px, 28vw)', height: 'min(186px, 37vw)',
+              backgroundColor: selectedProduct?.id === product.id ? 'var(--border)' : 'var(--bg2)',
+              border: 'none', overflow: 'hidden', padding: 0,
+              transition: 'background-color 0.3s ease',
+              opacity: selectedProduct?.id === product.id ? 1 : 0.8,
+            }}>
+              {product.image_url ? (
+                <img className="product-img" src={product.image_url} alt={stripName(product.name)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <span style={{ fontSize: '9px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Selected product */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px', gap: '6px' }}>
+      {/* Row 3: Selection area — flex 3 */}
+      <div style={{ flex: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px', gap: '8px', minHeight: 0 }}>
         {selectedProduct ? (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', maxWidth: '280px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%', maxWidth: '300px' }}>
               <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', fontWeight: 400, letterSpacing: '0.04em' }}>
                 {stripName(selectedProduct.name)}
               </h2>
@@ -135,9 +136,8 @@ export default function Counter() {
                   })}
                 </div>
 
-                {/* Size guide — always visible */}
                 {sizes.length > 0 && sizes[0] !== 'F' && (
-                  <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, lineHeight: '1.6', textAlign: 'center' }}>
+                  <div style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, lineHeight: '1.5', textAlign: 'center' }}>
                     {sizes.map((_, i) => {
                       const guide = sizeGuide?.[i];
                       const text = guide ? Object.entries(guide).map(([k, v]) => `${k} ${v}`).join(' · ') : `가슴 ${52 + i * 3} · 총장 ${68 + i * 3}`;
@@ -147,8 +147,8 @@ export default function Counter() {
                 )}
 
                 <button onClick={handleAdd} disabled={!selectedSize} style={{
-                  padding: '10px 28px',
-                  backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
+                  padding: '10px 32px',
+                  backgroundColor: selectedSize ? 'var(--text)' : 'rgba(0,0,0,0.08)',
                   color: selectedSize ? 'var(--bg)' : 'var(--text3)',
                   fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500,
                   cursor: selectedSize ? 'pointer' : 'default', transition: 'all 0.2s ease',
@@ -163,14 +163,14 @@ export default function Counter() {
         ) : null}
       </div>
 
-      {/* Bottom summary */}
-      <div style={{ flexShrink: 0, borderTop: '1px solid var(--border)', padding: '14px 40px' }}>
-        <div style={{ maxWidth: '520px', margin: '0 auto' }}>
+      {/* Row 4: Bottom summary — flex 3 */}
+      <div style={{ flex: 3, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', padding: '12px 40px', minHeight: 0 }}>
+        <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
           ) : (
             <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px', maxHeight: '30vh', overflowY: 'auto' }}>
                 {counter.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text2)' }}>
