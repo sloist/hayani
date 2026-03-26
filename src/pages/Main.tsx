@@ -14,16 +14,24 @@ export default function Main() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetch() {
-      const { data } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order');
-      setProducts(data || []);
-      setLoading(false);
+    async function fetchProducts() {
+      try {
+        console.log('Fetching products...');
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort_order');
+        if (error) console.error('Supabase error:', error);
+        console.log('Products:', data?.length);
+        setProducts(data || []);
+      } catch (e) {
+        console.error('Fetch crashed:', e);
+      } finally {
+        setLoading(false);
+      }
     }
-    fetch();
+    fetchProducts();
   }, []);
 
   const handleLogoClick = useCallback(() => {
