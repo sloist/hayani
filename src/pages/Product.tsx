@@ -87,14 +87,14 @@ export default function Product() {
                   </button>
                 ))}
               </div>
-              {expandedSize !== null && product.sizes[expandedSize] && (
+              {expandedSize !== null && (
                 <div style={{
                   marginTop: '12px', padding: '12px 16px',
                   backgroundColor: 'var(--bg2)',
                   fontSize: '12px', color: 'var(--text2)', fontWeight: 300,
                   letterSpacing: '1px',
                 }}>
-                  Size {expandedSize + 1} — {product.sizes[expandedSize]}
+                  실측 정보 준비 중
                 </div>
               )}
             </div>

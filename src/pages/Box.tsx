@@ -168,13 +168,6 @@ export default function Box() {
             ))}
           </div>
 
-          {/* Show actual size name when selected */}
-          {selectedSize && (
-            <div style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300, marginBottom: '12px', letterSpacing: '1px' }}>
-              Size {(selectedProduct.sizes || []).indexOf(selectedSize) + 1} — {selectedSize}
-            </div>
-          )}
-
           {/* Add button */}
           <button
             onClick={handleAdd}
@@ -198,9 +191,11 @@ export default function Box() {
       )}
 
       {products.length === 0 && (
-        <p style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: 400, textAlign: 'center', padding: '80px 40px' }}>
-          No items available
-        </p>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ fontSize: '14px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>
+            No items available
+          </p>
+        </div>
       )}
 
       {/* Box summary - fixed bottom */}

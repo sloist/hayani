@@ -43,7 +43,7 @@ export default function FooterSlide() {
 
         <p style={{
           fontSize: '14px',
-          fontWeight: 400,
+          fontWeight: 300,
           color: 'var(--text2)',
           lineHeight: '2',
           marginTop: '8px',
@@ -73,6 +73,21 @@ export default function FooterSlide() {
         }}>
           &copy; 2026 HAYANI
         </span>
+
+        {/* Business info */}
+        <div style={{
+          marginTop: '20px',
+          fontSize: '9px',
+          lineHeight: '1.8',
+          color: 'var(--text3)',
+          fontWeight: 300,
+          letterSpacing: '0.5px',
+        }}>
+          <span>하야니 · 대표 (미등록)</span><br />
+          <span>사업자등록번호 (미등록) · 통신판매업 신고번호 (미등록)</span><br />
+          <span>사업장 주소 (미등록)</span><br />
+          <span>hello@hayani.kr</span>
+        </div>
       </div>
     </div>
   );
