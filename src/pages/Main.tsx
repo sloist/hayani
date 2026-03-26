@@ -125,8 +125,8 @@ export default function Main() {
     <>
       {/* COUNTER — top center, fade with products */}
       <div style={{
-        position: 'fixed', top: '24px', left: '50%', transform: 'translateX(-50%)',
-        zIndex: 50,
+        position: 'fixed', top: '24px', left: 0, right: 0,
+        zIndex: 50, textAlign: 'center',
         opacity: isProductSlide ? 1 : 0,
         transition: 'opacity 0.4s ease',
         pointerEvents: isProductSlide ? 'auto' : 'none',
