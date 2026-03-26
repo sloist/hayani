@@ -9,7 +9,7 @@ interface Props {
 function getSlideVw() {
   // Desktop: narrower slides so next card peeks
   // Mobile: wider slides
-  return window.innerWidth > 768 ? 42 : 78;
+  return window.innerWidth > 768 ? 42 : 88;
 }
 
 export default function HorizontalGallery({ children, onIndexChange, initialIndex = 0 }: Props) {

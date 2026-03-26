@@ -49,6 +49,9 @@ function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
           border: 'none',
           cursor: 'default',
           padding: '20px',
+          outline: 'none',
+          WebkitTapHighlightColor: 'transparent',
+          userSelect: 'none',
         }}
       >
         HAYANI
@@ -61,6 +64,7 @@ export default function Main() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,9 +103,27 @@ export default function Main() {
   return (
     <>
       <BoxIndicator />
-      <HorizontalGallery initialIndex={0}>
+      <HorizontalGallery initialIndex={0} onIndexChange={setCurrentIndex}>
         {slides}
       </HorizontalGallery>
+      {/* Dots — only for product slides (index 1 to products.length) */}
+      {products.length > 1 && currentIndex >= 1 && currentIndex <= products.length && (
+        <div style={{
+          position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', gap: '6px', zIndex: 50,
+        }}>
+          {products.map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: '5px', height: '5px', borderRadius: '50%',
+                backgroundColor: currentIndex === i + 1 ? 'var(--text2)' : 'var(--border)',
+                transition: 'background-color 0.3s ease',
+              }}
+            />
+          ))}
+        </div>
+      )}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}

@@ -27,14 +27,19 @@ export default function OrderCheck() {
     setSearched(false);
     setSelected(null);
 
+    // Normalize phone: remove dashes, spaces, dots
+    const normalizedPhone = phone.trim().replace(/[-\s.]/g, '');
+
     const { data } = await supabase
       .from('orders')
       .select('*')
-      .eq('customer_email', email.trim())
-      .eq('customer_phone', phone.trim())
+      .ilike('customer_email', email.trim())
       .order('created_at', { ascending: false });
 
-    const results = data || [];
+    // Filter by phone client-side (handles format differences)
+    const results = (data || []).filter(o =>
+      o.customer_phone.replace(/[-\s.]/g, '') === normalizedPhone
+    );
     setOrders(results);
     setSearched(true);
     setLoading(false);
