@@ -24,7 +24,7 @@ export default function Privacy() {
 
         <section>
           <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Third Parties</h2>
-          <p>수집된 개인정보는 배송 업체(CJ대한통운)를 제외한 제3자에게 제공되지 않습니다.</p>
+          <p>수집된 개인정보는 배송 업체(한진택배)를 제외한 제3자에게 제공되지 않습니다.</p>
         </section>
 
         <section>
