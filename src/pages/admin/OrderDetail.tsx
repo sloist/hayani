@@ -23,11 +23,13 @@ export default function OrderDetail() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [authed, setAuthed] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate('/admin/login');
+      if (!session) { navigate('/admin/login'); return; }
+      setAuthed(true);
     });
   }, [navigate]);
 
@@ -42,7 +44,7 @@ export default function OrderDetail() {
       setLoading(false);
     }
     fetchOrder();
-  }, [id]);
+  }, [id, authed]);
 
   async function changeStatus(newStatus: string) {
     if (!order || updating) return;
@@ -75,7 +77,7 @@ export default function OrderDetail() {
     setUpdating(false);
   }
 
-  if (loading) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
+  if (!authed || loading) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
   if (!order) return <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text2)' }}>주문을 찾을 수 없습니다.</div>;
 
   const infoStyle: React.CSSProperties = {

@@ -18,15 +18,18 @@ export default function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filter, setFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [authed, setAuthed] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate('/admin/login');
+      if (!session) { navigate('/admin/login'); return; }
+      setAuthed(true);
     });
   }, [navigate]);
 
   useEffect(() => {
+    if (!authed) return;
     async function fetchOrders() {
       const { data } = await supabase
         .from('orders')
@@ -36,7 +39,7 @@ export default function Dashboard() {
       setLoading(false);
     }
     fetchOrders();
-  }, []);
+  }, [authed]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -44,6 +47,8 @@ export default function Dashboard() {
   }
 
   const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
+
+  if (!authed) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>

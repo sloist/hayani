@@ -28,11 +28,13 @@ export default function Products() {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [authed, setAuthed] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate('/admin/login');
+      if (!session) { navigate('/admin/login'); return; }
+      setAuthed(true);
     });
   }, [navigate]);
 
@@ -45,7 +47,7 @@ export default function Products() {
     setLoading(false);
   }
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => { if (authed) fetchProducts(); }, [authed]);
 
   function openAdd() {
     setEditingId(null);
@@ -93,10 +95,11 @@ export default function Products() {
   async function handleFileSelect(file: File) {
     if (!file.type.startsWith('image/')) return;
 
-    // If editing, upload immediately and set image_url
+    // If editing, upload immediately and save to DB
     if (editingId) {
       const url = await uploadImage(file, editingId);
       if (url) {
+        await supabase.from('products').update({ image_url: url }).eq('id', editingId);
         updateForm('image_url', url);
       }
     } else {
@@ -185,6 +188,8 @@ export default function Products() {
     fontSize: '14px',
     outline: 'none',
   };
+
+  if (!authed) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
