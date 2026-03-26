@@ -119,17 +119,17 @@ export default function Main() {
     <FooterSlide key="footer" />,
   ];
 
-  const lastIndex = slides.length - 1;
   const isProductSlide = currentIndex >= 1 && currentIndex <= products.length;
-  const showOverlay = currentIndex > 0 && currentIndex < lastIndex;
 
   return (
     <>
-      {/* BOX + indicator with fade */}
+      {/* COUNTER — top center, fade with products */}
       <div style={{
-        opacity: showOverlay ? 1 : 0,
+        position: 'fixed', top: '24px', left: '50%', transform: 'translateX(-50%)',
+        zIndex: 50,
+        opacity: isProductSlide ? 1 : 0,
         transition: 'opacity 0.4s ease',
-        pointerEvents: showOverlay ? 'auto' : 'none',
+        pointerEvents: isProductSlide ? 'auto' : 'none',
       }}>
         <CounterIndicator />
       </div>

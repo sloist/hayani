@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Product as ProductType } from '../types';
 import BackButton from '../components/BackButton';
-import CounterIndicator from '../components/CounterIndicator';
 
 export default function Product() {
   const { id } = useParams<{ id: string }>();
@@ -34,9 +33,8 @@ export default function Product() {
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+      <div style={{ padding: '20px 40px', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
         <BackButton />
-        <CounterIndicator />
       </div>
 
       {/* Image above, info below — like a caption */}
