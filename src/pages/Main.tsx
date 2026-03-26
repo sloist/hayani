@@ -114,43 +114,45 @@ export default function Main() {
     <FooterSlide key="footer" />,
   ];
 
-  const isProductSlide = currentIndex >= 1 && currentIndex <= products.length;
   const lastIndex = slides.length - 1;
-  const showBox = currentIndex > 0 && currentIndex < lastIndex;
+  const isProductSlide = currentIndex >= 1 && currentIndex <= products.length;
+  const showOverlay = currentIndex > 0 && currentIndex < lastIndex;
 
   return (
     <>
-      {showBox && <BoxIndicator />}
+      {/* BOX + indicator with fade */}
+      <div style={{
+        opacity: showOverlay ? 1 : 0,
+        transition: 'opacity 0.4s ease',
+        pointerEvents: showOverlay ? 'auto' : 'none',
+      }}>
+        <BoxIndicator />
+      </div>
+
       <HorizontalGallery ref={galleryRef} initialIndex={savedIndex} onIndexChange={handleIndexChange}>
         {slides}
       </HorizontalGallery>
 
-      {/* Page indicator — minimal line style */}
-      {isProductSlide && products.length > 1 && (
-        <div style={{
-          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', alignItems: 'center', gap: '0', zIndex: 50,
-        }}>
-          {products.map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: currentIndex === i + 1 ? '20px' : '8px',
-                height: '1px',
-                backgroundColor: currentIndex === i + 1 ? 'var(--text)' : 'var(--border)',
-                transition: 'all 0.4s ease',
-                marginRight: i < products.length - 1 ? '4px' : '0',
-              }}
-            />
-          ))}
-        </div>
-      )}
+      {/* Page indicator — fade with products */}
+      <div style={{
+        position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', alignItems: 'center', zIndex: 50,
+        opacity: isProductSlide ? 1 : 0,
+        transition: 'opacity 0.4s ease',
+        pointerEvents: 'none',
+      }}>
+        {products.map((_, i) => (
+          <div key={i} style={{
+            width: currentIndex === i + 1 ? '20px' : '8px', height: '1px',
+            backgroundColor: currentIndex === i + 1 ? 'var(--text)' : 'var(--border)',
+            transition: 'all 0.4s ease',
+            marginRight: i < products.length - 1 ? '4px' : '0',
+          }} />
+        ))}
+      </div>
 
       {selectedProduct && (
-        <ProductModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
+        <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       )}
     </>
   );

@@ -2,16 +2,16 @@ import BackButton from '../components/BackButton';
 
 export default function Terms() {
   return (
-    <div style={{ minHeight: '100vh', padding: '120px 40px 80px', maxWidth: '540px', margin: '0 auto' }}>
+    <div style={{ height: '100vh', overflow: 'hidden', padding: '100px 40px 40px', maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: '28px 40px', zIndex: 100, backgroundColor: 'var(--bg)' }}>
         <BackButton />
       </div>
 
-      <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '24px', fontWeight: 400, letterSpacing: '0.08em', marginBottom: '48px' }}>
+      <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '24px', fontWeight: 400, letterSpacing: '0.08em', marginBottom: '28px', flexShrink: 0 }}>
         Terms
       </h1>
 
-      <div style={{ fontSize: '13px', fontWeight: 400, lineHeight: '2.2', color: 'var(--text2)', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div style={{ fontSize: '12px', fontWeight: 400, lineHeight: '2', color: 'var(--text2)', display: 'flex', flexDirection: 'column', gap: '20px', flex: 1 }}>
         <section>
           <h2 style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Order & Payment</h2>
           <p>주문 후 무통장 입금으로 결제가 진행됩니다. 24시간 이내 미입금 시 주문은 자동 취소됩니다.</p>

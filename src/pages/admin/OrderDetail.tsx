@@ -253,8 +253,7 @@ export default function OrderDetail() {
             {order.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
                 <div>
-                  <span style={{ fontSize: '12px', letterSpacing: '2px', color: 'var(--text2)' }}>{item.code}</span>
-                  <span style={{ fontSize: '13px', marginLeft: '12px' }}>{item.name.replace(/^HAYANI\s*/i, '')}</span>
+                  <span style={{ fontSize: '13px' }}>{item.name.replace(/^HAYANI\s*/i, '')}</span>
                   <span style={{ fontSize: '12px', color: 'var(--text2)', marginLeft: '12px' }}>Size {sizeToNumber(item.size)} / {item.quantity}EA</span>
                 </div>
                 <span style={{ fontSize: '13px' }}>{formatPrice(item.price * item.quantity)}</span>

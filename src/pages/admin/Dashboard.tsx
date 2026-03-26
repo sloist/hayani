@@ -63,8 +63,9 @@ export default function Dashboard() {
 
   function getItemsSummary(order: Order): string {
     if (!order.items || order.items.length === 0) return '-';
-    if (order.items.length === 1) return order.items[0].code;
-    return `${order.items[0].code} 외 ${order.items.length - 1}`;
+    const name = order.items[0].name.replace(/^HAYANI\s*/i, '');
+    if (order.items.length === 1) return name;
+    return `${name} 외 ${order.items.length - 1}`;
   }
 
   function getSizesSummary(order: Order): string {

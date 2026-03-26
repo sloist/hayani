@@ -5,6 +5,7 @@ import { getBox, clearBox, type BoxItem } from '../lib/box';
 import { sizeToNumber } from '../lib/size';
 import type { OrderFormData } from '../types';
 import BackButton from '../components/BackButton';
+import StepIndicator from '../components/StepIndicator';
 
 const SHIPPING_FEE = 4000;
 const CUSTOMER_KEY = 'hayani_customer';
@@ -99,9 +100,10 @@ export default function BoxOrder() {
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', padding: '100px 40px 80px' }}>
-      <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+      <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <BackButton to="/box" />
-        <span className="label">2 / 3</span>
+        <StepIndicator current={2} />
+        <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)', fontWeight: 400 }}>2 / 3</span>
       </div>
 
       {/* Summary */}
