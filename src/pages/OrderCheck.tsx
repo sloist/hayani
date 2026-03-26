@@ -87,7 +87,7 @@ export default function OrderCheck() {
             {order.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: '13px', fontWeight: 300 }}>
-                  {item.code} / {item.size} / {item.quantity}
+                  {item.name.replace(/^HAYANI\s*/i, '')} / {item.size} / {item.quantity}
                 </span>
                 <span style={{ fontSize: '13px', fontWeight: 500 }}>
                   {formatPrice(item.price * item.quantity)}

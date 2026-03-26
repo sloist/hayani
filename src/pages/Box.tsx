@@ -126,7 +126,7 @@ export default function Box() {
             {product.image_url ? (
               <img src={product.image_url} alt={product.code} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
-              <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)', fontWeight: 500 }}>{product.code}</span>
+              <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text3)', fontWeight: 500 }}>{product.name.replace(/^HAYANI\s*/i, '')}</span>
             )}
           </button>
         ))}
@@ -136,16 +136,13 @@ export default function Box() {
       {selectedProduct && (
         <div style={{ padding: '32px 40px', maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
-            <span style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 500, color: 'var(--text2)' }}>
-              {selectedProduct.code}
-            </span>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.04em' }}>
+              {selectedProduct.name.replace(/^HAYANI\s*/i, '')}
+            </h2>
             <span style={{ fontSize: '14px', fontWeight: 500 }}>
               {formatPrice(selectedProduct.price)}
             </span>
           </div>
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.04em', marginBottom: '20px' }}>
-            {selectedProduct.name}
-          </h2>
 
           {selectedProduct.stock <= 0 ? (
             <span style={{ fontSize: '11px', letterSpacing: '3px', color: 'var(--text3)', fontWeight: 400, textTransform: 'uppercase' }}>
@@ -230,7 +227,7 @@ export default function Box() {
                 {box.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '12px', fontWeight: 300, color: 'var(--text2)' }}>
-                      {item.code} / {item.size} / {item.quantity}
+                      {item.name.replace(/^HAYANI\s*/i, '')} / {item.size} / {item.quantity}
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>

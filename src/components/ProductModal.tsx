@@ -84,13 +84,9 @@ export default function ProductModal({ product, onClose }: Props) {
 
         {/* Info */}
         <div style={{ width: '100%', maxWidth: '560px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <span style={{ fontSize: '11px', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text2)', fontWeight: 500 }}>
-            {product.code}
-          </span>
-
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 400, letterSpacing: '0.06em' }}>
-              {product.name}
+              {product.name.replace(/^HAYANI\s*/i, '')}
             </h2>
             <span style={{ fontSize: '15px', fontWeight: 500, letterSpacing: '0.04em' }}>
               {formatPrice(product.price)}

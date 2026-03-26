@@ -128,11 +128,11 @@ export default function BoxOrder() {
         {box.map((item, i) => (
           <div key={`${item.productId}-${item.size}`} style={{ marginBottom: i < box.length - 1 ? '16px' : '0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '14px', fontWeight: 300 }}>{item.name}</span>
+              <span style={{ fontSize: '14px', fontWeight: 300 }}>{item.name.replace(/^HAYANI\s*/i, '')}</span>
               <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
             <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px', fontWeight: 300 }}>
-              {item.code} / {item.size} / {item.quantity}
+              {item.size} / {item.quantity}
             </span>
           </div>
         ))}

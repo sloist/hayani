@@ -53,7 +53,7 @@ export default function ProductCard({ product, onClick }: Props) {
             letterSpacing: '0.12em',
             color: 'var(--text3)',
           }}>
-            {product.code}
+            {product.name.replace(/^HAYANI\s*/i, '')}
           </span>
         )}
         {isSoldOut && (
