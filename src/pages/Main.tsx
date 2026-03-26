@@ -2,13 +2,13 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Product } from '../types';
-import HorizontalGallery from '../components/HorizontalGallery';
+import HorizontalGallery, { type GalleryHandle } from '../components/HorizontalGallery';
 import ProductCard from '../components/ProductCard';
 import FooterSlide from '../components/FooterSlide';
 import BoxIndicator from '../components/BoxIndicator';
 import ProductModal from '../components/ProductModal';
 
-function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
+function HomeSlide({ onAdminAccess, onNext }: { onAdminAccess: () => void; onNext: () => void }) {
   const clickCount = useRef(0);
   const clickTimer = useRef(0);
 
@@ -23,8 +23,11 @@ function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
     }
 
     clickTimer.current = window.setTimeout(() => {
+      if (clickCount.current === 1) {
+        onNext();
+      }
       clickCount.current = 0;
-    }, 400);
+    }, 300);
   }
 
   return (
@@ -47,7 +50,7 @@ function HomeSlide({ onAdminAccess }: { onAdminAccess: () => void }) {
           color: 'var(--text)',
           background: 'none',
           border: 'none',
-          cursor: 'default',
+          cursor: 'pointer',
           padding: '20px',
           outline: 'none',
           WebkitTapHighlightColor: 'transparent',
@@ -65,9 +68,9 @@ export default function Main() {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const galleryRef = useRef<GalleryHandle>(null);
   const navigate = useNavigate();
 
-  // Save/restore slide position
   function handleIndexChange(index: number) {
     setCurrentIndex(index);
     sessionStorage.setItem('hayani_slide', String(index));
@@ -91,12 +94,16 @@ export default function Main() {
     navigate('/admin/login');
   }, [navigate]);
 
+  const handleLogoNext = useCallback(() => {
+    galleryRef.current?.scrollTo(1);
+  }, []);
+
   if (loading) {
     return <div style={{ height: '100vh', backgroundColor: 'var(--bg)' }} />;
   }
 
   const slides = [
-    <HomeSlide key="home" onAdminAccess={handleAdminAccess} />,
+    <HomeSlide key="home" onAdminAccess={handleAdminAccess} onNext={handleLogoNext} />,
     ...products.map((product) => (
       <ProductCard
         key={product.id}
@@ -107,30 +114,38 @@ export default function Main() {
     <FooterSlide key="footer" />,
   ];
 
+  const isProductSlide = currentIndex >= 1 && currentIndex <= products.length;
+  const lastIndex = slides.length - 1;
+  const showBox = currentIndex > 0 && currentIndex < lastIndex;
+
   return (
     <>
-      <BoxIndicator />
-      <HorizontalGallery initialIndex={savedIndex} onIndexChange={handleIndexChange}>
+      {showBox && <BoxIndicator />}
+      <HorizontalGallery ref={galleryRef} initialIndex={savedIndex} onIndexChange={handleIndexChange}>
         {slides}
       </HorizontalGallery>
-      {/* Dots — only for product slides (index 1 to products.length) */}
-      {products.length > 1 && currentIndex >= 1 && currentIndex <= products.length && (
+
+      {/* Page indicator — minimal line style */}
+      {isProductSlide && products.length > 1 && (
         <div style={{
-          position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', gap: '6px', zIndex: 50,
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', alignItems: 'center', gap: '0', zIndex: 50,
         }}>
           {products.map((_, i) => (
             <div
               key={i}
               style={{
-                width: '5px', height: '5px', borderRadius: '50%',
-                backgroundColor: currentIndex === i + 1 ? 'var(--text2)' : 'var(--border)',
-                transition: 'background-color 0.3s ease',
+                width: currentIndex === i + 1 ? '20px' : '8px',
+                height: '1px',
+                backgroundColor: currentIndex === i + 1 ? 'var(--text)' : 'var(--border)',
+                transition: 'all 0.4s ease',
+                marginRight: i < products.length - 1 ? '4px' : '0',
               }}
             />
           ))}
         </div>
       )}
+
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}

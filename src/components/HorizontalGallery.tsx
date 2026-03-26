@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState, type ReactNode } from 'react';
+import { useRef, useEffect, useCallback, useState, forwardRef, useImperativeHandle, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode[];
@@ -6,13 +6,15 @@ interface Props {
   initialIndex?: number;
 }
 
+export interface GalleryHandle {
+  scrollTo: (index: number) => void;
+}
+
 function getSlideVw() {
-  // Desktop: narrower slides so next card peeks
-  // Mobile: wider slides
   return window.innerWidth > 768 ? 42 : 88;
 }
 
-export default function HorizontalGallery({ children, onIndexChange, initialIndex = 0 }: Props) {
+const HorizontalGallery = forwardRef<GalleryHandle, Props>(function HorizontalGallery({ children, onIndexChange, initialIndex = 0 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrolling = useRef(false);
   const currentIndex = useRef(initialIndex);
@@ -59,6 +61,10 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
       behavior: smooth ? 'smooth' : 'instant',
     });
   }, [slideCount, slideWidth, onIndexChange]);
+
+  useImperativeHandle(ref, () => ({
+    scrollTo: (index: number) => scrollToIndex(index),
+  }), [scrollToIndex]);
 
   // Initial scroll — immediate, no flash
   useEffect(() => {
@@ -233,4 +239,6 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
       `}</style>
     </div>
   );
-}
+});
+
+export default HorizontalGallery;
