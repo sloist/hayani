@@ -85,7 +85,32 @@ export default function Home() {
                   alt={product.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-              ) : null}
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '12px',
+                }}>
+                  <span style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: '24px',
+                    fontWeight: 300,
+                    letterSpacing: '0.08em',
+                    color: 'var(--text3)',
+                  }}>
+                    {product.name}
+                  </span>
+                  <span style={{
+                    fontSize: '12px',
+                    fontWeight: 300,
+                    color: 'var(--text3)',
+                    letterSpacing: '0.04em',
+                  }}>
+                    {'\u20A9'}{product.price.toLocaleString('ko-KR')}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Product code - bottom center */}

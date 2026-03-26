@@ -37,6 +37,26 @@ export default function Header() {
           &middot;
         </Link>
       </div>
+
+      {/* Bag icon */}
+      <Link to="/wear" style={{
+        pointerEvents: 'auto',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '24px',
+        height: '24px',
+        opacity: 0.4,
+        transition: 'opacity 0.3s ease',
+      }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '0.4')}
+      >
+        <svg width="18" height="20" viewBox="0 0 18 20" fill="none" stroke="currentColor" strokeWidth="1">
+          <path d="M1 5h16v14H1z" />
+          <path d="M5 5V4a4 4 0 0 1 8 0v1" />
+        </svg>
+      </Link>
     </header>
   );
 }
