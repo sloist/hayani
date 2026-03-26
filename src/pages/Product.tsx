@@ -51,12 +51,10 @@ export default function Product() {
           )}
         </div>
 
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h1>
-            <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h1>
+          <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginTop: '4px' }}>
             {specs.map((spec, i) => (
               <span key={i} style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
             ))}
