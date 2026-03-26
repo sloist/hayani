@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { sizeToNumber } from '../../lib/size';
+import { useAdminAuth } from '../../lib/useAdminAuth';
 import type { Order } from '../../types';
 
 const STATUS_LIST = ['pending', 'paid', 'shipped', 'delivered'] as const;
@@ -24,20 +25,12 @@ export default function OrderDetail() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [authed, setAuthed] = useState(false);
   const [trackingCompany, setTrackingCompany] = useState('');
   const [trackingNumber, setTrackingNumber] = useState('');
   const [showTrackingForm, setShowTrackingForm] = useState(false);
   const [adminMemo, setAdminMemo] = useState('');
   const [memoSaving, setMemoSaving] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { navigate('/admin/login'); return; }
-      setAuthed(true);
-    });
-  }, [navigate]);
+  const authed = useAdminAuth();
 
   useEffect(() => {
     if (!authed) return;

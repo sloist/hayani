@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, type FormEvent, type DragEvent, type ChangeEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useAdminAuth } from '../../lib/useAdminAuth';
 import type { Product } from '../../types';
 
 interface ProductForm {
@@ -36,15 +37,8 @@ export default function Products() {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [authed, setAuthed] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { navigate('/admin/login'); return; }
-      setAuthed(true);
-    });
-  }, [navigate]);
+  const authed = useAdminAuth();
 
   async function fetchProducts() {
     const { data } = await supabase

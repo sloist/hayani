@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { sizeToNumber } from '../../lib/size';
+import { useAdminAuth } from '../../lib/useAdminAuth';
 import type { Order } from '../../types';
 
 export default function Report() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [authed, setAuthed] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { navigate('/admin/login'); return; }
-      setAuthed(true);
-    });
-  }, [navigate]);
+  const authed = useAdminAuth();
 
   useEffect(() => {
     if (!authed) return;
