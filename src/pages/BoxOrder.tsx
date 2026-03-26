@@ -99,8 +99,8 @@ export default function BoxOrder() {
   };
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '100px 40px 80px' }}>
-      <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '28px 40px 80px' }}>
+      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <BackButton to="/box" />
         <StepIndicator current={2} />
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)', fontWeight: 400 }}>2 / 3</span>

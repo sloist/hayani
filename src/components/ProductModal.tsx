@@ -106,7 +106,7 @@ export default function ProductModal({ product, onClose }: Props) {
         @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes modalOut { from { opacity: 1; } to { opacity: 0; } }
         @media (max-width: 768px) {
-          .modal-layout { flex-direction: column !important; gap: 24px !important; }
+          .modal-layout { flex-direction: column !important; gap: 20px !important; align-items: stretch !important; }
         }
       `}</style>
     </div>

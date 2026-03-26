@@ -73,7 +73,7 @@ export default function Box() {
       }}>
         {products.map(product => (
           <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
-            flexShrink: 0, width: '110px', height: '146px',
+            flexShrink: 0, width: 'min(110px, 22vw)', height: 'min(146px, 29vw)',
             backgroundColor: selectedProduct?.id === product.id ? 'var(--border)' : 'var(--bg2)',
             border: 'none', overflow: 'hidden', padding: 0,
             transition: 'background-color 0.3s ease',

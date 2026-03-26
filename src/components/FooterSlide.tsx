@@ -32,6 +32,7 @@ export default function FooterSlide() {
       <div style={{ marginTop: '48px', display: 'flex', flexDirection: 'column', gap: '14px', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: '24px' }}>
           <a href="mailto:white@hayani.kr" style={{ ...linkStyle, textDecoration: 'none' }}>Contact</a>
+          <button onClick={() => navigate('/order/check')} style={linkStyle}>Order</button>
           <button onClick={() => navigate('/terms')} style={linkStyle}>Terms</button>
           <button onClick={() => navigate('/privacy')} style={linkStyle}>Privacy</button>
         </div>

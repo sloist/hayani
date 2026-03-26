@@ -54,9 +54,11 @@ export default function Product() {
           )}
         </div>
 
-        <div style={{ flex: '1 1 400px', padding: '100px 60px 60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '16px' }}>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h1>
-          <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
+        <div className="product-info" style={{ flex: '1 1 400px', padding: '100px 60px 60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '16px' }}>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h1>
+            <span style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text2)', flexShrink: 0 }}>{formatPrice(product.price)}</span>
+          </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -88,8 +90,9 @@ export default function Product() {
 
       <style>{`
         @media (max-width: 768px) {
-          .product-layout { flex-direction: column !important; }
-          .product-image { flex: 0 0 45vh !important; min-width: 0 !important; }
+          .product-layout { flex-direction: column !important; height: auto !important; }
+          .product-image { flex: 0 0 50vh !important; min-width: 0 !important; }
+          .product-info { padding: 24px 28px 24px !important; }
         }
       `}</style>
     </div>

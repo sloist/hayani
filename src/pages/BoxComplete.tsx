@@ -9,46 +9,44 @@ export default function BoxComplete() {
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      {/* Top */}
       <div style={{ padding: '28px 40px', display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
         <StepIndicator current={3} />
       </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '0 40px', textAlign: 'center', gap: '16px' }}>
-        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 400, letterSpacing: '0.06em' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '0 40px', textAlign: 'center', gap: '14px' }}>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '0.06em' }}>
           감사합니다
         </h1>
 
         {orderNumber && (
-          <span style={{ fontSize: '14px', letterSpacing: '2px', color: 'var(--text)', fontFamily: 'monospace', fontWeight: 500 }}>
+          <span style={{ fontSize: '13px', letterSpacing: '2px', color: 'var(--text)', fontFamily: 'monospace', fontWeight: 500 }}>
             {orderNumber}
           </span>
         )}
 
-        <div style={{ padding: '28px 40px', border: '1px solid var(--border)', marginTop: '12px', textAlign: 'center', minWidth: '280px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 400, lineHeight: '2.2' }}>
+        <div style={{ padding: '24px 36px', border: '1px solid var(--border)', marginTop: '8px', textAlign: 'center', minWidth: '260px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 400, lineHeight: '2' }}>
             <div>카카오뱅크</div>
-            <div style={{ fontWeight: 500, fontSize: '16px' }}>계좌번호 안내 예정</div>
+            <div style={{ fontWeight: 500, fontSize: '15px' }}>계좌번호 안내 예정</div>
             <div style={{ fontSize: '12px', color: 'var(--text2)' }}>예금주: 하야니</div>
           </div>
           {totalPrice && (
-            <div style={{ marginTop: '16px', fontSize: '20px', fontWeight: 500, letterSpacing: '0.5px' }}>
+            <div style={{ marginTop: '14px', fontSize: '18px', fontWeight: 500 }}>
               {formatPrice(Number(totalPrice))}
             </div>
           )}
         </div>
 
-        <p style={{ fontSize: '13px', fontWeight: 400, color: 'var(--text2)', lineHeight: '1.8' }}>
+        <p style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text2)' }}>
           입금 확인 후 순차 발송됩니다.
         </p>
-        <p style={{ fontSize: '12px', color: 'var(--text)', fontWeight: 400 }}>
-          Please save this page.
+        <p style={{ fontSize: '11px', color: 'var(--text2)' }}>
+          이 화면을 저장해 주세요.
         </p>
 
-        <div style={{ marginTop: '24px', display: 'flex', gap: '24px' }}>
+        <div style={{ marginTop: '20px', display: 'flex', gap: '24px' }}>
           <Link to="/order/check" style={{ fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text2)', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>
-            Order Check
+            Order
           </Link>
           <Link to="/" style={{ fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text2)', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>
             Home
