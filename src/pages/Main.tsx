@@ -82,14 +82,11 @@ export default function Main() {
     return <div style={{ height: '100vh', backgroundColor: 'var(--bg)' }} />;
   }
 
-  // Repeat products 3 times for loop feel, then footer
-  const repeatedProducts = [...products, ...products, ...products];
-
   const slides = [
     <HomeSlide key="home" onAdminAccess={handleAdminAccess} />,
-    ...repeatedProducts.map((product, i) => (
+    ...products.map((product) => (
       <ProductCard
-        key={`${product.id}-${i}`}
+        key={product.id}
         product={product}
         onClick={() => navigate(`/wear/${product.id}`)}
       />
