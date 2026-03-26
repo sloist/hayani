@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Product } from '../types';
 import { getBox, addToBox, removeFromBox, type BoxItem } from '../lib/box';
+import { sizeToNumber } from '../lib/size';
 import BackButton from '../components/BackButton';
 import BoxIndicator from '../components/BoxIndicator';
 
@@ -227,7 +228,7 @@ export default function Box() {
                 {box.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '12px', fontWeight: 300, color: 'var(--text2)' }}>
-                      {item.name.replace(/^HAYANI\s*/i, '')} / {item.size} / {item.quantity}
+                      {item.name.replace(/^HAYANI\s*/i, '')} / {sizeToNumber(item.size)} / {item.quantity}EA
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>

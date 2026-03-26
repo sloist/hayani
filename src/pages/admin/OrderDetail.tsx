@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { sizeToNumber } from '../../lib/size';
 import type { Order } from '../../types';
 
 const STATUS_LIST = ['pending', 'paid', 'shipped', 'delivered'] as const;
@@ -253,8 +254,8 @@ export default function OrderDetail() {
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
                 <div>
                   <span style={{ fontSize: '12px', letterSpacing: '2px', color: 'var(--text2)' }}>{item.code}</span>
-                  <span style={{ fontSize: '13px', marginLeft: '12px' }}>{item.name}</span>
-                  <span style={{ fontSize: '12px', color: 'var(--text2)', marginLeft: '12px' }}>{item.size} / {item.quantity}개</span>
+                  <span style={{ fontSize: '13px', marginLeft: '12px' }}>{item.name.replace(/^HAYANI\s*/i, '')}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text2)', marginLeft: '12px' }}>Size {sizeToNumber(item.size)} / {item.quantity}EA</span>
                 </div>
                 <span style={{ fontSize: '13px' }}>{formatPrice(item.price * item.quantity)}</span>
               </div>

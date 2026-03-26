@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { sizeToNumber } from '../../lib/size';
 import type { Order } from '../../types';
 
 const STATUSES = ['all', 'pending', 'paid', 'shipped', 'delivered', 'cancelled'] as const;
@@ -68,7 +69,7 @@ export default function Dashboard() {
 
   function getSizesSummary(order: Order): string {
     if (!order.items || order.items.length === 0) return '-';
-    return order.items.map(i => i.size).join(', ');
+    return order.items.map(i => sizeToNumber(i.size)).join(', ');
   }
 
   function toggleSelect(id: string) {

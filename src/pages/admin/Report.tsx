@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { sizeToNumber } from '../../lib/size';
 import type { Order } from '../../types';
 
 export default function Report() {
@@ -59,7 +60,8 @@ export default function Report() {
   for (const o of orders) {
     if (!o.items) continue;
     for (const item of o.items) {
-      sizeMap.set(item.size, (sizeMap.get(item.size) || 0) + item.quantity);
+      const sizeLabel = sizeToNumber(item.size);
+      sizeMap.set(sizeLabel, (sizeMap.get(sizeLabel) || 0) + item.quantity);
     }
   }
   const sizeDist = [...sizeMap.entries()].sort((a, b) => b[1] - a[1]);

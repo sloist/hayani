@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase, generateOrderNumber } from '../lib/supabase';
 import { getBox, clearBox, type BoxItem } from '../lib/box';
+import { sizeToNumber } from '../lib/size';
 import type { OrderFormData } from '../types';
 import BackButton from '../components/BackButton';
 
@@ -132,7 +133,7 @@ export default function BoxOrder() {
               <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
             <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px', fontWeight: 300 }}>
-              {item.size} / {item.quantity}
+              Size {sizeToNumber(item.size)} / {item.quantity}EA
             </span>
           </div>
         ))}
