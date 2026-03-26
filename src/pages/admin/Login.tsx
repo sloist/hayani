@@ -1,26 +1,23 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
-export default function AdminLogin() {
-  const navigate = useNavigate();
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError('');
+    setLoading(true);
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (authError) {
-      setError('로그인 실패');
+    if (err) {
+      setError(err.message);
       setLoading(false);
       return;
     }
@@ -28,37 +25,26 @@ export default function AdminLogin() {
     navigate('/admin');
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '12px 0',
-    border: 'none',
-    borderBottom: '1px solid var(--border)',
-    backgroundColor: 'transparent',
-    fontSize: '13px',
-    fontWeight: 300,
-    color: 'var(--text)',
-    outline: 'none',
-  };
-
   return (
     <div style={{
       minHeight: '100vh',
+      backgroundColor: 'var(--bg)',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
       alignItems: 'center',
-      padding: '40px',
+      justifyContent: 'center',
+      padding: '24px',
     }}>
       <Link to="/" style={{
         fontFamily: "'Cormorant Garamond', serif",
-        fontSize: '16px',
+        fontSize: '28px',
         fontWeight: 300,
-        letterSpacing: '0.12em',
-        color: 'var(--text2)',
-        marginBottom: '16px',
+        letterSpacing: '0.14em',
+        marginBottom: '12px',
       }}>
         HAYANI
       </Link>
+
       <span className="label" style={{ marginBottom: '48px' }}>Admin</span>
 
       <form onSubmit={handleSubmit} style={{
@@ -74,7 +60,16 @@ export default function AdminLogin() {
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
-          style={inputStyle}
+          style={{
+            width: '100%',
+            padding: '12px 0',
+            border: 'none',
+            borderBottom: '1px solid var(--border)',
+            backgroundColor: 'transparent',
+            color: 'var(--text)',
+            fontSize: '14px',
+            outline: 'none',
+          }}
         />
         <input
           type="password"
@@ -82,23 +77,32 @@ export default function AdminLogin() {
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
-          style={inputStyle}
+          style={{
+            width: '100%',
+            padding: '12px 0',
+            border: 'none',
+            borderBottom: '1px solid var(--border)',
+            backgroundColor: 'transparent',
+            color: 'var(--text)',
+            fontSize: '14px',
+            outline: 'none',
+          }}
         />
 
         {error && (
-          <span style={{ fontSize: '11px', color: 'var(--text2)' }}>{error}</span>
+          <p style={{ fontSize: '12px', color: '#c44' }}>{error}</p>
         )}
 
         <button
           type="submit"
           disabled={loading}
           style={{
-            marginTop: '24px',
-            padding: '14px 0',
+            marginTop: '8px',
+            padding: '14px',
             backgroundColor: 'var(--text)',
             color: 'var(--bg)',
-            fontSize: '10px',
-            letterSpacing: '4px',
+            fontSize: '12px',
+            letterSpacing: '3px',
             textTransform: 'uppercase',
             fontWeight: 300,
           }}

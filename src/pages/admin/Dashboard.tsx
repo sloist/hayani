@@ -1,176 +1,147 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import type { Order } from '../../types';
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: '입금대기',
-  paid: '입금확인',
-  shipped: '배송중',
-  delivered: '배송완료',
-  cancelled: '취소',
-};
-
-const STATUS_FILTERS = ['all', 'pending', 'paid', 'shipped', 'delivered', 'cancelled'];
+const STATUSES = ['all', 'pending', 'paid', 'shipped', 'delivered', 'cancelled'] as const;
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuth();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) navigate('/admin/login');
+    });
+  }, [navigate]);
+
+  useEffect(() => {
+    async function fetchOrders() {
+      const { data } = await supabase
+        .from('orders')
+        .select('*, product:products(*)')
+        .order('created_at', { ascending: false });
+      setOrders(data || []);
+      setLoading(false);
+    }
     fetchOrders();
   }, []);
-
-  async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) navigate('/admin/login');
-  }
-
-  async function fetchOrders() {
-    const { data } = await supabase
-      .from('orders')
-      .select('*, product:products(*)')
-      .order('created_at', { ascending: false });
-    setOrders(data || []);
-    setLoading(false);
-  }
 
   async function handleLogout() {
     await supabase.auth.signOut();
     navigate('/admin/login');
   }
 
-  const filtered = filter === 'all'
-    ? orders
-    : orders.filter(o => o.status === filter);
-
-  const formatDate = (d: string) => new Date(d).toLocaleDateString('ko-KR');
-  const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
+  const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
 
   return (
-    <div style={{ padding: '40px', maxWidth: '960px', margin: '0 auto' }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '32px',
-      }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <Link to="/" style={{
           fontFamily: "'Cormorant Garamond', serif",
-          fontSize: '16px',
+          fontSize: '22px',
           fontWeight: 300,
-          letterSpacing: '0.12em',
-          color: 'var(--text2)',
+          letterSpacing: '0.14em',
         }}>
           HAYANI
         </Link>
-        <button
-          onClick={handleLogout}
-          style={{
-            fontSize: '10px',
-            letterSpacing: '2px',
-            color: 'var(--text2)',
-            textTransform: 'uppercase',
-          }}
-        >
+        <button onClick={handleLogout} className="label" style={{ color: 'var(--text2)' }}>
           Logout
         </button>
       </div>
 
-      {/* Admin nav */}
-      <div style={{
-        display: 'flex',
-        gap: '24px',
-        marginBottom: '40px',
-        borderBottom: '1px solid var(--border)',
-        paddingBottom: '12px',
-      }}>
-        <span className="label" style={{ color: 'var(--text)', borderBottom: '1px solid var(--text)', paddingBottom: '12px', marginBottom: '-13px' }}>
-          Orders
-        </span>
-        <Link to="/admin/products" className="label" style={{ transition: 'color 0.2s' }}>
-          Products
-        </Link>
+      {/* Nav tabs */}
+      <div style={{ display: 'flex', gap: '24px', marginBottom: '32px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+        <span className="label" style={{ color: 'var(--text)' }}>Orders</span>
+        <Link to="/admin/products" className="label" style={{ color: 'var(--text3)' }}>Products</Link>
       </div>
 
-      {/* Filters */}
-      <div style={{
-        display: 'flex',
-        gap: '16px',
-        marginBottom: '32px',
-        flexWrap: 'wrap',
-      }}>
-        {STATUS_FILTERS.map(s => (
+      {/* Status filters */}
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        {STATUSES.map(s => (
           <button
             key={s}
             onClick={() => setFilter(s)}
             style={{
-              fontSize: '10px',
+              fontSize: '11px',
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              color: filter === s ? 'var(--text)' : 'var(--text3)',
-              borderBottom: filter === s ? '1px solid var(--text)' : '1px solid transparent',
-              paddingBottom: '4px',
-              transition: 'color 0.2s ease',
+              padding: '6px 12px',
+              border: '1px solid',
+              borderColor: filter === s ? 'var(--text)' : 'var(--border)',
+              color: filter === s ? 'var(--text)' : 'var(--text2)',
+              backgroundColor: filter === s ? 'var(--bg2)' : 'transparent',
             }}
           >
-            {s === 'all' ? `전체 (${orders.length})` : `${STATUS_LABELS[s]} (${orders.filter(o => o.status === s).length})`}
+            {s}
           </button>
         ))}
       </div>
 
-      {/* Order list */}
+      {/* Orders */}
       {loading ? (
-        <span className="label">Loading</span>
+        <p style={{ color: 'var(--text2)', fontSize: '13px' }}>Loading...</p>
       ) : filtered.length === 0 ? (
-        <span style={{ fontSize: '13px', color: 'var(--text3)' }}>주문이 없습니다.</span>
+        <p style={{ color: 'var(--text2)', fontSize: '13px' }}>No orders found.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', backgroundColor: 'var(--border)' }}>
+          {/* Header row */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '120px 1fr 100px 60px 100px 90px 100px',
+            gap: '12px',
+            padding: '10px 16px',
+            backgroundColor: 'var(--bg2)',
+            fontSize: '10px',
+            textTransform: 'uppercase',
+            letterSpacing: '3px',
+            color: 'var(--text2)',
+          }}>
+            <span>Order</span>
+            <span>Customer</span>
+            <span>Product</span>
+            <span>Size</span>
+            <span style={{ textAlign: 'right' }}>Total</span>
+            <span>Status</span>
+            <span>Date</span>
+          </div>
+
           {filtered.map(order => (
             <Link
               key={order.id}
               to={`/admin/orders/${order.id}`}
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
+                display: 'grid',
+                gridTemplateColumns: '120px 1fr 100px 60px 100px 90px 100px',
+                gap: '12px',
+                padding: '14px 16px',
+                backgroundColor: 'var(--bg)',
+                fontSize: '13px',
                 alignItems: 'center',
-                padding: '16px 0',
-                borderBottom: '1px solid var(--border)',
-                transition: 'opacity 0.2s ease',
+                transition: 'background 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--bg2)')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--bg)')}
             >
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'baseline' }}>
-                <span style={{ fontSize: '11px', letterSpacing: '2px', color: 'var(--text2)', fontFamily: 'monospace' }}>
-                  {order.order_number}
-                </span>
-                <span style={{ fontSize: '12px', fontWeight: 300 }}>
-                  {order.customer_name}
-                </span>
-                <span style={{ fontSize: '11px', color: 'var(--text2)' }}>
-                  {order.product?.code} / {order.size}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'baseline' }}>
-                <span style={{ fontSize: '11px', color: 'var(--text2)' }}>
-                  {formatPrice(order.total_price)}
-                </span>
-                <span style={{
-                  fontSize: '9px',
-                  letterSpacing: '2px',
-                  textTransform: 'uppercase',
-                  color: order.status === 'cancelled' ? 'var(--text3)' : 'var(--text2)',
-                }}>
-                  {STATUS_LABELS[order.status]}
-                </span>
-                <span style={{ fontSize: '10px', color: 'var(--text3)' }}>
-                  {formatDate(order.created_at)}
-                </span>
-              </div>
+              <span style={{ fontFamily: 'monospace', fontSize: '12px' }}>{order.order_number}</span>
+              <span>{order.customer_name}</span>
+              <span style={{ color: 'var(--text2)', fontSize: '12px' }}>{order.product?.code || '-'}</span>
+              <span style={{ color: 'var(--text2)' }}>{order.size}</span>
+              <span style={{ textAlign: 'right' }}>{order.total_price.toLocaleString()}원</span>
+              <span style={{
+                fontSize: '10px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                color: order.status === 'cancelled' ? '#c44' : order.status === 'delivered' ? '#4a8' : 'var(--text2)',
+              }}>
+                {order.status}
+              </span>
+              <span style={{ color: 'var(--text2)', fontSize: '12px' }}>
+                {new Date(order.created_at).toLocaleDateString('ko-KR')}
+              </span>
             </Link>
           ))}
         </div>

@@ -1,54 +1,53 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import type { Order } from '../../types';
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: '입금대기',
-  paid: '입금확인',
-  shipped: '배송중',
-  delivered: '배송완료',
-  cancelled: '취소',
-};
+const STATUS_LIST = ['pending', 'paid', 'shipped', 'delivered'] as const;
 
-const STATUS_FLOW = ['pending', 'paid', 'shipped', 'delivered'];
+function formatDate(d: string | null) {
+  if (!d) return '-';
+  return new Date(d).toLocaleString('ko-KR');
+}
 
 export default function OrderDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    checkAuth();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) navigate('/admin/login');
+    });
+  }, [navigate]);
+
+  useEffect(() => {
+    async function fetchOrder() {
+      const { data } = await supabase
+        .from('orders')
+        .select('*, product:products(*)')
+        .eq('id', id)
+        .single();
+      setOrder(data);
+      setLoading(false);
+    }
     fetchOrder();
   }, [id]);
 
-  async function checkAuth() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) navigate('/admin/login');
-  }
-
-  async function fetchOrder() {
-    if (!id) return;
-    const { data } = await supabase
-      .from('orders')
-      .select('*, product:products(*)')
-      .eq('id', id)
-      .single();
-    setOrder(data);
-    setLoading(false);
-  }
-
-  async function updateStatus(newStatus: string) {
-    if (!order) return;
+  async function changeStatus(newStatus: string) {
+    if (!order || updating) return;
+    setUpdating(true);
 
     const updates: Record<string, unknown> = { status: newStatus };
+
     if (newStatus === 'paid') updates.paid_at = new Date().toISOString();
     if (newStatus === 'shipped') updates.shipped_at = new Date().toISOString();
+
     if (newStatus === 'cancelled') {
       updates.cancelled_at = new Date().toISOString();
-      // Restore stock
+      // Restore product stock
       if (order.product) {
         await supabase
           .from('products')
@@ -57,145 +56,145 @@ export default function OrderDetail() {
       }
     }
 
-    await supabase
+    const { data } = await supabase
       .from('orders')
       .update(updates)
-      .eq('id', order.id);
+      .eq('id', order.id)
+      .select('*, product:products(*)')
+      .single();
 
-    fetchOrder();
+    if (data) setOrder(data);
+    setUpdating(false);
   }
 
-  const formatDate = (d: string | null) => d ? new Date(d).toLocaleString('ko-KR') : '-';
-  const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
+  if (loading) return <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
+  if (!order) return <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text2)' }}>Order not found.</div>;
 
-  if (loading) return <div style={{ minHeight: '100vh' }} />;
-  if (!order) return null;
+  const infoStyle: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: '120px 1fr',
+    gap: '8px 16px',
+    fontSize: '13px',
+    lineHeight: '2',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    color: 'var(--text2)',
+    fontSize: '12px',
+  };
 
   return (
-    <div style={{ padding: '40px', maxWidth: '640px', margin: '0 auto' }}>
-      <Link
-        to="/admin"
-        style={{
-          fontSize: '10px',
-          letterSpacing: '3px',
-          textTransform: 'uppercase',
-          color: 'var(--text2)',
-          marginBottom: '48px',
-          display: 'inline-block',
-        }}
-      >
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)', padding: '24px', maxWidth: '720px', margin: '0 auto' }}>
+      {/* Back */}
+      <Link to="/admin" style={{ fontSize: '12px', color: 'var(--text2)', letterSpacing: '2px', textTransform: 'uppercase' }}>
         &larr; Orders
       </Link>
 
-      <div style={{ marginBottom: '32px' }}>
-        <span style={{
-          fontSize: '11px',
-          letterSpacing: '2px',
-          color: 'var(--text2)',
-          fontFamily: 'monospace',
-        }}>
-          {order.order_number}
-        </span>
-      </div>
-
-      {/* Status */}
-      <div style={{
-        padding: '24px 0',
-        borderBottom: '1px solid var(--border)',
-        marginBottom: '24px',
+      {/* Order number */}
+      <h1 style={{
+        fontFamily: 'monospace',
+        fontSize: '20px',
+        fontWeight: 400,
+        marginTop: '24px',
+        marginBottom: '8px',
       }}>
-        <span className="label" style={{ marginBottom: '16px', display: 'block' }}>상태</span>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          {STATUS_FLOW.map(s => (
-            <button
-              key={s}
-              onClick={() => updateStatus(s)}
-              style={{
-                padding: '8px 16px',
-                fontSize: '10px',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                border: order.status === s ? '1px solid var(--text)' : '1px solid var(--border)',
-                color: order.status === s ? 'var(--text)' : 'var(--text2)',
-                backgroundColor: 'transparent',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {STATUS_LABELS[s]}
-            </button>
-          ))}
-          {order.status !== 'cancelled' && (
-            <button
-              onClick={() => {
-                if (confirm('주문을 취소하시겠습니까?')) updateStatus('cancelled');
-              }}
-              style={{
-                padding: '8px 16px',
-                fontSize: '10px',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                border: '1px solid var(--border)',
-                color: 'var(--text3)',
-                backgroundColor: 'transparent',
-              }}
-            >
-              취소
-            </button>
-          )}
-          {order.status === 'cancelled' && (
-            <span style={{
-              padding: '8px 16px',
-              fontSize: '10px',
+        {order.order_number}
+      </h1>
+
+      <span style={{
+        display: 'inline-block',
+        fontSize: '10px',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        padding: '4px 10px',
+        border: '1px solid var(--border)',
+        color: order.status === 'cancelled' ? '#c44' : order.status === 'delivered' ? '#4a8' : 'var(--text2)',
+        marginBottom: '32px',
+      }}>
+        {order.status}
+      </span>
+
+      {/* Status buttons */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '40px', flexWrap: 'wrap' }}>
+        {STATUS_LIST.map(s => (
+          <button
+            key={s}
+            onClick={() => changeStatus(s)}
+            disabled={updating || order.status === s || order.status === 'cancelled'}
+            style={{
+              fontSize: '11px',
               letterSpacing: '2px',
-              color: 'var(--text3)',
-            }}>
-              취소됨
-            </span>
-          )}
-        </div>
+              textTransform: 'uppercase',
+              padding: '8px 16px',
+              border: '1px solid',
+              borderColor: order.status === s ? 'var(--text)' : 'var(--border)',
+              color: order.status === s ? 'var(--text)' : 'var(--text2)',
+              backgroundColor: order.status === s ? 'var(--bg2)' : 'transparent',
+              opacity: (updating || order.status === 'cancelled') ? 0.4 : 1,
+              cursor: (updating || order.status === s || order.status === 'cancelled') ? 'default' : 'pointer',
+            }}
+          >
+            {s}
+          </button>
+        ))}
+        <button
+          onClick={() => {
+            if (confirm('Cancel this order? Stock will be restored.')) changeStatus('cancelled');
+          }}
+          disabled={updating || order.status === 'cancelled'}
+          style={{
+            fontSize: '11px',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            padding: '8px 16px',
+            border: '1px solid',
+            borderColor: order.status === 'cancelled' ? '#c44' : 'var(--border)',
+            color: '#c44',
+            backgroundColor: 'transparent',
+            opacity: (updating || order.status === 'cancelled') ? 0.4 : 1,
+            cursor: (updating || order.status === 'cancelled') ? 'default' : 'pointer',
+          }}
+        >
+          Cancel
+        </button>
       </div>
 
-      {/* Product */}
-      <div style={{
-        paddingBottom: '24px',
-        borderBottom: '1px solid var(--border)',
-        marginBottom: '24px',
-      }}>
-        <span className="label" style={{ marginBottom: '12px', display: 'block' }}>제품</span>
-        <div style={{ fontSize: '13px', fontWeight: 300, lineHeight: '2' }}>
-          <div>{order.product?.name} ({order.product?.code})</div>
-          <div>{order.size} / {order.quantity}개</div>
-          <div>{formatPrice(order.total_price)}</div>
-        </div>
+      {/* Product info */}
+      <p className="label" style={{ marginBottom: '12px' }}>Product</p>
+      <div style={{ ...infoStyle, marginBottom: '32px' }}>
+        <span style={labelStyle}>Code</span><span>{order.product?.code || '-'}</span>
+        <span style={labelStyle}>Name</span><span>{order.product?.name || '-'}</span>
+        <span style={labelStyle}>Size</span><span>{order.size}</span>
+        <span style={labelStyle}>Quantity</span><span>{order.quantity}</span>
+        <span style={labelStyle}>Total</span><span>{order.total_price.toLocaleString()}원</span>
       </div>
 
-      {/* Customer */}
-      <div style={{
-        paddingBottom: '24px',
-        borderBottom: '1px solid var(--border)',
-        marginBottom: '24px',
-      }}>
-        <span className="label" style={{ marginBottom: '12px', display: 'block' }}>주문자</span>
-        <div style={{ fontSize: '13px', fontWeight: 300, lineHeight: '2' }}>
-          <div>{order.customer_name}</div>
-          <div>{order.customer_phone}</div>
-          <div>{order.customer_address} {order.customer_address_detail}</div>
-          {order.delivery_memo && <div style={{ color: 'var(--text2)' }}>{order.delivery_memo}</div>}
-        </div>
+      {/* Customer info */}
+      <p className="label" style={{ marginBottom: '12px' }}>Customer</p>
+      <div style={{ ...infoStyle, marginBottom: '32px' }}>
+        <span style={labelStyle}>Name</span><span>{order.customer_name}</span>
+        <span style={labelStyle}>Email</span><span>{order.customer_email}</span>
+        <span style={labelStyle}>Phone</span><span>{order.customer_phone}</span>
+        <span style={labelStyle}>Address</span><span>{order.customer_address} {order.customer_address_detail || ''}</span>
+        <span style={labelStyle}>Delivery Memo</span><span>{order.delivery_memo || '-'}</span>
       </div>
 
-      {/* Payment */}
-      <div style={{
-        paddingBottom: '24px',
-        marginBottom: '24px',
-      }}>
-        <span className="label" style={{ marginBottom: '12px', display: 'block' }}>입금</span>
-        <div style={{ fontSize: '13px', fontWeight: 300, lineHeight: '2' }}>
-          <div>입금자명: {order.depositor_name}</div>
-          <div>주문일시: {formatDate(order.created_at)}</div>
-          <div>입금확인: {formatDate(order.paid_at)}</div>
-          <div>배송시작: {formatDate(order.shipped_at)}</div>
-        </div>
+      {/* Payment info */}
+      <p className="label" style={{ marginBottom: '12px' }}>Payment</p>
+      <div style={{ ...infoStyle, marginBottom: '32px' }}>
+        <span style={labelStyle}>Depositor</span><span>{order.depositor_name}</span>
+        <span style={labelStyle}>Amount</span><span>{order.total_price.toLocaleString()}원</span>
+      </div>
+
+      {/* Timestamps */}
+      <p className="label" style={{ marginBottom: '12px' }}>Timestamps</p>
+      <div style={{ ...infoStyle, marginBottom: '32px' }}>
+        <span style={labelStyle}>Created</span><span>{formatDate(order.created_at)}</span>
+        <span style={labelStyle}>Paid</span><span>{formatDate(order.paid_at)}</span>
+        <span style={labelStyle}>Shipped</span><span>{formatDate(order.shipped_at)}</span>
+        {order.cancelled_at && (
+          <><span style={labelStyle}>Cancelled</span><span>{formatDate(order.cancelled_at)}</span></>
+        )}
       </div>
     </div>
   );

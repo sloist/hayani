@@ -19,6 +19,7 @@ export interface Order {
   size: string;
   quantity: number;
   total_price: number;
+  customer_email: string;
   customer_name: string;
   customer_phone: string;
   customer_address: string;
@@ -34,6 +35,7 @@ export interface Order {
 }
 
 export interface OrderFormData {
+  customer_email: string;
   customer_name: string;
   customer_phone: string;
   customer_address: string;
