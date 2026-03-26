@@ -97,6 +97,14 @@ export default function OrderCheck() {
           <span style={{ fontSize: '14px', fontWeight: 500 }}>{formatPrice(order.total_price)}</span>
         </div>
 
+        {/* Tracking info */}
+        {order.tracking_company && order.tracking_number && (
+          <div style={{ padding: '16px', backgroundColor: 'var(--bg2)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '11px', letterSpacing: '2px', color: 'var(--text2)', fontWeight: 400 }}>{order.tracking_company}</span>
+            <span style={{ fontSize: '14px', fontWeight: 500, letterSpacing: '1px' }}>{order.tracking_number}</span>
+          </div>
+        )}
+
         <div style={{ fontSize: '12px', color: 'var(--text2)', fontWeight: 300 }}>
           {new Date(order.created_at).toLocaleDateString('ko-KR')}
         </div>

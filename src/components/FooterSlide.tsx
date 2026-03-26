@@ -54,7 +54,7 @@ export default function FooterSlide() {
 
       <div style={{ marginTop: '60px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: '24px' }}>
-          <a href="mailto:hello@hayani.kr" style={{ ...linkStyle, textDecoration: 'none' }}>
+          <a href="mailto:white@hayani.kr" style={{ ...linkStyle, textDecoration: 'none' }}>
             Contact
           </a>
           <button onClick={() => navigate('/order/check')} style={linkStyle}>
@@ -89,7 +89,7 @@ export default function FooterSlide() {
           <span>하야니 · 대표 (미등록)</span><br />
           <span>사업자등록번호 (미등록) · 통신판매업 신고번호 (미등록)</span><br />
           <span>사업장 주소 (미등록)</span><br />
-          <span>hello@hayani.kr</span>
+          <span>white@hayani.kr</span>
         </div>
       </div>
     </div>

@@ -101,7 +101,7 @@ export default function BoxOrder() {
 
       saveCustomer(form);
       clearBox();
-      navigate(`/box/complete?order_number=${orderNumber}`);
+      navigate(`/box/complete?order_number=${orderNumber}&total=${total}`);
     } catch (err) {
       submittedRef.current = false;
       setSubmitting(false);

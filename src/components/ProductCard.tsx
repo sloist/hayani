@@ -6,6 +6,8 @@ interface Props {
 }
 
 export default function ProductCard({ product, onClick }: Props) {
+  const isSoldOut = product.stock <= 0;
+
   return (
     <button
       onClick={onClick}
@@ -32,6 +34,7 @@ export default function ProductCard({ product, onClick }: Props) {
           justifyContent: 'center',
           overflow: 'hidden',
           transition: 'opacity 0.4s ease',
+          position: 'relative',
         }}
         onMouseEnter={e => { e.currentTarget.style.opacity = '0.92'; }}
         onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
@@ -51,6 +54,21 @@ export default function ProductCard({ product, onClick }: Props) {
             color: 'var(--text3)',
           }}>
             {product.code}
+          </span>
+        )}
+        {isSoldOut && (
+          <span style={{
+            position: 'absolute',
+            bottom: '16px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: '9px',
+            letterSpacing: '3px',
+            textTransform: 'uppercase',
+            color: 'var(--text3)',
+            fontWeight: 400,
+          }}>
+            Sold Out
           </span>
         )}
       </div>

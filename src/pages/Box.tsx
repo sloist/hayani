@@ -21,7 +21,6 @@ export default function Box() {
         .from('products')
         .select('*')
         .eq('is_active', true)
-        .gt('stock', 0)
         .order('sort_order');
       setProducts(data || []);
       if (data && data.length > 0) setSelectedProduct(data[0]);
@@ -148,45 +147,53 @@ export default function Box() {
             {selectedProduct.name}
           </h2>
 
-          {/* Size selection as 1, 2, 3 */}
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-            {(selectedProduct.sizes || []).map((size, i) => (
+          {selectedProduct.stock <= 0 ? (
+            <span style={{ fontSize: '11px', letterSpacing: '3px', color: 'var(--text3)', fontWeight: 400, textTransform: 'uppercase' }}>
+              Sold Out
+            </span>
+          ) : (
+            <>
+              {/* Size selection as 1, 2, 3 */}
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+                {(selectedProduct.sizes || []).map((size, i) => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
+                    style={{
+                      minWidth: '40px', height: '40px', padding: '0 10px',
+                      border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
+                      backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
+                      fontSize: '13px', fontWeight: 500,
+                      color: selectedSize === size ? 'var(--bg)' : 'var(--text2)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              {/* Add button */}
               <button
-                key={size}
-                onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
+                onClick={handleAdd}
+                disabled={!selectedSize}
                 style={{
-                  minWidth: '40px', height: '40px', padding: '0 10px',
-                  border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
-                  backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
-                  fontSize: '13px', fontWeight: 500,
-                  color: selectedSize === size ? 'var(--bg)' : 'var(--text2)',
+                  padding: '12px 32px',
+                  backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
+                  color: selectedSize ? 'var(--bg)' : 'var(--text3)',
+                  fontSize: '10px',
+                  letterSpacing: '4px',
+                  textTransform: 'uppercase',
+                  fontWeight: 500,
+                  cursor: selectedSize ? 'pointer' : 'default',
                   transition: 'all 0.2s ease',
+                  marginTop: '4px',
                 }}
               >
-                {i + 1}
+                BOX
               </button>
-            ))}
-          </div>
-
-          {/* Add button */}
-          <button
-            onClick={handleAdd}
-            disabled={!selectedSize}
-            style={{
-              padding: '12px 32px',
-              backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
-              color: selectedSize ? 'var(--bg)' : 'var(--text3)',
-              fontSize: '10px',
-              letterSpacing: '4px',
-              textTransform: 'uppercase',
-              fontWeight: 500,
-              cursor: selectedSize ? 'pointer' : 'default',
-              transition: 'all 0.2s ease',
-              marginTop: '4px',
-            }}
-          >
-            BOX
-          </button>
+            </>
+          )}
         </div>
       )}
 

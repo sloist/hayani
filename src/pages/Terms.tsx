@@ -24,7 +24,10 @@ export default function Terms() {
 
         <section>
           <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Exchange & Return</h2>
-          <p>프리오더 특성상 단순 변심에 의한 교환 및 반품은 불가합니다. 상품 하자 시 수령 후 7일 이내 hello@hayani.kr로 문의해 주세요.</p>
+          <p>수령 후 7일 이내 교환 및 환불이 가능합니다.</p>
+          <p>착용 또는 세탁한 제품은 교환 및 환불이 불가합니다.</p>
+          <p>반송 배송비는 구매자 부담입니다.</p>
+          <p>교환/환불 접수: white@hayani.kr</p>
         </section>
 
         <section>

@@ -37,6 +37,9 @@ export interface Order {
   delivery_memo: string | null;
   depositor_name: string;
   status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+  tracking_company: string | null;
+  tracking_number: string | null;
+  admin_memo: string | null;
   created_at: string;
   paid_at: string | null;
   shipped_at: string | null;
