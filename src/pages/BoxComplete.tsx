@@ -30,7 +30,7 @@ export default function BoxComplete() {
             <div style={{ fontWeight: 500, fontSize: '15px' }}>계좌번호 안내 예정</div>
             <div style={{ fontSize: '12px', color: 'var(--text2)' }}>예금주: 하야니</div>
           </div>
-          {totalPrice && (
+          {totalPrice && !isNaN(Number(totalPrice)) && (
             <div style={{ marginTop: '14px', fontSize: '18px', fontWeight: 500 }}>
               {formatPrice(Number(totalPrice))}
             </div>

@@ -9,13 +9,10 @@ export async function generateOrderNumber(): Promise<string> {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(2);
   const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const prefix = `${yy}${mm}`;
-
-  const { count } = await supabase
-    .from('orders')
-    .select('*', { count: 'exact', head: true })
-    .like('order_number', `${prefix}%`);
-
-  const seq = String((count || 0) + 1).padStart(4, '0');
-  return `${prefix}${seq}`;
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mi = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const rand = String(Math.floor(Math.random() * 100)).padStart(2, '0');
+  return `${yy}${mm}${dd}${hh}${mi}${ss}${rand}`;
 }

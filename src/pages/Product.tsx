@@ -22,8 +22,11 @@ export default function Product() {
     fetch();
   }, [id]);
 
-  if (loading) return <div style={{ height: '100vh' }} />;
-  if (!product) { navigate('/'); return null; }
+  useEffect(() => {
+    if (!loading && !product) navigate('/');
+  }, [loading, product, navigate]);
+
+  if (loading || !product) return <div style={{ height: '100vh' }} />;
 
   const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
   const name = product.name.replace(/^HAYANI\s*/i, '');

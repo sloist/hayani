@@ -57,13 +57,10 @@ export default function BoxOrder() {
     try {
       const orderNumber = await generateOrderNumber();
 
+      // Check stock first
       for (const item of box) {
         const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
         if (!cur || cur.stock < item.quantity) throw new Error(`${item.name} (${item.size}) 재고가 부족합니다.`);
-      }
-      for (const item of box) {
-        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
-        if (cur) await supabase.from('products').update({ stock: cur.stock - item.quantity }).eq('id', item.productId);
       }
 
       const items = box.map(item => ({
@@ -71,6 +68,7 @@ export default function BoxOrder() {
         size: item.size, price: item.price, quantity: item.quantity, image_url: item.imageUrl,
       }));
 
+      // Insert order first — if this fails, stock is untouched
       const { error } = await supabase.from('orders').insert({
         order_number: orderNumber, items, subtotal, shipping_fee: SHIPPING_FEE, total_price: total,
         customer_email: form.customer_email.trim(), customer_name: form.customer_name.trim(),
@@ -80,6 +78,14 @@ export default function BoxOrder() {
         status: 'pending',
       });
       if (error) throw error;
+
+      // Order succeeded — deduct stock (order-first ensures no orphan deductions)
+      for (const item of box) {
+        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
+        if (cur && cur.stock >= item.quantity) {
+          await supabase.from('products').update({ stock: cur.stock - item.quantity }).eq('id', item.productId);
+        }
+      }
 
       saveCustomer(form);
       clearBox();

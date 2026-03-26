@@ -71,10 +71,10 @@ export default function Main() {
   const galleryRef = useRef<GalleryHandle>(null);
   const navigate = useNavigate();
 
-  function handleIndexChange(index: number) {
+  const handleIndexChange = useCallback((index: number) => {
     setCurrentIndex(index);
     sessionStorage.setItem('hayani_slide', String(index));
-  }
+  }, []);
   const savedIndex = Number(sessionStorage.getItem('hayani_slide') || '0');
 
   useEffect(() => {

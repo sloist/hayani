@@ -40,6 +40,7 @@ export default function OrderDetail() {
   }, [navigate]);
 
   useEffect(() => {
+    if (!authed) return;
     async function fetchOrder() {
       const { data } = await supabase
         .from('orders')

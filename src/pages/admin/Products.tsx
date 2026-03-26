@@ -15,6 +15,13 @@ interface ProductForm {
   stock_by_size: string; // JSON string
 }
 
+function parseStockBySize(s: string): Record<string, number> | null {
+  const trimmed = s.trim();
+  if (!trimmed) return null;
+  try { return JSON.parse(trimmed); }
+  catch { alert('사이즈별 재고 JSON 형식이 올바르지 않습니다.'); return null; }
+}
+
 const emptyForm: ProductForm = {
   code: '', name: '', price: '', stock: '', sort_order: '0', specs: '', sizes: '', image_url: '', stock_by_size: '',
 };
@@ -147,7 +154,7 @@ export default function Products() {
       specs: form.specs.split(',').map(s => s.trim()).filter(Boolean),
       sizes: form.sizes.split(',').map(s => s.trim()).filter(Boolean),
       image_url: form.image_url.startsWith('blob:') ? null : (form.image_url.trim() || null),
-      stock_by_size: form.stock_by_size.trim() ? JSON.parse(form.stock_by_size) : null,
+      stock_by_size: parseStockBySize(form.stock_by_size),
     };
 
     if (editingId) {
