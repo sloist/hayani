@@ -19,6 +19,7 @@ export interface OrderItem {
   code: string;
   name: string;
   size: string;
+  size_display?: string;
   price: number;
   quantity: number;
   image_url: string | null;

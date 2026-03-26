@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { sizeToNumber } from '../lib/size';
 import type { Order } from '../types';
 import BackButton from '../components/BackButton';
 
@@ -89,7 +88,7 @@ export default function OrderCheck() {
             {order.items.map((item, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: '13px', fontWeight: 300 }}>
-                  {item.name.replace(/^HAYANI\s*/i, '')} / Size {sizeToNumber(item.size)} / {item.quantity}EA
+                  {item.name.replace(/^HAYANI\s*/i, '')} / Size {item.size_display || item.size} / {item.quantity}EA
                 </span>
                 <span style={{ fontSize: '13px', fontWeight: 500 }}>
                   {formatPrice(item.price * item.quantity)}

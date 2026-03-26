@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase, generateOrderNumber } from '../lib/supabase';
 import { getCounter, clearCounter, type CounterItem } from '../lib/counter';
-import { sizeToNumber } from '../lib/size';
 import type { OrderFormData } from '../types';
 import BackButton from '../components/BackButton';
 import StepIndicator from '../components/StepIndicator';
@@ -61,7 +60,8 @@ export default function Checkout() {
 
       const orderItems = items.map(item => ({
         product_id: item.productId, code: item.code, name: item.name,
-        size: item.size, price: item.price, quantity: item.quantity, image_url: item.imageUrl,
+        size: item.size, size_display: item.sizeDisplay || item.size,
+        price: item.price, quantity: item.quantity, image_url: item.imageUrl,
       }));
 
       const { error } = await supabase.from('orders').insert({
@@ -118,7 +118,7 @@ export default function Checkout() {
               <span style={{ fontSize: '13px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
             <span style={{ fontSize: '10px', color: 'var(--text3)', letterSpacing: '1px', fontWeight: 300 }}>
-              Size {sizeToNumber(item.size)} · {item.quantity}EA
+              Size {item.sizeDisplay || item.size} · {item.quantity}EA
             </span>
           </div>
         ))}

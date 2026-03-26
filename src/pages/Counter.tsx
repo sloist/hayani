@@ -57,7 +57,9 @@ export default function Counter() {
 
   function handleAdd() {
     if (!selectedProduct || !selectedSize) return;
-    addToCounter({ productId: selectedProduct.id, code: selectedProduct.code, name: selectedProduct.name, size: selectedSize, price: selectedProduct.price, quantity: 1, imageUrl: selectedProduct.image_url });
+    const sizeIdx = (selectedProduct.sizes || []).indexOf(selectedSize);
+    const display = selectedSize === 'F' ? 'F' : String(sizeIdx + 1);
+    addToCounter({ productId: selectedProduct.id, code: selectedProduct.code, name: selectedProduct.name, size: selectedSize, sizeDisplay: display, price: selectedProduct.price, quantity: 1, imageUrl: selectedProduct.image_url });
     setSelectedSize('');
   }
 
@@ -172,7 +174,7 @@ export default function Counter() {
                 {counter.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text2)' }}>
-                      {stripName(item.name)} · {sizeToNumber(item.size, products.find(p => p.id === item.productId)?.sizes)} · {item.quantity}EA
+                      {stripName(item.name)} · {item.sizeDisplay || sizeToNumber(item.size, products.find(p => p.id === item.productId)?.sizes)} · {item.quantity}EA
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <span style={{ fontSize: '11px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>

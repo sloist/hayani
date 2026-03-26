@@ -3,6 +3,7 @@ export interface CounterItem {
   code: string;
   name: string;
   size: string;
+  sizeDisplay: string; // "1", "2", "3", "F" etc
   price: number;
   quantity: number;
   imageUrl: string | null;
