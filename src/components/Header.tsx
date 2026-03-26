@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCollectCount } from '../lib/collect';
 
@@ -9,12 +9,30 @@ interface HeaderProps {
 export default function Header({ onLogoClick }: HeaderProps) {
   const navigate = useNavigate();
   const [count, setCount] = useState(getCollectCount);
+  const clickCount = useRef(0);
+  const clickTimer = useRef(0);
 
   useEffect(() => {
     function onUpdate() { setCount(getCollectCount()); }
     window.addEventListener('collect-change', onUpdate);
     return () => window.removeEventListener('collect-change', onUpdate);
   }, []);
+
+  function handleLogoClick() {
+    clickCount.current += 1;
+    clearTimeout(clickTimer.current);
+
+    if (clickCount.current >= 6) {
+      clickCount.current = 0;
+      navigate('/admin/login');
+      return;
+    }
+
+    clickTimer.current = window.setTimeout(() => {
+      onLogoClick?.();
+      clickCount.current = 0;
+    }, 400);
+  }
 
   return (
     <header style={{
@@ -30,7 +48,7 @@ export default function Header({ onLogoClick }: HeaderProps) {
       alignItems: 'center',
     }}>
       <button
-        onClick={onLogoClick}
+        onClick={handleLogoClick}
         style={{
           pointerEvents: 'auto',
           fontFamily: "'Cormorant Garamond', serif",

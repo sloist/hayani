@@ -14,19 +14,23 @@ export default function ProductCard({ product, onClick }: Props) {
       style={{
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '20px',
         cursor: 'pointer',
         background: 'none',
         border: 'none',
         width: '100%',
         height: '100%',
-        padding: 0,
+        padding: '0',
       }}
     >
-      {/* Image area — fills most of the height */}
+      {/* Image area */}
       <div
         style={{
-          flex: 1,
-          width: '100%',
+          width: '80%',
+          maxWidth: '480px',
+          aspectRatio: '3/4',
           backgroundColor: 'var(--bg2)',
           display: 'flex',
           alignItems: 'center',
@@ -46,7 +50,7 @@ export default function ProductCard({ product, onClick }: Props) {
         ) : (
           <span style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 'clamp(32px, 5vw, 48px)',
+            fontSize: 'clamp(28px, 4vw, 42px)',
             fontWeight: 300,
             letterSpacing: '0.12em',
             color: 'var(--text3)',
@@ -56,11 +60,8 @@ export default function ProductCard({ product, onClick }: Props) {
         )}
       </div>
 
-      {/* Label — small strip at bottom */}
-      <div style={{
-        padding: '16px 0',
-        textAlign: 'center',
-      }}>
+      {/* Label */}
+      <div style={{ textAlign: 'center' }}>
         <span style={{
           fontSize: '10px',
           letterSpacing: '4px',

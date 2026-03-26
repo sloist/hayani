@@ -155,7 +155,7 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
               flexShrink: 0,
               width: `${slideWidth}vw`,
               height: '100vh',
-              padding: '80px 6px 0',
+              padding: '80px 8px 60px',
               scrollSnapAlign: 'center',
             }}
           >
