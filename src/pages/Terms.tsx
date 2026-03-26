@@ -19,7 +19,8 @@ export default function Terms() {
 
         <section>
           <h2 style={{ fontSize: '11px', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '16px', fontWeight: 400 }}>Shipping</h2>
-          <p>배송비는 전 상품 ₩4,000이며, 입금 확인 후 순차적으로 발송됩니다. 배송은 CJ대한통운을 이용하며, 발송 후 1~3일 이내 수령 가능합니다.</p>
+          <p>배송비는 전 상품 ₩4,000이며, 입금 확인 후 순차적으로 발송됩니다.</p>
+          <p>배송은 한진택배를 이용하며, 발송 후 1~3일 이내 수령 가능합니다.</p>
         </section>
 
         <section>
