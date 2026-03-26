@@ -57,12 +57,22 @@ export default function BoxOrder() {
     try {
       const orderNumber = await generateOrderNumber();
 
-      // Check stock first
+      // Re-validate stock + price from server (BOX may be stale)
+      let serverSubtotal = 0;
       for (const item of box) {
-        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
-        if (!cur || cur.stock < item.quantity) throw new Error(`${item.name} (${item.size}) 재고가 부족합니다.`);
+        const { data: prod, error: fetchErr } = await supabase.from('products').select('stock, stock_by_size, price, is_active').eq('id', item.productId).single();
+        if (fetchErr || !prod) throw new Error(`${item.name} 상품 정보를 확인할 수 없습니다.`);
+        if (!prod.is_active) throw new Error(`${item.name}은(는) 현재 판매 중이 아닙니다.`);
+        if (prod.stock < item.quantity) throw new Error(`${item.name} 재고가 부족합니다.`);
+        // Check size-specific stock
+        if (prod.stock_by_size && prod.stock_by_size[item.size] !== undefined) {
+          if (prod.stock_by_size[item.size] < item.quantity) throw new Error(`${item.name} (Size ${item.size}) 재고가 부족합니다.`);
+        }
+        serverSubtotal += prod.price * item.quantity;
       }
+      const serverTotal = serverSubtotal + SHIPPING_FEE;
 
+      // Use server-validated prices for order
       const items = box.map(item => ({
         product_id: item.productId, code: item.code, name: item.name,
         size: item.size, price: item.price, quantity: item.quantity, image_url: item.imageUrl,
@@ -70,7 +80,7 @@ export default function BoxOrder() {
 
       // Insert order first — if this fails, stock is untouched
       const { error } = await supabase.from('orders').insert({
-        order_number: orderNumber, items, subtotal, shipping_fee: SHIPPING_FEE, total_price: total,
+        order_number: orderNumber, items, subtotal: serverSubtotal, shipping_fee: SHIPPING_FEE, total_price: serverTotal,
         customer_email: form.customer_email.trim(), customer_name: form.customer_name.trim(),
         customer_phone: form.customer_phone.trim(), customer_address: form.customer_address.trim(),
         customer_address_detail: form.customer_address_detail.trim() || null,
@@ -79,12 +89,15 @@ export default function BoxOrder() {
       });
       if (error) throw error;
 
-      // Order succeeded — deduct stock (order-first ensures no orphan deductions)
+      // Order succeeded — deduct stock + stock_by_size
       for (const item of box) {
-        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.productId).single();
-        if (cur && cur.stock >= item.quantity) {
-          await supabase.from('products').update({ stock: cur.stock - item.quantity }).eq('id', item.productId);
+        const { data: cur } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.productId).single();
+        if (!cur) continue;
+        const updates: Record<string, unknown> = { stock: Math.max(0, cur.stock - item.quantity) };
+        if (cur.stock_by_size && cur.stock_by_size[item.size] !== undefined) {
+          updates.stock_by_size = { ...cur.stock_by_size, [item.size]: Math.max(0, cur.stock_by_size[item.size] - item.quantity) };
         }
+        await supabase.from('products').update(updates).eq('id', item.productId);
       }
 
       saveCustomer(form);

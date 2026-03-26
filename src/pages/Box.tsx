@@ -19,8 +19,18 @@ export default function Box() {
   useEffect(() => {
     async function fetchProducts() {
       const { data } = await supabase.from('products').select('*').eq('is_active', true).order('sort_order');
-      setProducts(data || []);
-      if (data && data.length > 0) setSelectedProduct(data[0]);
+      const prods = data || [];
+      setProducts(prods);
+      if (prods.length > 0) setSelectedProduct(prods[0]);
+
+      // Clean stale BOX items (inactive or removed products)
+      const activeIds = new Set(prods.map(p => p.id));
+      const currentBox = getBox();
+      const staleItems = currentBox.filter(item => !activeIds.has(item.productId));
+      for (const item of staleItems) {
+        removeFromBox(item.productId, item.size);
+      }
+
       setLoading(false);
     }
     fetchProducts();

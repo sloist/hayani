@@ -84,26 +84,31 @@ export default function OrderDetail() {
       setShowTrackingForm(false);
     }
 
-    // Cancel: restore stock only if not already cancelled
+    // Cancel: restore stock + stock_by_size only if not already cancelled
     if (newStatus === 'cancelled' && order.status !== 'cancelled') {
       updates.cancelled_at = new Date().toISOString();
       if (order.items) {
         for (const item of order.items) {
-          const { data: cur } = await supabase.from('products').select('stock').eq('id', item.product_id).single();
+          const { data: cur } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.product_id).single();
           if (cur) {
-            await supabase.from('products').update({ stock: cur.stock + item.quantity }).eq('id', item.product_id);
+            const upd: Record<string, unknown> = { stock: cur.stock + item.quantity };
+            if (cur.stock_by_size && cur.stock_by_size[item.size] !== undefined) {
+              upd.stock_by_size = { ...cur.stock_by_size, [item.size]: cur.stock_by_size[item.size] + item.quantity };
+            }
+            await supabase.from('products').update(upd).eq('id', item.product_id);
           }
         }
       }
     }
 
-    const { data } = await supabase
+    const { data, error: updateErr } = await supabase
       .from('orders')
       .update(updates)
       .eq('id', order.id)
       .select('*')
       .single();
 
+    if (updateErr) alert(`상태 변경 실패: ${updateErr.message}`);
     if (data) setOrder(data);
     setUpdating(false);
   }
@@ -111,12 +116,13 @@ export default function OrderDetail() {
   async function saveMemo() {
     if (!order) return;
     setMemoSaving(true);
-    const { data } = await supabase
+    const { data, error: memoErr } = await supabase
       .from('orders')
       .update({ admin_memo: adminMemo.trim() || null })
       .eq('id', order.id)
       .select('*')
       .single();
+    if (memoErr) alert(`메모 저장 실패: ${memoErr.message}`);
     if (data) setOrder(data);
     setMemoSaving(false);
   }

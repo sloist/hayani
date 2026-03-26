@@ -106,9 +106,13 @@ export default function Dashboard() {
         const order = orders.find(o => o.id === id);
         if (order && order.status !== 'cancelled' && order.items) {
           for (const item of order.items) {
-            const { data: cur } = await supabase.from('products').select('stock').eq('id', item.product_id).single();
+            const { data: cur } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.product_id).single();
             if (cur) {
-              await supabase.from('products').update({ stock: cur.stock + item.quantity }).eq('id', item.product_id);
+              const upd: Record<string, unknown> = { stock: cur.stock + item.quantity };
+              if (cur.stock_by_size && cur.stock_by_size[item.size] !== undefined) {
+                upd.stock_by_size = { ...cur.stock_by_size, [item.size]: cur.stock_by_size[item.size] + item.quantity };
+              }
+              await supabase.from('products').update(upd).eq('id', item.product_id);
             }
           }
         }

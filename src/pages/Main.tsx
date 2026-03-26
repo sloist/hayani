@@ -79,11 +79,12 @@ export default function Main() {
 
   useEffect(() => {
     async function fetchProducts() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('is_active', true)
         .order('sort_order');
+      if (error) console.error('Failed to load products:', error);
       setProducts(data || []);
       setLoading(false);
     }
