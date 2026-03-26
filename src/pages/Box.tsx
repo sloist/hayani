@@ -18,7 +18,8 @@ export default function Box() {
 
   useEffect(() => {
     async function fetchProducts() {
-      const { data } = await supabase.from('products').select('*').eq('is_active', true).order('sort_order');
+      const { data, error } = await supabase.from('products').select('*').eq('is_active', true).order('sort_order');
+      if (error) console.error('Products fetch failed:', error);
       const prods = data || [];
       setProducts(prods);
       if (prods.length > 0) setSelectedProduct(prods[0]);

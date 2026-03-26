@@ -15,7 +15,8 @@ export default function Product() {
   useEffect(() => {
     async function fetch() {
       if (!id) return;
-      const { data } = await supabase.from('products').select('*').eq('id', id).single();
+      const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+      if (error) console.error('Product fetch failed:', error);
       setProduct(data);
       setLoading(false);
     }

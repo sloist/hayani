@@ -91,13 +91,15 @@ export default function BoxOrder() {
 
       // Order succeeded — deduct stock + stock_by_size
       for (const item of box) {
-        const { data: cur } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.productId).single();
+        const { data: cur, error: fetchErr } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.productId).single();
+        if (fetchErr) { console.error('Stock fetch failed:', item.productId, fetchErr); continue; }
         if (!cur) continue;
-        const updates: Record<string, unknown> = { stock: Math.max(0, cur.stock - item.quantity) };
+        const upd: Record<string, unknown> = { stock: Math.max(0, cur.stock - item.quantity) };
         if (cur.stock_by_size && cur.stock_by_size[item.size] !== undefined) {
-          updates.stock_by_size = { ...cur.stock_by_size, [item.size]: Math.max(0, cur.stock_by_size[item.size] - item.quantity) };
+          upd.stock_by_size = { ...cur.stock_by_size, [item.size]: Math.max(0, cur.stock_by_size[item.size] - item.quantity) };
         }
-        await supabase.from('products').update(updates).eq('id', item.productId);
+        const { error: updErr } = await supabase.from('products').update(upd).eq('id', item.productId);
+        if (updErr) console.error('Stock deduct failed:', item.productId, updErr);
       }
 
       saveCustomer(form);

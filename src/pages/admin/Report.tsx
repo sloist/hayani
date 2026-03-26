@@ -13,11 +13,12 @@ export default function Report() {
   useEffect(() => {
     if (!authed) return;
     async function fetch() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('orders')
         .select('*')
         .neq('status', 'cancelled')
         .order('created_at', { ascending: false });
+      if (error) console.error('Report data fetch failed:', error);
       setOrders(data || []);
       setLoading(false);
     }

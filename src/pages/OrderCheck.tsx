@@ -31,11 +31,12 @@ export default function OrderCheck() {
     // Normalize phone: remove dashes, spaces, dots
     const normalizedPhone = phone.trim().replace(/[-\s.]/g, '');
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('orders')
       .select('*')
       .ilike('customer_email', email.trim())
       .order('created_at', { ascending: false });
+    if (error) { console.error('Order check failed:', error); setSearched(true); setLoading(false); return; }
 
     // Filter by phone client-side (handles format differences)
     const results = (data || []).filter(o =>

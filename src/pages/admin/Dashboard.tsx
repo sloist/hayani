@@ -29,10 +29,11 @@ export default function Dashboard() {
   useEffect(() => {
     if (!authed) return;
     async function fetchOrders() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
+      if (error) console.error('Orders fetch failed:', error);
       setOrders(data || []);
       setLoading(false);
     }
@@ -100,25 +101,31 @@ export default function Dashboard() {
         const order = orders.find(o => o.id === id);
         if (order && order.status !== 'cancelled' && order.items) {
           for (const item of order.items) {
-            const { data: cur } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.product_id).single();
+            const { data: cur, error: fe } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.product_id).single();
+            if (fe) { console.error('Stock restore fetch failed:', item.product_id, fe); continue; }
             if (cur) {
               const upd: Record<string, unknown> = { stock: cur.stock + item.quantity };
               if (cur.stock_by_size && cur.stock_by_size[item.size] !== undefined) {
                 upd.stock_by_size = { ...cur.stock_by_size, [item.size]: cur.stock_by_size[item.size] + item.quantity };
               }
-              await supabase.from('products').update(upd).eq('id', item.product_id);
+              const { error: ue } = await supabase.from('products').update(upd).eq('id', item.product_id);
+              if (ue) console.error('Stock restore update failed:', item.product_id, ue);
             }
           }
         }
       }
     }
 
+    let batchFailed = 0;
     for (const id of selected) {
-      await supabase.from('orders').update(updates).eq('id', id);
+      const { error: be } = await supabase.from('orders').update(updates).eq('id', id);
+      if (be) { console.error('Batch status update failed:', id, be); batchFailed++; }
     }
+    if (batchFailed > 0) alert(`${batchFailed}건 상태 변경 실패`);
 
     // Refresh
-    const { data } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    const { data, error: re } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    if (re) console.error('Orders refresh failed:', re);
     setOrders(data || []);
     setSelected(new Set());
     setBatchUpdating(false);

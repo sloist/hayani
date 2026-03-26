@@ -41,10 +41,11 @@ export default function Products() {
   const authed = useAdminAuth();
 
   async function fetchProducts() {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('products')
       .select('*')
       .order('sort_order');
+    if (error) console.error('Products fetch failed:', error);
     setProducts(data || []);
     setLoading(false);
   }
@@ -106,8 +107,9 @@ export default function Products() {
     if (editingId) {
       const url = await uploadImage(file, editingId);
       if (url) {
-        await supabase.from('products').update({ image_url: url }).eq('id', editingId);
-        updateForm('image_url', url);
+        const { error: imgErr } = await supabase.from('products').update({ image_url: url }).eq('id', editingId);
+        if (imgErr) alert(`이미지 저장 실패: ${imgErr.message}`);
+        else updateForm('image_url', url);
       }
     } else {
       // For new products, create a temporary preview via object URL
@@ -152,15 +154,17 @@ export default function Products() {
     };
 
     if (editingId) {
-      await supabase.from('products').update(payload).eq('id', editingId);
+      const { error: ue } = await supabase.from('products').update(payload).eq('id', editingId);
+      if (ue) { alert(`저장 실패: ${ue.message}`); setSaving(false); return; }
     } else {
-      const { data: newProduct } = await supabase.from('products').insert(payload).select().single();
+      const { data: newProduct, error: ie } = await supabase.from('products').insert(payload).select().single();
+      if (ie) { alert(`추가 실패: ${ie.message}`); setSaving(false); return; }
 
-      // Upload pending file for newly created product
       if (newProduct && pendingFileRef.current) {
         const url = await uploadImage(pendingFileRef.current, newProduct.id);
         if (url) {
-          await supabase.from('products').update({ image_url: url }).eq('id', newProduct.id);
+          const { error: imgErr } = await supabase.from('products').update({ image_url: url }).eq('id', newProduct.id);
+          if (imgErr) console.error('Image save failed:', imgErr);
         }
         pendingFileRef.current = null;
       }
@@ -173,12 +177,14 @@ export default function Products() {
 
   async function handleDelete(p: Product) {
     if (!confirm(`"${p.name}" 을(를) 삭제하시겠습니까?`)) return;
-    await supabase.from('products').delete().eq('id', p.id);
+    const { error } = await supabase.from('products').delete().eq('id', p.id);
+    if (error) alert(`삭제 실패: ${error.message}`);
     fetchProducts();
   }
 
   async function toggleActive(p: Product) {
-    await supabase.from('products').update({ is_active: !p.is_active }).eq('id', p.id);
+    const { error } = await supabase.from('products').update({ is_active: !p.is_active }).eq('id', p.id);
+    if (error) alert(`상태 변경 실패: ${error.message}`);
     fetchProducts();
   }
 

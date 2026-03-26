@@ -35,11 +35,12 @@ export default function OrderDetail() {
   useEffect(() => {
     if (!authed) return;
     async function fetchOrder() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('id', id)
         .single();
+      if (error) console.error('Order fetch failed:', error);
       setOrder(data);
       if (data) {
         setTrackingCompany(data.tracking_company || '');
@@ -82,13 +83,15 @@ export default function OrderDetail() {
       updates.cancelled_at = new Date().toISOString();
       if (order.items) {
         for (const item of order.items) {
-          const { data: cur } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.product_id).single();
+          const { data: cur, error: fe } = await supabase.from('products').select('stock, stock_by_size').eq('id', item.product_id).single();
+          if (fe) { console.error('Stock restore fetch failed:', item.product_id, fe); continue; }
           if (cur) {
             const upd: Record<string, unknown> = { stock: cur.stock + item.quantity };
             if (cur.stock_by_size && cur.stock_by_size[item.size] !== undefined) {
               upd.stock_by_size = { ...cur.stock_by_size, [item.size]: cur.stock_by_size[item.size] + item.quantity };
             }
-            await supabase.from('products').update(upd).eq('id', item.product_id);
+            const { error: ue } = await supabase.from('products').update(upd).eq('id', item.product_id);
+            if (ue) console.error('Stock restore update failed:', item.product_id, ue);
           }
         }
       }
