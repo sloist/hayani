@@ -7,7 +7,9 @@ import PageTransition from '../components/PageTransition';
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const totalSlides = useRef(0);
 
   useEffect(() => {
     async function fetch() {
@@ -17,6 +19,7 @@ export default function Home() {
         .eq('is_active', true)
         .order('sort_order');
       setProducts(data || []);
+      totalSlides.current = (data?.length || 0) + 1;
       setLoading(false);
     }
     fetch();
@@ -27,17 +30,47 @@ export default function Home() {
     if (!el) return;
 
     function onWheel(e: WheelEvent) {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        el!.scrollLeft += e.deltaY * 1.5;
+      e.preventDefault();
+      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+
+      if (Math.abs(delta) > 10) {
+        const direction = delta > 0 ? 1 : -1;
+        const nextIndex = Math.max(0, Math.min(currentIndex + direction, totalSlides.current - 1));
+        if (nextIndex !== currentIndex) {
+          setCurrentIndex(nextIndex);
+          el!.scrollTo({
+            left: nextIndex * window.innerWidth,
+            behavior: 'smooth',
+          });
+        }
       }
     }
 
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
+  }, [currentIndex]);
+
+  // Update index on scroll (for touch/drag)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let timeout: number;
+    function onScroll() {
+      clearTimeout(timeout);
+      timeout = window.setTimeout(() => {
+        const index = Math.round(el!.scrollLeft / window.innerWidth);
+        setCurrentIndex(index);
+      }, 100);
+    }
+
+    el.addEventListener('scroll', onScroll);
+    return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
   if (loading) return <div style={{ minHeight: '100vh' }} />;
+
+  const total = products.length + 1;
 
   return (
     <PageTransition>
@@ -46,9 +79,8 @@ export default function Home() {
         style={{
           height: '100vh',
           display: 'flex',
-          overflowX: 'auto',
+          overflowX: 'hidden',
           overflowY: 'hidden',
-          scrollSnapType: 'x mandatory',
         }}
       >
         {products.map(product => (
@@ -62,7 +94,6 @@ export default function Home() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              scrollSnapAlign: 'start',
               position: 'relative',
             }}
           >
@@ -113,10 +144,9 @@ export default function Home() {
               )}
             </div>
 
-            {/* Product code - bottom center */}
             <span style={{
               position: 'absolute',
-              bottom: '40px',
+              bottom: '60px',
               left: '50%',
               transform: 'translateX(-50%)',
               fontSize: '9px',
@@ -131,7 +161,7 @@ export default function Home() {
             {product.stock <= 0 && (
               <span style={{
                 position: 'absolute',
-                bottom: '24px',
+                bottom: '40px',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 fontSize: '8px',
@@ -145,7 +175,7 @@ export default function Home() {
           </Link>
         ))}
 
-        {/* Last slide: About */}
+        {/* Last slide */}
         <div style={{
           flexShrink: 0,
           width: '100vw',
@@ -154,7 +184,6 @@ export default function Home() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          scrollSnapAlign: 'start',
           gap: '24px',
         }}>
           <p style={{
@@ -169,26 +198,30 @@ export default function Home() {
             덜어낸 뒤에 남는 것만 만든다.
           </p>
         </div>
+      </div>
 
-        {products.length === 0 && (
-          <div style={{
-            flexShrink: 0,
-            width: '100vw',
-            height: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-            <span style={{
-              fontSize: '10px',
-              letterSpacing: '4px',
-              color: 'var(--text3)',
-              textTransform: 'uppercase',
-            }}>
-              Coming Soon
-            </span>
-          </div>
-        )}
+      {/* Slide indicator dots */}
+      <div style={{
+        position: 'fixed',
+        bottom: '24px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: '8px',
+        zIndex: 50,
+      }}>
+        {Array.from({ length: total }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              width: currentIndex === i ? '16px' : '4px',
+              height: '4px',
+              borderRadius: '2px',
+              backgroundColor: currentIndex === i ? 'var(--text2)' : 'var(--border)',
+              transition: 'all 0.3s ease',
+            }}
+          />
+        ))}
       </div>
     </PageTransition>
   );
