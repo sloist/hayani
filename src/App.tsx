@@ -8,6 +8,7 @@ import About from './pages/About';
 import AdminLogin from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import OrderDetail from './pages/admin/OrderDetail';
+import AdminProducts from './pages/admin/Products';
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<Dashboard />} />
         <Route path="/admin/orders/:id" element={<OrderDetail />} />
+        <Route path="/admin/products" element={<AdminProducts />} />
       </Routes>
     </BrowserRouter>
   );

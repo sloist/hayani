@@ -1,6 +1,30 @@
-import { Link } from 'react-router-dom';
+import { useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Header() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isProduct = location.pathname.startsWith('/wear/');
+  const clickCount = useRef(0);
+  const clickTimer = useRef<number>();
+
+  // Triple-click HAYANI logo → admin
+  function handleLogoClick(e: React.MouseEvent) {
+    clickCount.current++;
+    clearTimeout(clickTimer.current);
+
+    if (clickCount.current >= 3) {
+      e.preventDefault();
+      clickCount.current = 0;
+      navigate('/admin/login');
+      return;
+    }
+
+    clickTimer.current = window.setTimeout(() => {
+      clickCount.current = 0;
+    }, 500);
+  }
+
   return (
     <header style={{
       position: 'fixed',
@@ -14,8 +38,8 @@ export default function Header() {
       padding: '24px 40px',
       pointerEvents: 'none',
     }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', pointerEvents: 'auto' }}>
-        <Link to="/" style={{
+      <div style={{ pointerEvents: 'auto' }}>
+        <Link to="/" onClick={handleLogoClick} style={{
           fontFamily: "'Cormorant Garamond', serif",
           fontSize: '18px',
           fontWeight: 300,
@@ -23,40 +47,24 @@ export default function Header() {
         }}>
           HAYANI
         </Link>
-        <Link to="/admin/login" style={{
-          fontSize: '0',
-          width: '8px',
-          height: '8px',
-          display: 'inline-block',
-          opacity: 0,
-        }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.15')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
-          aria-label="Admin"
-        >
-          &middot;
-        </Link>
       </div>
 
-      {/* Bag icon */}
-      <Link to="/wear" style={{
-        pointerEvents: 'auto',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '24px',
-        height: '24px',
-        opacity: 0.4,
-        transition: 'opacity 0.3s ease',
-      }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '0.4')}
-      >
-        <svg width="18" height="20" viewBox="0 0 18 20" fill="none" stroke="currentColor" strokeWidth="1">
-          <path d="M1 5h16v14H1z" />
-          <path d="M5 5V4a4 4 0 0 1 8 0v1" />
-        </svg>
-      </Link>
+      <div style={{ display: 'flex', gap: '24px', alignItems: 'center', pointerEvents: 'auto' }}>
+        {isProduct && (
+          <Link to="/" style={{
+            fontSize: '10px',
+            letterSpacing: '3px',
+            textTransform: 'uppercase',
+            color: 'var(--text2)',
+            transition: 'color 0.3s ease',
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text2)')}
+          >
+            Back
+          </Link>
+        )}
+      </div>
     </header>
   );
 }

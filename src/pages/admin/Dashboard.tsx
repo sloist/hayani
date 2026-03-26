@@ -56,20 +56,17 @@ export default function Dashboard() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '48px',
+        marginBottom: '32px',
       }}>
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'baseline' }}>
-          <Link to="/" style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontSize: '16px',
-            fontWeight: 300,
-            letterSpacing: '0.12em',
-            color: 'var(--text2)',
-          }}>
-            HAYANI
-          </Link>
-          <span className="label">Orders</span>
-        </div>
+        <Link to="/" style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: '16px',
+          fontWeight: 300,
+          letterSpacing: '0.12em',
+          color: 'var(--text2)',
+        }}>
+          HAYANI
+        </Link>
         <button
           onClick={handleLogout}
           style={{
@@ -81,6 +78,22 @@ export default function Dashboard() {
         >
           Logout
         </button>
+      </div>
+
+      {/* Admin nav */}
+      <div style={{
+        display: 'flex',
+        gap: '24px',
+        marginBottom: '40px',
+        borderBottom: '1px solid var(--border)',
+        paddingBottom: '12px',
+      }}>
+        <span className="label" style={{ color: 'var(--text)', borderBottom: '1px solid var(--text)', paddingBottom: '12px', marginBottom: '-13px' }}>
+          Orders
+        </span>
+        <Link to="/admin/products" className="label" style={{ transition: 'color 0.2s' }}>
+          Products
+        </Link>
       </div>
 
       {/* Filters */}
