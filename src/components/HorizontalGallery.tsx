@@ -60,12 +60,19 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
     });
   }, [slideCount, slideWidth, onIndexChange]);
 
-  // Initial scroll
+  // Initial scroll — immediate, no flash
   useEffect(() => {
     if (initialIndex > 0) {
-      setTimeout(() => scrollToIndex(initialIndex, false), 50);
+      const el = containerRef.current;
+      if (el) {
+        const target = initialIndex * (window.innerWidth * slideWidth / 100);
+        el.scrollLeft = target;
+        currentIndex.current = initialIndex;
+        onIndexChange?.(initialIndex);
+      }
     }
-  }, [initialIndex, scrollToIndex]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Hide hint
   useEffect(() => {
@@ -125,11 +132,14 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
     }
 
     function onTouchEnd(e: TouchEvent) {
+      if (isScrolling.current) return;
       const dx = touchStartX.current - e.changedTouches[0].clientX;
       const dy = touchStartY.current - e.changedTouches[0].clientY;
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        isScrolling.current = true;
         setShowHint(false);
         scrollToIndex(currentIndex.current + (dx > 0 ? 1 : -1));
+        setTimeout(() => { isScrolling.current = false; }, 500);
       }
     }
 
