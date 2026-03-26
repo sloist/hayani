@@ -15,8 +15,8 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
   const [showHint, setShowHint] = useState(true);
 
   const slideCount = children.length;
-  const slideWidth = 75;
-  const peekWidth = 12.5;
+  const slideWidth = 55;
+  const peekWidth = 22.5;
 
   const scrollToIndex = useCallback((index: number, smooth = true) => {
     const el = containerRef.current;

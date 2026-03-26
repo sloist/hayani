@@ -26,7 +26,7 @@ export default function ProductCard({ product, onClick }: Props) {
     >
       <div
         style={{
-          width: 'min(420px, 55vw)',
+          width: '85%',
           aspectRatio: '3/4',
           backgroundColor: 'var(--bg2)',
           display: 'flex',
