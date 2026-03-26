@@ -6,7 +6,7 @@ export default function Header() {
   const navigate = useNavigate();
   const isProduct = location.pathname.startsWith('/wear/');
   const clickCount = useRef(0);
-  const clickTimer = useRef<number>();
+  const clickTimer = useRef<number>(0);
 
   // Triple-click HAYANI logo → admin
   function handleLogoClick(e: React.MouseEvent) {
