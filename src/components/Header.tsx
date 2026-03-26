@@ -12,6 +12,9 @@ export default function Header({ onLogoClick }: HeaderProps) {
       zIndex: 100,
       padding: '28px 40px',
       pointerEvents: 'none',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     }}>
       <button
         onClick={onLogoClick}
@@ -26,6 +29,17 @@ export default function Header({ onLogoClick }: HeaderProps) {
       >
         HAYANI
       </button>
+      <span style={{
+        pointerEvents: 'auto',
+        fontSize: '9px',
+        letterSpacing: '3px',
+        textTransform: 'uppercase',
+        color: 'var(--text2)',
+        fontWeight: 300,
+        cursor: 'default',
+      }}>
+        Collect
+      </span>
     </header>
   );
 }

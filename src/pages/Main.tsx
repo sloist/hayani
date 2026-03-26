@@ -34,46 +34,17 @@ export default function Main() {
     return <div style={{ height: '100vh', backgroundColor: 'var(--bg)' }} />;
   }
 
-  const slides = [
-    // Slide 0: Home
-    <div key="home" style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '48px',
-    }}>
-      <h1 style={{
-        fontFamily: "'Cormorant Garamond', serif",
-        fontSize: 'clamp(48px, 8vw, 96px)',
-        fontWeight: 300,
-        letterSpacing: '0.14em',
-      }}>
-        HAYANI
-      </h1>
-      <span style={{
-        fontSize: '9px',
-        letterSpacing: '5px',
-        textTransform: 'uppercase',
-        color: 'var(--text3)',
-        fontWeight: 300,
-      }}>
-        Pre-Order — Summer 2026
-      </span>
-    </div>,
+  // Repeat products 3 times for loop feel, then footer
+  const repeatedProducts = [...products, ...products, ...products];
 
-    // Product slides
-    ...products.map(product => (
+  const slides = [
+    ...repeatedProducts.map((product, i) => (
       <ProductCard
-        key={product.id}
+        key={`${product.id}-${i}`}
         product={product}
         onClick={() => navigate(`/wear/${product.id}`)}
       />
     )),
-
-    // Last slide: About + Footer
     <FooterSlide key="footer" />,
   ];
 
