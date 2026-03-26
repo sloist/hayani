@@ -67,6 +67,13 @@ export default function Main() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
+  // Save/restore slide position
+  function handleIndexChange(index: number) {
+    setCurrentIndex(index);
+    sessionStorage.setItem('hayani_slide', String(index));
+  }
+  const savedIndex = Number(sessionStorage.getItem('hayani_slide') || '0');
+
   useEffect(() => {
     async function fetchProducts() {
       const { data } = await supabase
@@ -103,7 +110,7 @@ export default function Main() {
   return (
     <>
       <BoxIndicator />
-      <HorizontalGallery initialIndex={0} onIndexChange={setCurrentIndex}>
+      <HorizontalGallery initialIndex={savedIndex} onIndexChange={handleIndexChange}>
         {slides}
       </HorizontalGallery>
       {/* Dots — only for product slides (index 1 to products.length) */}
