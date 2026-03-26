@@ -1,20 +1,24 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { supabase, generateOrderNumber } from '../lib/supabase';
+import { getCollect } from '../lib/collect';
 import type { Product, OrderFormData } from '../types';
 
 const SHIPPING_FEE = 4000;
 
+interface OrderItem {
+  product: Product;
+  size: string;
+}
+
 export default function Order() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const submittedRef = useRef(false);
-
-  const productId = searchParams.get('product_id');
-  const size = searchParams.get('size');
+  const fromCollect = searchParams.get('from') === 'collect';
 
   const [form, setForm] = useState<OrderFormData>({
     customer_email: '', customer_name: '', customer_phone: '',
@@ -22,15 +26,39 @@ export default function Order() {
   });
 
   useEffect(() => {
-    if (!productId || !size) { navigate('/'); return; }
-    async function fetch() {
-      const { data } = await supabase.from('products').select('*').eq('id', productId).single();
-      if (!data || data.stock <= 0) { navigate('/'); return; }
-      setProduct(data);
+    async function load() {
+      if (fromCollect) {
+        // Load all collected items
+        const collected = getCollect();
+        if (collected.length === 0) { navigate('/'); return; }
+
+        const ids = [...new Set(collected.map(c => c.productId))];
+        const { data } = await supabase.from('products').select('*').in('id', ids);
+        const productMap = new Map((data || []).map(p => [p.id, p]));
+
+        const items = collected
+          .map(c => {
+            const product = productMap.get(c.productId);
+            return product && product.stock > 0 ? { product, size: c.size } : null;
+          })
+          .filter((x): x is OrderItem => x !== null);
+
+        if (items.length === 0) { navigate('/'); return; }
+        setOrderItems(items);
+      } else {
+        // Single item order
+        const productId = searchParams.get('product_id');
+        const size = searchParams.get('size');
+        if (!productId || !size) { navigate('/'); return; }
+
+        const { data } = await supabase.from('products').select('*').eq('id', productId).single();
+        if (!data || data.stock <= 0) { navigate('/'); return; }
+        setOrderItems([{ product: data, size }]);
+      }
       setLoading(false);
     }
-    fetch();
-  }, [productId, size, navigate]);
+    load();
+  }, [searchParams, navigate, fromCollect]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -38,7 +66,7 @@ export default function Order() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (submittedRef.current || submitting || !product || !size) return;
+    if (submittedRef.current || submitting || orderItems.length === 0) return;
     const required = ['customer_email', 'customer_name', 'customer_phone', 'customer_address', 'depositor_name'] as const;
     for (const f of required) if (!form[f].trim()) return;
 
@@ -46,26 +74,40 @@ export default function Order() {
     setSubmitting(true);
 
     try {
-      const { data: cur } = await supabase.from('products').select('stock').eq('id', product.id).single();
-      if (!cur || cur.stock <= 0) { alert('품절된 상품입니다.'); navigate('/'); return; }
-
-      await supabase.from('products').update({ stock: cur.stock - 1 }).eq('id', product.id);
       const orderNumber = await generateOrderNumber();
 
-      const { error } = await supabase.from('orders').insert({
-        order_number: orderNumber, product_id: product.id, size, quantity: 1,
-        total_price: product.price + SHIPPING_FEE,
-        customer_email: form.customer_email.trim(), customer_name: form.customer_name.trim(),
-        customer_phone: form.customer_phone.trim(), customer_address: form.customer_address.trim(),
-        customer_address_detail: form.customer_address_detail.trim() || null,
-        delivery_memo: form.delivery_memo.trim() || null, depositor_name: form.depositor_name.trim(),
-        status: 'pending',
-      });
+      for (const item of orderItems) {
+        const { data: cur } = await supabase.from('products').select('stock').eq('id', item.product.id).single();
+        if (!cur || cur.stock <= 0) continue;
 
-      if (error) {
-        await supabase.from('products').update({ stock: cur.stock }).eq('id', product.id);
-        throw error;
+        await supabase.from('products').update({ stock: cur.stock - 1 }).eq('id', item.product.id);
+
+        const itemOrderNumber = orderItems.length > 1
+          ? `${orderNumber}-${orderItems.indexOf(item) + 1}`
+          : orderNumber;
+
+        const { error } = await supabase.from('orders').insert({
+          order_number: itemOrderNumber, product_id: item.product.id, size: item.size, quantity: 1,
+          total_price: item.product.price + (orderItems.indexOf(item) === 0 ? SHIPPING_FEE : 0),
+          customer_email: form.customer_email.trim(), customer_name: form.customer_name.trim(),
+          customer_phone: form.customer_phone.trim(), customer_address: form.customer_address.trim(),
+          customer_address_detail: form.customer_address_detail.trim() || null,
+          delivery_memo: form.delivery_memo.trim() || null, depositor_name: form.depositor_name.trim(),
+          status: 'pending',
+        });
+
+        if (error) {
+          await supabase.from('products').update({ stock: cur.stock }).eq('id', item.product.id);
+          throw error;
+        }
       }
+
+      // Clear collect if ordering from collect
+      if (fromCollect) {
+        localStorage.removeItem('hayani_collect');
+        window.dispatchEvent(new Event('collect-change'));
+      }
+
       navigate(`/order/complete?order_number=${orderNumber}`);
     } catch {
       submittedRef.current = false;
@@ -75,9 +117,12 @@ export default function Order() {
   }
 
   if (loading) return <div style={{ minHeight: '100vh' }} />;
-  if (!product) return null;
+  if (orderItems.length === 0) return null;
 
   const formatPrice = (p: number) => `\u20A9${p.toLocaleString('ko-KR')}`;
+  const subtotal = orderItems.reduce((sum, i) => sum + i.product.price, 0);
+  const total = subtotal + SHIPPING_FEE;
+
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '12px 0', border: 'none', borderBottom: '1px solid var(--border)',
     backgroundColor: 'transparent', fontSize: '13px', fontWeight: 300, color: 'var(--text)', outline: 'none',
@@ -92,18 +137,24 @@ export default function Order() {
 
       {/* Summary */}
       <div style={{ paddingBottom: '32px', marginBottom: '32px', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 300 }}>{product.name}</span>
-          <span style={{ fontSize: '13px', fontWeight: 300 }}>{formatPrice(product.price)}</span>
-        </div>
-        <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px' }}>{product.code} / {size} / 1</span>
+        {orderItems.map((item, i) => (
+          <div key={`${item.product.id}-${item.size}-${i}`} style={{ marginBottom: i < orderItems.length - 1 ? '16px' : '0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 300 }}>{item.product.name}</span>
+              <span style={{ fontSize: '13px', fontWeight: 300 }}>{formatPrice(item.product.price)}</span>
+            </div>
+            <span style={{ fontSize: '11px', color: 'var(--text2)', letterSpacing: '2px' }}>
+              {item.product.code} / {item.size} / 1
+            </span>
+          </div>
+        ))}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
           <span style={{ fontSize: '11px', color: 'var(--text2)' }}>배송비</span>
           <span style={{ fontSize: '11px', color: 'var(--text2)' }}>{formatPrice(SHIPPING_FEE)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
           <span style={{ fontSize: '13px', fontWeight: 400 }}>합계</span>
-          <span style={{ fontSize: '13px', fontWeight: 400 }}>{formatPrice(product.price + SHIPPING_FEE)}</span>
+          <span style={{ fontSize: '13px', fontWeight: 400 }}>{formatPrice(total)}</span>
         </div>
       </div>
 
