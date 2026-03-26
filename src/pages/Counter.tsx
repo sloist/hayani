@@ -56,9 +56,7 @@ export default function Counter() {
 
   function handleAdd() {
     if (!selectedProduct || !selectedSize) return;
-    const sizeIdx = (selectedProduct.sizes || []).indexOf(selectedSize);
-    const display = selectedSize === 'F' ? 'F' : String(sizeIdx + 1);
-    addToCounter({ productId: selectedProduct.id, code: selectedProduct.code, name: selectedProduct.name, size: selectedSize, sizeDisplay: display, price: selectedProduct.price, quantity: 1, imageUrl: selectedProduct.image_url });
+    addToCounter({ productId: selectedProduct.id, code: selectedProduct.code, name: selectedProduct.name, size: selectedSize, sizeDisplay: selectedSize, price: selectedProduct.price, quantity: 1, imageUrl: selectedProduct.image_url });
     setSelectedSize('');
   }
 
@@ -115,7 +113,7 @@ export default function Counter() {
       <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px', minHeight: 0 }}>
         {selectedProduct ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', maxWidth: '320px' }}>
-            {/* Name + Price — one line */}
+            {/* Name + Price */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
               <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', fontWeight: 400, letterSpacing: '0.04em' }}>
                 {stripName(selectedProduct.name)}
@@ -129,12 +127,12 @@ export default function Counter() {
               <>
                 {/* Size + ADD — one row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-                  {sizes.map((size, i) => {
+                  {sizes.map((size) => {
                     const sizeStock = selectedProduct.stock_by_size?.[size];
                     const isSizeOut = sizeStock !== undefined && sizeStock <= 0;
                     return (
                       <button key={size} onClick={() => !isSizeOut && setSelectedSize(selectedSize === size ? '' : size)} disabled={isSizeOut} style={{
-                        minWidth: '32px', height: '32px', padding: '0 6px',
+                        minWidth: '32px', height: '32px', padding: '0 8px',
                         border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
                         backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
                         fontSize: '11px', fontWeight: 500,
@@ -142,13 +140,11 @@ export default function Counter() {
                         opacity: isSizeOut ? 0.4 : 1, cursor: isSizeOut ? 'default' : 'pointer',
                         textDecoration: isSizeOut ? 'line-through' : 'none', transition: 'all 0.15s ease',
                       }}>
-                        {size === 'F' ? 'F' : i + 1}
+                        {size}
                       </button>
                     );
                   })}
-
                   <div style={{ flex: 1 }} />
-
                   <button onClick={handleAdd} disabled={!selectedSize} style={{
                     padding: '8px 20px',
                     backgroundColor: selectedSize ? 'var(--text)' : 'transparent',
@@ -161,12 +157,14 @@ export default function Counter() {
                   </button>
                 </div>
 
-                {/* Selected size info — 1 line only */}
-                {sizeInfo && (
-                  <span style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '0.5px', alignSelf: 'flex-start' }}>
-                    {selectedSizeIdx + 1} — {sizeInfo}
-                  </span>
-                )}
+                {/* Size info — fixed height so nothing shifts */}
+                <div style={{ height: '14px', width: '100%' }}>
+                  {sizeInfo && (
+                    <span style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '0.5px' }}>
+                      {selectedSize} — {sizeInfo}
+                    </span>
+                  )}
+                </div>
               </>
             )}
           </div>
