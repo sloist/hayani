@@ -7,6 +7,7 @@ export interface Product {
   specs: string[];
   sizes: string[];
   stock_by_size: Record<string, number> | null;
+  size_guide: Array<Record<string, number>> | null;
   image_url: string | null;
   sort_order: number;
   is_active: boolean;

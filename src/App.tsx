@@ -32,7 +32,7 @@ export default function App() {
           <Route path="/admin/orders/:id" element={<AdminOrderDetail />} />
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/report" element={<AdminReport />} />
-          <Route path="/order/check" element={<OrderCheck />} />
+          <Route path="/order" element={<OrderCheck />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
         </Routes>

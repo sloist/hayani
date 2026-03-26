@@ -75,7 +75,11 @@ export default function Main() {
     setCurrentIndex(index);
     sessionStorage.setItem('hayani_slide', String(index));
   }, []);
-  const savedIndex = Number(sessionStorage.getItem('hayani_slide') || '0');
+
+  // On fresh page load (not back-navigation), always start at 0
+  const isBackNav = performance.getEntriesByType('navigation').length > 0 &&
+    (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming).type === 'back_forward';
+  const savedIndex = isBackNav ? Number(sessionStorage.getItem('hayani_slide') || '0') : 0;
 
   useEffect(() => {
     async function fetchProducts() {

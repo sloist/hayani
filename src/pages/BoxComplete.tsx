@@ -45,7 +45,7 @@ export default function BoxComplete() {
         </p>
 
         <div style={{ marginTop: '20px', display: 'flex', gap: '24px' }}>
-          <Link to="/order/check" style={{ fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text2)', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>
+          <Link to="/order" style={{ fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text2)', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>
             Order
           </Link>
           <Link to="/" style={{ fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text2)', borderBottom: '1px solid var(--border)', paddingBottom: '4px' }}>

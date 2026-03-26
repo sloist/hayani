@@ -12,6 +12,7 @@ export default function Box() {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState('');
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [box, setBox] = useState<BoxItem[]>(getBox);
   const navigate = useNavigate();
   const stripRef = useRef<HTMLDivElement>(null);
@@ -58,7 +59,7 @@ export default function Box() {
   const SHIPPING_FEE = 4000;
   const stripName = (n: string) => n.replace(/^HAYANI\s*/i, '');
 
-  function handleSelectProduct(product: Product) { setSelectedProduct(product); setSelectedSize(''); }
+  function handleSelectProduct(product: Product) { setSelectedProduct(product); setSelectedSize(''); setShowSizeGuide(false); }
 
   function handleAdd() {
     if (!selectedProduct || !selectedSize) return;
@@ -133,6 +134,21 @@ export default function Box() {
                     );
                   })}
                 </div>
+                {/* Size Guide toggle */}
+                <button onClick={() => setShowSizeGuide(!showSizeGuide)} style={{
+                  fontSize: '10px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '1px',
+                }}>
+                  {showSizeGuide ? '− Size Guide' : '+ Size Guide'}
+                </button>
+                {showSizeGuide && selectedProduct && (
+                  <div style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, lineHeight: '1.8', textAlign: 'left', width: '100%', maxWidth: '280px' }}>
+                    {(selectedProduct.sizes || []).map((_, i) => {
+                      // Placeholder measurements — will come from size_guide jsonb
+                      const guides: Record<number, string> = { 0: '가슴 52 · 총장 68', 1: '가슴 55 · 총장 71', 2: '가슴 58 · 총장 74', 3: '가슴 61 · 총장 77' };
+                      return <div key={i}>{i + 1} — {guides[i] || '준비 중'}</div>;
+                    })}
+                  </div>
+                )}
                 <button onClick={handleAdd} disabled={!selectedSize} style={{
                   padding: '10px 28px', backgroundColor: selectedSize ? 'var(--text)' : 'var(--border)',
                   color: selectedSize ? 'var(--bg)' : 'var(--text3)',
