@@ -1,8 +1,21 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getCollectCount } from '../lib/collect';
+
 interface HeaderProps {
   onLogoClick?: () => void;
 }
 
 export default function Header({ onLogoClick }: HeaderProps) {
+  const navigate = useNavigate();
+  const [count, setCount] = useState(getCollectCount);
+
+  useEffect(() => {
+    function onUpdate() { setCount(getCollectCount()); }
+    window.addEventListener('collect-change', onUpdate);
+    return () => window.removeEventListener('collect-change', onUpdate);
+  }, []);
+
   return (
     <header style={{
       position: 'fixed',
@@ -29,17 +42,34 @@ export default function Header({ onLogoClick }: HeaderProps) {
       >
         HAYANI
       </button>
-      <span style={{
-        pointerEvents: 'auto',
-        fontSize: '9px',
-        letterSpacing: '3px',
-        textTransform: 'uppercase',
-        color: 'var(--text2)',
-        fontWeight: 300,
-        cursor: 'default',
-      }}>
+      <button
+        onClick={() => navigate('/collect')}
+        style={{
+          pointerEvents: 'auto',
+          fontSize: '9px',
+          letterSpacing: '3px',
+          textTransform: 'uppercase',
+          color: 'var(--text2)',
+          fontWeight: 300,
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
+      >
         Collect
-      </span>
+        {count > 0 && (
+          <span style={{
+            fontSize: '8px',
+            color: 'var(--text)',
+            fontWeight: 400,
+          }}>
+            {count}
+          </span>
+        )}
+      </button>
     </header>
   );
 }

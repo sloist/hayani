@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { addToCollect, isCollected } from '../lib/collect';
 import type { Product as ProductType } from '../types';
 
 export default function Product() {
@@ -9,6 +10,7 @@ export default function Product() {
   const [product, setProduct] = useState<ProductType | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState('');
+  const [collected, setCollected] = useState(false);
 
   useEffect(() => {
     async function fetch() {
@@ -19,6 +21,14 @@ export default function Product() {
     }
     fetch();
   }, [id]);
+
+  useEffect(() => {
+    if (id && selectedSize) {
+      setCollected(isCollected(id, selectedSize));
+    } else {
+      setCollected(false);
+    }
+  }, [id, selectedSize]);
 
   if (loading) return <div style={{ minHeight: '100vh' }} />;
   if (!product) { navigate('/'); return null; }
@@ -32,20 +42,24 @@ export default function Product() {
     navigate(`/order?product_id=${product!.id}&size=${selectedSize}`);
   }
 
+  function handleCollect() {
+    if (!selectedSize || isSoldOut) return;
+    addToCollect(product!.id, selectedSize);
+    setCollected(true);
+  }
+
   return (
     <div style={{ minHeight: '100vh' }}>
-      {/* Back */}
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, padding: '28px 40px', display: 'flex', justifyContent: 'space-between' }}>
         <Link to="/" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', fontWeight: 300, letterSpacing: '0.12em' }}>
           HAYANI
         </Link>
-        <Link to="/" style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase' as const, color: 'var(--text2)' }}>
-          Back
+        <Link to="/collect" style={{ fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase' as const, color: 'var(--text2)' }}>
+          Collect
         </Link>
       </div>
 
       <div style={{ paddingTop: '80px', minHeight: '100vh', display: 'flex', flexWrap: 'wrap' }}>
-        {/* Image */}
         <div style={{
           flex: '1 1 50%', minWidth: '300px', position: 'sticky', top: 0, height: '100vh',
           backgroundColor: 'var(--bg2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -59,7 +73,6 @@ export default function Product() {
           )}
         </div>
 
-        {/* Info */}
         <div style={{ flex: '1 1 400px', padding: '120px 60px 80px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
           <span className="label">{product.code}</span>
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 300, letterSpacing: '0.06em' }}>
@@ -86,15 +99,27 @@ export default function Product() {
             ))}
           </div>
 
-          <button onClick={handleOrder} disabled={!canOrder} style={{
-            marginTop: '16px', padding: '16px 0',
-            backgroundColor: canOrder ? 'var(--text)' : 'var(--border)',
-            color: canOrder ? 'var(--bg)' : 'var(--text3)',
-            fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
-            transition: 'opacity 0.3s ease', cursor: canOrder ? 'pointer' : 'default',
-          }}>
-            {isSoldOut ? 'Sold Out' : 'Order'}
-          </button>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+            <button onClick={handleCollect} disabled={!selectedSize || isSoldOut || collected} style={{
+              flex: 1, padding: '16px 0',
+              border: '1px solid var(--border)',
+              backgroundColor: 'transparent',
+              color: collected ? 'var(--text3)' : (selectedSize && !isSoldOut) ? 'var(--text)' : 'var(--text3)',
+              fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
+              transition: 'all 0.3s ease', cursor: (selectedSize && !isSoldOut && !collected) ? 'pointer' : 'default',
+            }}>
+              {collected ? 'Collected' : 'Collect'}
+            </button>
+            <button onClick={handleOrder} disabled={!canOrder} style={{
+              flex: 1, padding: '16px 0',
+              backgroundColor: canOrder ? 'var(--text)' : 'var(--border)',
+              color: canOrder ? 'var(--bg)' : 'var(--text3)',
+              fontSize: '10px', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 300,
+              transition: 'opacity 0.3s ease', cursor: canOrder ? 'pointer' : 'default',
+            }}>
+              {isSoldOut ? 'Sold Out' : 'Order'}
+            </button>
+          </div>
 
           {!isSoldOut && (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 200, lineHeight: '1.8' }}>

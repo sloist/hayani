@@ -9,6 +9,7 @@ const AdminLogin = lazy(() => import('./pages/admin/Login'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminOrderDetail = lazy(() => import('./pages/admin/OrderDetail'));
 const AdminProducts = lazy(() => import('./pages/admin/Products'));
+const Collect = lazy(() => import('./pages/Collect'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 
@@ -21,6 +22,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/wear/:id" element={<Product />} />
+          <Route path="/collect" element={<Collect />} />
           <Route path="/order" element={<Order />} />
           <Route path="/order/complete" element={<OrderComplete />} />
           <Route path="/admin/login" element={<AdminLogin />} />
