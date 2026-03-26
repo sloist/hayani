@@ -1,4 +1,20 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function FooterSlide() {
+  const navigate = useNavigate();
+
+  const linkStyle = {
+    fontSize: '9px',
+    letterSpacing: '3px',
+    textTransform: 'uppercase' as const,
+    color: 'var(--text3)',
+    fontWeight: 300,
+    cursor: 'pointer',
+    background: 'none',
+    border: 'none',
+    padding: 0,
+  };
+
   return (
     <div style={{
       width: '100%',
@@ -38,18 +54,15 @@ export default function FooterSlide() {
 
       <div style={{ marginTop: '60px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: '24px' }}>
-          {['Contact', 'Terms', 'Privacy'].map(link => (
-            <span key={link} style={{
-              fontSize: '9px',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              color: 'var(--text3)',
-              fontWeight: 300,
-              cursor: 'pointer',
-            }}>
-              {link}
-            </span>
-          ))}
+          <a href="mailto:hello@hayani.kr" style={{ ...linkStyle, textDecoration: 'none' }}>
+            Contact
+          </a>
+          <button onClick={() => navigate('/terms')} style={linkStyle}>
+            Terms
+          </button>
+          <button onClick={() => navigate('/privacy')} style={linkStyle}>
+            Privacy
+          </button>
         </div>
         <span style={{
           fontSize: '9px',

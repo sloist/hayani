@@ -9,6 +9,8 @@ const AdminLogin = lazy(() => import('./pages/admin/Login'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminOrderDetail = lazy(() => import('./pages/admin/OrderDetail'));
 const AdminProducts = lazy(() => import('./pages/admin/Products'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
 
 const Loading = () => <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg)' }} />;
 
@@ -25,6 +27,8 @@ export default function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/orders/:id" element={<AdminOrderDetail />} />
           <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
