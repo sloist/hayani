@@ -14,35 +14,28 @@ export default function ProductCard({ product, onClick }: Props) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '24px',
         cursor: 'pointer',
         background: 'none',
         border: 'none',
         width: '100%',
         height: '100%',
+        padding: 0,
       }}
     >
+      {/* Image area — fills most of the height */}
       <div
         style={{
-          width: '85%',
-          aspectRatio: '3/4',
+          flex: 1,
+          width: '100%',
           backgroundColor: 'var(--bg2)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
-          transition: 'transform 0.5s ease, opacity 0.3s ease',
+          transition: 'opacity 0.4s ease',
         }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = 'scale(0.985)';
-          e.currentTarget.style.opacity = '0.9';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.opacity = '1';
-        }}
+        onMouseEnter={e => { e.currentTarget.style.opacity = '0.92'; }}
+        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
       >
         {product.image_url ? (
           <img
@@ -63,7 +56,11 @@ export default function ProductCard({ product, onClick }: Props) {
         )}
       </div>
 
-      <div style={{ textAlign: 'center' }}>
+      {/* Label — small strip at bottom */}
+      <div style={{
+        padding: '16px 0',
+        textAlign: 'center',
+      }}>
         <span style={{
           fontSize: '10px',
           letterSpacing: '4px',
@@ -76,7 +73,7 @@ export default function ProductCard({ product, onClick }: Props) {
         {isSoldOut && (
           <span style={{
             display: 'block',
-            marginTop: '6px',
+            marginTop: '4px',
             fontSize: '9px',
             letterSpacing: '3px',
             textTransform: 'uppercase',

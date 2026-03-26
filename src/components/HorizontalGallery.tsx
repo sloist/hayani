@@ -15,8 +15,8 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
   const [showHint, setShowHint] = useState(true);
 
   const slideCount = children.length;
-  const slideWidth = 55;
-  const peekWidth = 22.5;
+  const slideWidth = 72;
+  const peekWidth = 14;
 
   const scrollToIndex = useCallback((index: number, smooth = true) => {
     const el = containerRef.current;
@@ -155,9 +155,7 @@ export default function HorizontalGallery({ children, onIndexChange, initialInde
               flexShrink: 0,
               width: `${slideWidth}vw`,
               height: '100vh',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              padding: '80px 6px 0',
               scrollSnapAlign: 'center',
             }}
           >
