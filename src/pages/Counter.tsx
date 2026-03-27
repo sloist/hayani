@@ -78,10 +78,12 @@ export default function Counter() {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
 
-      {/* Top bar */}
-      <div style={{ padding: '16px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+      {/* Top bar — COUNTER centered absolutely like home */}
+      <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
         <BackButton to="/" />
-        <StepIndicator current={1} />
+        <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
+          <StepIndicator current={1} />
+        </div>
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>1 / 3</span>
       </div>
 
@@ -89,7 +91,7 @@ export default function Counter() {
       <div style={{ flex: 2.5, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '4px', minHeight: 0 }}>
         <div ref={stripRef} style={{
           display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
-          scrollbarWidth: 'none', gap: '10px', padding: '0 40px', width: '100%',
+          scrollbarWidth: 'none', gap: '10px', padding: '0 24px', width: '100%',
         }}>
           {products.map(product => (
             <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
@@ -110,8 +112,8 @@ export default function Counter() {
         </div>
       </div>
 
-      {/* Action bar — flex 1.5, tight to thumbnails */}
-      <div style={{ flex: 1.5, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '8px 40px 0', minHeight: 0 }}>
+      {/* Action bar — flex 1, tight to thumbnails */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '4px 24px 0', minHeight: 0 }}>
         {selectedProduct ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', maxWidth: '320px' }}>
             {/* Name + Price */}
@@ -175,7 +177,7 @@ export default function Counter() {
       </div>
 
       {/* Bottom summary — flex 2.5, closer to action */}
-      <div style={{ flex: 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderTop: '1px solid var(--text3)', padding: '12px 40px', minHeight: 0 }}>
+      <div style={{ flex: 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderTop: '1px solid var(--text3)', padding: '12px 24px', minHeight: 0 }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>

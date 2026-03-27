@@ -13,7 +13,7 @@ export default function FooterSlide() {
     <div style={{
       width: '100%', height: '100%',
       display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-      padding: '40px', textAlign: 'center', gap: '40px',
+      padding: '24px', textAlign: 'center', gap: '40px',
     }}>
       {/* Links — vertical */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>

@@ -102,10 +102,12 @@ export default function Checkout() {
   };
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '20px 40px 60px' }}>
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '20px 24px 60px' }}>
+      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
         <BackButton to="/counter" />
-        <StepIndicator current={2} />
+        <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
+          <StepIndicator current={2} />
+        </div>
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>2 / 3</span>
       </div>
 
