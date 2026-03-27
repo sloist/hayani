@@ -72,7 +72,7 @@ export default function Counter() {
   }
 
   return (
-    <div style={{ height: '100vh', overflow: 'auto', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+    <div style={{ height: '100vh', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%', paddingBottom: '120px' }}>
 
       {/* Top bar */}
       <div style={{ padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
@@ -160,8 +160,9 @@ export default function Counter() {
         ) : null}
       </div>
 
-      {/* Bottom summary — directly after action, no gap */}
-      <div style={{ borderTop: '1px solid var(--text3)', padding: '12px 24px', marginTop: '12px', flexShrink: 0 }}>
+      {/* Bottom summary — fixed to viewport bottom */}
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, borderTop: '1px solid var(--text3)', padding: '12px 24px', backgroundColor: 'var(--bg)', zIndex: 10 }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
@@ -192,6 +193,7 @@ export default function Counter() {
               </div>
             </>
           )}
+        </div>
         </div>
       </div>
     </div>
