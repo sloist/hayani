@@ -46,7 +46,7 @@ export default function ProductModal({ product, onClose }: Props) {
           )}
         </div>
 
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
             <h2 style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase' }}>{name}</h2>
             <span style={{ fontSize: '12px', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
