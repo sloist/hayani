@@ -85,8 +85,8 @@ export default function Counter() {
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>1 / 3</span>
       </div>
 
-      {/* Thumbnails — flex 3, pushed slightly up */}
-      <div style={{ flex: 3, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '8px', minHeight: 0 }}>
+      {/* Thumbnails — flex 2.5, pushed up */}
+      <div style={{ flex: 2.5, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '4px', minHeight: 0 }}>
         <div ref={stripRef} style={{
           display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
           scrollbarWidth: 'none', gap: '10px', padding: '0 40px', width: '100%',
@@ -110,8 +110,8 @@ export default function Counter() {
         </div>
       </div>
 
-      {/* Action bar — flex 2, compact */}
-      <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 40px', minHeight: 0 }}>
+      {/* Action bar — flex 1.5, tight to thumbnails */}
+      <div style={{ flex: 1.5, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '8px 40px 0', minHeight: 0 }}>
         {selectedProduct ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', maxWidth: '320px' }}>
             {/* Name + Price */}
