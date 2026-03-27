@@ -72,7 +72,7 @@ export default function Counter() {
   }
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%', position: 'relative' }}>
 
       {/* Top bar */}
       <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
@@ -106,10 +106,10 @@ export default function Counter() {
         ))}
       </div>
 
-      {/* Action bar — directly after thumbnails, no flex grow */}
-      <div style={{ padding: '12px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+      {/* Action bar — tight to thumbnails */}
+      <div style={{ padding: '6px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
         {selectedProduct ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', maxWidth: '320px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%', maxWidth: '320px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
               <span style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase' }}>
                 {stripName(selectedProduct.name)}
@@ -160,11 +160,8 @@ export default function Counter() {
         ) : null}
       </div>
 
-      {/* Spacer — pushes bottom to bottom */}
-      <div style={{ flex: 1 }} />
-
-      {/* Bottom summary */}
-      <div style={{ flexShrink: 0, borderTop: '1px solid var(--text3)', padding: '12px 24px' }}>
+      {/* Bottom summary — fixed to bottom */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, borderTop: '1px solid var(--text3)', padding: '12px 24px', backgroundColor: 'var(--bg)' }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
