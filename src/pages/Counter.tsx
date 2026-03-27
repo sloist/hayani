@@ -90,7 +90,7 @@ export default function Counter() {
       }}>
         {products.map(product => (
           <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
-            flexShrink: 0, width: 'min(120px, 25vw)', height: 'min(140px, 28vw)',
+            flexShrink: 0, width: 'min(140px, 28vw)', height: 'min(186px, 37vw)',
             backgroundColor: 'var(--bg2)',
             border: selectedProduct?.id === product.id ? '1px solid var(--text3)' : '1px solid transparent',
             overflow: 'hidden', padding: 0,
@@ -160,8 +160,8 @@ export default function Counter() {
         ) : null}
       </div>
 
-      {/* Bottom summary — fixed to bottom */}
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, borderTop: '1px solid var(--text3)', padding: '12px 24px', backgroundColor: 'var(--bg)' }}>
+      {/* Bottom summary — fills remaining space, content at bottom */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderTop: '1px solid var(--text3)', padding: '12px 24px', marginTop: '12px' }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
