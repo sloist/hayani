@@ -110,7 +110,7 @@ export default function Counter() {
       {/* Action bar — tight to thumbnails */}
       <div style={{ padding: '14px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
         {selectedProduct ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%', maxWidth: '320px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%', maxWidth: '320px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
               <span style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase' }}>
                 {stripName(selectedProduct.name)}
