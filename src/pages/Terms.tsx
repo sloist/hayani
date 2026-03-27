@@ -2,8 +2,8 @@ import BackButton from '../components/BackButton';
 
 export default function Terms() {
   return (
-    <div style={{ height: '100vh', overflow: 'hidden', padding: '100px 40px 40px', maxWidth: '540px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: '28px 40px', zIndex: 100, backgroundColor: 'var(--bg)' }}>
+    <div style={{ height: '100vh', overflow: 'hidden', padding: '70px 24px 24px', maxWidth: '480px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: '20px 24px', zIndex: 100, backgroundColor: 'var(--bg)' }}>
         <BackButton />
       </div>
 

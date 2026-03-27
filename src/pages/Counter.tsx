@@ -129,7 +129,7 @@ export default function Counter() {
                     return (
                       <button key={size} onClick={() => !isSizeOut && setSelectedSize(selectedSize === size ? '' : size)} disabled={isSizeOut} style={{
                         minWidth: '32px', height: '32px', padding: '0 8px',
-                        border: selectedSize === size ? '1px solid var(--text)' : '1px solid var(--border)',
+                        border: `1px solid ${selectedSize === size ? 'var(--text)' : 'var(--border)'}`,
                         backgroundColor: selectedSize === size ? 'var(--text)' : 'transparent',
                         fontSize: '11px', fontWeight: 500,
                         color: isSizeOut ? 'var(--text3)' : selectedSize === size ? 'var(--bg)' : 'var(--text2)',
@@ -145,7 +145,7 @@ export default function Counter() {
                     padding: '8px 22px',
                     backgroundColor: selectedSize ? 'var(--text)' : 'transparent',
                     color: selectedSize ? 'var(--bg)' : 'var(--text2)',
-                    border: selectedSize ? 'none' : '1px solid var(--text3)',
+                    border: selectedSize ? 'none' : '1px solid var(--border)',
                     fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 500,
                     cursor: selectedSize ? 'pointer' : 'default', transition: 'all 0.2s ease',
                   }}>
@@ -162,7 +162,7 @@ export default function Counter() {
       </div>
 
       {/* Bottom summary — fixed to viewport bottom */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, borderTop: '1px solid var(--text3)', padding: '12px 24px', backgroundColor: 'var(--bg)', zIndex: 10 }}>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, borderTop: '1px solid var(--border)', padding: '12px 24px', backgroundColor: 'var(--bg)', zIndex: 10 }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (

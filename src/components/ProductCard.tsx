@@ -49,7 +49,7 @@ export default function ProductCard({ product, onClick }: Props) {
         ) : (
           <span style={{
             fontFamily: "'Cormorant Garamond', serif",
-            fontSize: 'clamp(28px, 4vw, 42px)',
+            fontSize: '36px',
             fontWeight: 400,
             letterSpacing: '0.12em',
             color: 'var(--text3)',

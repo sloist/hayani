@@ -123,8 +123,8 @@ export default function Checkout() {
         {items.map((item, i) => (
           <div key={`${item.productId}-${item.size}`} style={{ marginBottom: i < items.length - 1 ? '10px' : '0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 400 }}>{stripName(item.name)}</span>
-              <span style={{ fontSize: '13px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
+              <span style={{ fontSize: '12px', fontWeight: 400 }}>{stripName(item.name)}</span>
+              <span style={{ fontSize: '12px', fontWeight: 500 }}>{formatPrice(item.price * item.quantity)}</span>
             </div>
             <span style={{ fontSize: '10px', color: 'var(--text3)', letterSpacing: '1px', fontWeight: 300 }}>
               Size {item.sizeDisplay || item.size} · {item.quantity}EA
@@ -153,7 +153,7 @@ export default function Checkout() {
 
         <div style={{ padding: '16px', border: '1px solid var(--border)', marginBottom: '16px' }}>
           <span className="label" style={{ marginBottom: '12px', display: 'block' }}>Payment</span>
-          <div style={{ fontSize: '13px', fontWeight: 300, lineHeight: '1.8' }}>
+          <div style={{ fontSize: '13px', fontWeight: 300, lineHeight: '1.6' }}>
             <div>카카오뱅크</div>
             <div style={{ color: 'var(--text2)' }}>계좌번호 안내 예정</div>
             <div style={{ fontSize: '11px', color: 'var(--text2)' }}>예금주: 하야니</div>

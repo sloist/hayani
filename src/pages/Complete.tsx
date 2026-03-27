@@ -18,7 +18,7 @@ export default function Complete() {
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '0 24px', textAlign: 'center', gap: '14px' }}>
-        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '26px', fontWeight: 400, letterSpacing: '0.06em' }}>감사합니다</h1>
+        <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '24px', fontWeight: 400, letterSpacing: '0.08em' }}>감사합니다</h1>
         {orderNumber && <span style={{ fontSize: '13px', letterSpacing: '2px', color: 'var(--text)', fontFamily: 'monospace', fontWeight: 500 }}>{orderNumber}</span>}
 
         <div style={{ padding: '24px 36px', border: '1px solid var(--border)', marginTop: '8px', textAlign: 'center', minWidth: '260px' }}>

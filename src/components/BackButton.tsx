@@ -25,7 +25,7 @@ export default function BackButton({ to }: Props) {
       style={{
         fontFamily: "'Cormorant Garamond', serif",
         fontSize: '20px',
-        fontWeight: 300,
+        fontWeight: 400,
         background: 'none',
         border: 'none',
         cursor: 'pointer',
