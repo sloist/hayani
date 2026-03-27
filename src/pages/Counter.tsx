@@ -75,7 +75,7 @@ export default function Counter() {
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%', position: 'relative' }}>
 
       {/* Top bar */}
-      <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
+      <div style={{ padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
         <BackButton to="/" />
         <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
           <StepIndicator current={1} />
@@ -90,7 +90,7 @@ export default function Counter() {
       }}>
         {products.map(product => (
           <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
-            flexShrink: 0, width: 'min(140px, 28vw)', height: 'min(186px, 37vw)',
+            flexShrink: 0, width: 'min(120px, 25vw)', height: 'min(140px, 28vw)',
             backgroundColor: 'var(--bg2)',
             border: selectedProduct?.id === product.id ? '1px solid var(--text3)' : '1px solid transparent',
             overflow: 'hidden', padding: 0,
@@ -107,7 +107,7 @@ export default function Counter() {
       </div>
 
       {/* Action bar — tight to thumbnails */}
-      <div style={{ padding: '6px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+      <div style={{ padding: '4px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
         {selectedProduct ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', width: '100%', maxWidth: '320px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
