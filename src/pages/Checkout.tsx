@@ -109,8 +109,8 @@ export default function Checkout() {
   };
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px 24px 60px' }}>
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+    <div>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
         <BackButton to="/counter" />
         <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
           <StepIndicator current={2} />
@@ -118,6 +118,7 @@ export default function Checkout() {
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>2 / 3</span>
       </div>
 
+      <div style={{ maxWidth: '480px', margin: '0 auto', padding: '0 24px 60px' }}>
       {/* Summary */}
       <div style={{ paddingBottom: '20px', marginBottom: '20px', borderBottom: '1px solid var(--border)' }}>
         {items.map((item, i) => (
@@ -175,6 +176,7 @@ export default function Checkout() {
           {submitting ? 'Processing...' : 'Complete'}
         </button>
       </form>
+      </div>
     </div>
   );
 }

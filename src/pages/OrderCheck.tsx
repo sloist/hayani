@@ -163,8 +163,10 @@ export default function OrderCheck() {
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden', maxWidth: '480px', margin: '0 auto', padding: '60px 24px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, padding: '16px 24px', zIndex: 100, backgroundColor: 'var(--bg)' }}>
-        <BackButton />
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backgroundColor: 'var(--bg)' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '16px 24px' }}>
+          <BackButton />
+        </div>
       </div>
 
       <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '24px', fontWeight: 400, letterSpacing: '0.06em', marginBottom: '40px' }}>
