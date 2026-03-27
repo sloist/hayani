@@ -72,7 +72,8 @@ export default function Counter() {
   }
 
   return (
-    <div style={{ height: '100vh', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%', paddingBottom: '120px' }}>
+    <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', touchAction: 'none' }}>
+    <div style={{ height: '100%', maxWidth: '1000px', margin: '0 auto', width: '100%', paddingBottom: '120px' }}>
 
       {/* Top bar */}
       <div style={{ padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
@@ -196,6 +197,7 @@ export default function Counter() {
         </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
