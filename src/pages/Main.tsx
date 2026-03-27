@@ -76,10 +76,12 @@ export default function Main() {
     sessionStorage.setItem('hayani_slide', String(index));
   }, []);
 
-  // On fresh page load (not back-navigation), always start at 0
-  const isBackNav = performance.getEntriesByType('navigation').length > 0 &&
-    (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming).type === 'back_forward';
-  const savedIndex = isBackNav ? Number(sessionStorage.getItem('hayani_slide') || '0') : 0;
+  // Restore slide on back-nav, reset on refresh
+  // 'hayani_navigated' flag distinguishes SPA nav from hard refresh
+  const wasNavigated = sessionStorage.getItem('hayani_navigated') === '1';
+  const savedIndex = wasNavigated ? Number(sessionStorage.getItem('hayani_slide') || '0') : 0;
+  // Clear the flag — will be set again when navigating away
+  useEffect(() => { sessionStorage.removeItem('hayani_navigated'); }, []);
 
   useEffect(() => {
     async function fetchProducts() {

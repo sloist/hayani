@@ -18,9 +18,9 @@ export default function FooterSlide() {
       {/* Links — vertical */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
         <a href="mailto:white@hayani.kr" style={{ ...linkStyle, textDecoration: 'none' }}>Contact</a>
-        <button onClick={() => navigate('/order')} style={linkStyle}>Order</button>
-        <button onClick={() => navigate('/terms')} style={linkStyle}>Terms</button>
-        <button onClick={() => navigate('/privacy')} style={linkStyle}>Privacy</button>
+        <button onClick={() => { sessionStorage.setItem('hayani_navigated', '1'); navigate('/order'); }} style={linkStyle}>Order</button>
+        <button onClick={() => { sessionStorage.setItem('hayani_navigated', '1'); navigate('/terms'); }} style={linkStyle}>Terms</button>
+        <button onClick={() => { sessionStorage.setItem('hayani_navigated', '1'); navigate('/privacy'); }} style={linkStyle}>Privacy</button>
       </div>
 
       {/* Copyright */}
