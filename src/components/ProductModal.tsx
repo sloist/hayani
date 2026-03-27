@@ -46,14 +46,21 @@ export default function ProductModal({ product, onClose }: Props) {
           )}
         </div>
 
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' }}>
-            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h2>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+            <h2 style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase' }}>{name}</h2>
             <span style={{ fontSize: '12px', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
           </div>
-          <span style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>
-            {specs.join(' · ')}
-          </span>
+          {(() => {
+            const material = specs.filter(s => !/(white|black|grey|cream|ivory|canvas-|made in)/i.test(s));
+            const origin = specs.find(s => /made in/i.test(s));
+            return (
+              <>
+                {material.length > 0 && <span style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{material.join(' · ')}</span>}
+                {origin && <span style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{origin}</span>}
+              </>
+            );
+          })()}
         </div>
       </div>
 
