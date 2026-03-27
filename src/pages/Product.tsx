@@ -33,7 +33,7 @@ export default function Product() {
 
   return (
     <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '20px 24px', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+      <div style={{ padding: '16px 24px', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
         <BackButton />
       </div>
 

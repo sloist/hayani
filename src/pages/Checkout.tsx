@@ -109,7 +109,7 @@ export default function Checkout() {
   };
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '20px 24px 60px' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto', padding: '16px 24px 60px' }}>
       <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
         <BackButton to="/counter" />
         <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>

@@ -76,7 +76,7 @@ export default function Counter() {
     <div style={{ height: '100%', maxWidth: '1000px', margin: '0 auto', width: '100%', paddingBottom: '120px' }}>
 
       {/* Top bar */}
-      <div style={{ padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
+      <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
         <BackButton to="/" />
         <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
           <StepIndicator current={1} />

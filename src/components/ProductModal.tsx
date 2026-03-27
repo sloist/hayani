@@ -26,7 +26,7 @@ export default function ProductModal({ product, onClose }: Props) {
       animation: closing ? 'modalOut 0.25s ease forwards' : 'modalIn 0.3s ease',
       display: 'flex', flexDirection: 'column',
     }}>
-      <div style={{ padding: '20px 24px', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+      <div style={{ padding: '16px 24px', flexShrink: 0, maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
         <button onClick={handleClose} style={{
           fontFamily: "'Cormorant Garamond', serif", fontSize: '20px', fontWeight: 400,
           color: 'var(--text)', padding: '0',
