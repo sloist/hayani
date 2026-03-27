@@ -10,9 +10,6 @@ export async function generateOrderNumber(): Promise<string> {
   const yy = String(now.getFullYear()).slice(2);
   const mm = String(now.getMonth() + 1).padStart(2, '0');
   const dd = String(now.getDate()).padStart(2, '0');
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mi = String(now.getMinutes()).padStart(2, '0');
-  const ss = String(now.getSeconds()).padStart(2, '0');
-  const rand = String(Math.floor(Math.random() * 100)).padStart(2, '0');
-  return `${yy}${mm}${dd}${hh}${mi}${ss}${rand}`;
+  const rand = crypto.getRandomValues(new Uint32Array(1))[0].toString(36).slice(0, 5).toUpperCase();
+  return `${yy}${mm}${dd}${rand}`;
 }

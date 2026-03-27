@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Order } from '../types';
 import BackButton from '../components/BackButton';
@@ -19,9 +19,19 @@ export default function OrderCheck() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const attemptsRef = useRef(0);
+  const lastAttemptRef = useRef(0);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim() || !phone.trim()) return;
+
+    // Rate limit: max 5 attempts per 60 seconds
+    const now = Date.now();
+    if (now - lastAttemptRef.current > 60000) { attemptsRef.current = 0; }
+    attemptsRef.current++;
+    lastAttemptRef.current = now;
+    if (attemptsRef.current > 5) { alert('너무 많은 시도입니다. 잠시 후 다시 시도해주세요.'); return; }
 
     setLoading(true);
     setSearched(false);

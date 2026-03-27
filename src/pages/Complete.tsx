@@ -4,7 +4,7 @@ import StepIndicator from '../components/StepIndicator';
 export default function Complete() {
   const [params] = useSearchParams();
   const orderNumber = params.get('order_number');
-  const totalPrice = params.get('total');
+  const totalPrice = sessionStorage.getItem('hayani_order_total');
   const formatPrice = (p: number) => `₩${p.toLocaleString('ko-KR')}`;
 
   return (

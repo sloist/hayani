@@ -36,11 +36,17 @@ export default function Checkout() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submittedRef.current || submitting || items.length === 0) return;
+
+    // Rate limit: 1 order per 30 seconds
+    const lastOrder = Number(sessionStorage.getItem('hayani_last_order') || '0');
+    if (Date.now() - lastOrder < 30000) { alert('잠시 후 다시 시도해주세요.'); return; }
+
     const required = ['customer_email', 'customer_name', 'customer_phone', 'customer_address', 'depositor_name'] as const;
     for (const f of required) if (!form[f].trim()) return;
 
     submittedRef.current = true;
     setSubmitting(true);
+    sessionStorage.setItem('hayani_last_order', String(Date.now()));
 
     try {
       const orderNumber = await generateOrderNumber();
@@ -86,7 +92,8 @@ export default function Checkout() {
 
       saveCustomer(form);
       clearCounter();
-      navigate(`/counter/complete?order_number=${orderNumber}&total=${serverTotal}`);
+      sessionStorage.setItem('hayani_order_total', String(serverTotal));
+      navigate(`/counter/complete?order_number=${orderNumber}`);
     } catch (err) {
       submittedRef.current = false;
       setSubmitting(false);
