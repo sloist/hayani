@@ -46,17 +46,21 @@ export default function ProductModal({ product, onClose }: Props) {
           )}
         </div>
 
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h2>
-          <span style={{ fontSize: '12px', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginTop: '4px' }}>
-            {specs.map((spec, i) => (
-              <span key={i} style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
-            ))}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '22px', fontWeight: 400, letterSpacing: '0.06em' }}>{name}</h2>
+            <span style={{ fontSize: '12px', color: 'var(--text2)' }}>{formatPrice(product.price)}</span>
           </div>
-          <span style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '1px', marginTop: '4px' }}>
-            Size & order available in COUNTER
-          </span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              {specs.map((spec, i) => (
+                <span key={i} style={{ fontSize: '10px', color: 'var(--text2)', fontWeight: 300, letterSpacing: '0.5px' }}>{spec}</span>
+              ))}
+            </div>
+            <span style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '0.5px', textAlign: 'right', lineHeight: '1.6' }}>
+              Size & order<br />available in COUNTER
+            </span>
+          </div>
         </div>
       </div>
 
