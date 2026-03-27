@@ -85,8 +85,8 @@ export default function Counter() {
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>1 / 3</span>
       </div>
 
-      {/* Thumbnails — flex 3 */}
-      <div style={{ flex: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0 }}>
+      {/* Thumbnails — flex 3, pushed slightly up */}
+      <div style={{ flex: 3, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '8px', minHeight: 0 }}>
         <div ref={stripRef} style={{
           display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
           scrollbarWidth: 'none', gap: '10px', padding: '0 40px', width: '100%',
@@ -94,10 +94,11 @@ export default function Counter() {
           {products.map(product => (
             <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
               flexShrink: 0, width: 'min(140px, 28vw)', height: 'min(186px, 37vw)',
-              backgroundColor: selectedProduct?.id === product.id ? 'var(--border)' : 'var(--bg2)',
-              border: 'none', overflow: 'hidden', padding: 0,
-              transition: 'background-color 0.3s ease',
-              opacity: selectedProduct?.id === product.id ? 1 : 0.8,
+              backgroundColor: 'var(--bg2)',
+              border: selectedProduct?.id === product.id ? '1px solid var(--text3)' : '1px solid transparent',
+              overflow: 'hidden', padding: 0,
+              transition: 'all 0.3s ease',
+              opacity: selectedProduct?.id === product.id ? 1 : 0.75,
             }}>
               {product.image_url ? (
                 <img className="product-img" src={product.image_url} alt={stripName(product.name)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -115,7 +116,7 @@ export default function Counter() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', maxWidth: '320px' }}>
             {/* Name + Price */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
-              <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', fontWeight: 400, letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase' }}>
                 {stripName(selectedProduct.name)}
               </span>
               <span style={{ fontSize: '12px', color: 'var(--text2)' }}>{formatPrice(selectedProduct.price)}</span>
@@ -146,11 +147,11 @@ export default function Counter() {
                   })}
                   <div style={{ flex: 1 }} />
                   <button onClick={handleAdd} disabled={!selectedSize} style={{
-                    padding: '8px 20px',
+                    padding: '8px 22px',
                     backgroundColor: selectedSize ? 'var(--text)' : 'transparent',
-                    color: selectedSize ? 'var(--bg)' : 'var(--text3)',
-                    border: selectedSize ? 'none' : '1px solid var(--border)',
-                    fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 400,
+                    color: selectedSize ? 'var(--bg)' : 'var(--text2)',
+                    border: selectedSize ? 'none' : '1px solid var(--text3)',
+                    fontSize: '10px', letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 500,
                     cursor: selectedSize ? 'pointer' : 'default', transition: 'all 0.2s ease',
                   }}>
                     ADD
@@ -173,8 +174,8 @@ export default function Counter() {
         ) : null}
       </div>
 
-      {/* Bottom summary — flex 3 */}
-      <div style={{ flex: 3, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', padding: '12px 40px', minHeight: 0 }}>
+      {/* Bottom summary — flex 2.5, closer to action */}
+      <div style={{ flex: 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderTop: '1px solid var(--text3)', padding: '12px 40px', minHeight: 0 }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
