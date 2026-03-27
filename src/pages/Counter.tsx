@@ -65,21 +65,17 @@ export default function Counter() {
   const sizeGuide = selectedProduct?.size_guide;
   const sizes = selectedProduct?.sizes || [];
   const selectedSizeIdx = sizes.indexOf(selectedSize);
-
-  // Get measurement for selected size
   let sizeInfo = '';
   if (selectedSize && selectedSize !== 'F' && selectedSizeIdx >= 0) {
     const guide = sizeGuide?.[selectedSizeIdx];
-    sizeInfo = guide
-      ? Object.entries(guide).map(([k, v]) => `${k} ${v}`).join(' · ')
-      : `가슴 ${52 + selectedSizeIdx * 3} · 총장 ${68 + selectedSizeIdx * 3}`;
+    sizeInfo = guide ? Object.entries(guide).map(([k, v]) => `${k} ${v}`).join(' · ') : `가슴 ${52 + selectedSizeIdx * 3} · 총장 ${68 + selectedSizeIdx * 3}`;
   }
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
 
-      {/* Top bar — COUNTER centered absolutely like home */}
-      <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
+      {/* Top bar */}
+      <div style={{ padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, position: 'relative' }}>
         <BackButton to="/" />
         <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
           <StepIndicator current={1} />
@@ -87,36 +83,33 @@ export default function Counter() {
         <span style={{ fontSize: '10px', letterSpacing: '2px', color: 'var(--text2)' }}>1 / 3</span>
       </div>
 
-      {/* Thumbnails — flex 2.5, pushed up */}
-      <div style={{ flex: 2.5, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '4px', minHeight: 0 }}>
-        <div ref={stripRef} style={{
-          display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
-          scrollbarWidth: 'none', gap: '10px', padding: '0 24px', width: '100%',
-        }}>
-          {products.map(product => (
-            <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
-              flexShrink: 0, width: 'min(140px, 28vw)', height: 'min(186px, 37vw)',
-              backgroundColor: 'var(--bg2)',
-              border: selectedProduct?.id === product.id ? '1px solid var(--text3)' : '1px solid transparent',
-              overflow: 'hidden', padding: 0,
-              transition: 'all 0.3s ease',
-              opacity: selectedProduct?.id === product.id ? 1 : 0.75,
-            }}>
-              {product.image_url ? (
-                <img className="product-img" src={product.image_url} alt={stripName(product.name)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <span style={{ fontSize: '9px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
-              )}
-            </button>
-          ))}
-        </div>
+      {/* Thumbnails */}
+      <div ref={stripRef} style={{
+        display: 'flex', justifyContent: 'center', overflowX: 'auto', overflowY: 'hidden',
+        scrollbarWidth: 'none', gap: '10px', padding: '0 24px', flexShrink: 0,
+      }}>
+        {products.map(product => (
+          <button key={product.id} onClick={() => handleSelectProduct(product)} style={{
+            flexShrink: 0, width: 'min(140px, 28vw)', height: 'min(186px, 37vw)',
+            backgroundColor: 'var(--bg2)',
+            border: selectedProduct?.id === product.id ? '1px solid var(--text3)' : '1px solid transparent',
+            overflow: 'hidden', padding: 0,
+            transition: 'all 0.3s ease',
+            opacity: selectedProduct?.id === product.id ? 1 : 0.75,
+          }}>
+            {product.image_url ? (
+              <img className="product-img" src={product.image_url} alt={stripName(product.name)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <span style={{ fontSize: '9px', letterSpacing: '2px', color: 'var(--text3)' }}>{stripName(product.name)}</span>
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Action bar — flex 1, tight to thumbnails */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '4px 24px 0', minHeight: 0 }}>
+      {/* Action bar — directly after thumbnails, no flex grow */}
+      <div style={{ padding: '12px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
         {selectedProduct ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', maxWidth: '320px' }}>
-            {/* Name + Price */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', width: '100%' }}>
               <span style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '3px', textTransform: 'uppercase' }}>
                 {stripName(selectedProduct.name)}
@@ -128,7 +121,6 @@ export default function Counter() {
               <span style={{ fontSize: '10px', letterSpacing: '3px', color: 'var(--text3)', textTransform: 'uppercase' }}>Sold Out</span>
             ) : (
               <>
-                {/* Size + ADD — one row */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
                   {sizes.map((size) => {
                     const sizeStock = selectedProduct.stock_by_size?.[size];
@@ -159,31 +151,26 @@ export default function Counter() {
                     ADD
                   </button>
                 </div>
-
-                {/* Size info — fixed height so nothing shifts */}
                 <div style={{ height: '14px', width: '100%' }}>
-                  {sizeInfo && (
-                    <span style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '0.5px' }}>
-                      {selectedSize} — {sizeInfo}
-                    </span>
-                  )}
+                  {sizeInfo && <span style={{ fontSize: '9px', color: 'var(--text3)', fontWeight: 300, letterSpacing: '0.5px' }}>{selectedSize} — {sizeInfo}</span>}
                 </div>
               </>
             )}
           </div>
-        ) : products.length === 0 ? (
-          <p style={{ fontSize: '13px', color: 'var(--text3)', fontWeight: 300 }}>No items available</p>
         ) : null}
       </div>
 
-      {/* Bottom summary — flex 2.5, closer to action */}
-      <div style={{ flex: 2.5, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', borderTop: '1px solid var(--text3)', padding: '12px 24px', minHeight: 0 }}>
+      {/* Spacer — pushes bottom to bottom */}
+      <div style={{ flex: 1 }} />
+
+      {/* Bottom summary */}
+      <div style={{ flexShrink: 0, borderTop: '1px solid var(--text3)', padding: '12px 24px' }}>
         <div style={{ maxWidth: '520px', margin: '0 auto', width: '100%' }}>
           {counter.length === 0 ? (
             <p style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 300, textAlign: 'center' }}>Still empty</p>
           ) : (
             <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px', maxHeight: '25vh', overflowY: 'auto' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px', maxHeight: '20vh', overflowY: 'auto' }}>
                 {counter.map(item => (
                   <div key={`${item.productId}-${item.size}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text2)' }}>

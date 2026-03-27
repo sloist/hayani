@@ -8,6 +8,8 @@ export default function BackButton({ to }: Props) {
   const navigate = useNavigate();
 
   function handleClick() {
+    // Always set flag so Main restores slide position on back-nav
+    sessionStorage.setItem('hayani_navigated', '1');
     if (to) {
       navigate(to);
     } else if (window.history.length > 1) {

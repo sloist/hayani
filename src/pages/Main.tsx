@@ -77,11 +77,13 @@ export default function Main() {
   }, []);
 
   // Restore slide on back-nav, reset on refresh
-  // 'hayani_navigated' flag distinguishes SPA nav from hard refresh
-  const wasNavigated = sessionStorage.getItem('hayani_navigated') === '1';
-  const savedIndex = wasNavigated ? Number(sessionStorage.getItem('hayani_slide') || '0') : 0;
-  // Clear the flag — will be set again when navigating away
-  useEffect(() => { sessionStorage.removeItem('hayani_navigated'); }, []);
+  const restoredRef = useRef<number | null>(null);
+  if (restoredRef.current === null) {
+    const wasNavigated = sessionStorage.getItem('hayani_navigated') === '1';
+    restoredRef.current = wasNavigated ? Number(sessionStorage.getItem('hayani_slide') || '0') : 0;
+    sessionStorage.removeItem('hayani_navigated');
+  }
+  const savedIndex = restoredRef.current;
 
   useEffect(() => {
     async function fetchProducts() {
@@ -127,7 +129,7 @@ export default function Main() {
     <>
       {/* COUNTER — top center, fade with products */}
       <div style={{
-        position: 'fixed', top: '24px', left: 0, right: 0,
+        position: 'fixed', top: '14px', left: 0, right: 0,
         zIndex: 50, textAlign: 'center',
         opacity: isProductSlide ? 1 : 0,
         transition: 'opacity 0.4s ease',
